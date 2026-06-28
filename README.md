@@ -1,74 +1,41 @@
 # ResurGo Fitness
 
-PWA coach sportif offline-first, mobile-first iPhone/iPad, avec profils, tests initiaux, plan adaptatif, séance guidée, TTS, statistiques, export/import JSON et connecteur Garmin via Cloudflare Worker.
+PWA sportive 100% statique, prête pour GitHub Pages.
 
-## Démarrer
+## Déploiement GitHub Pages
 
-```bash
-npm install
-npm run dev
-```
+Ce dépôt est volontairement simple :
 
-## Validation
+- `index.html`
+- `app.js`
+- `styles.css`
+- `sw.js`
+- `manifest.webmanifest`
+- `icon.svg`
 
-```bash
-npm run lint
-npm run test
-npm run build
-npm run preview
-npm run test:e2e
-```
+Configuration GitHub Pages :
 
-## GitHub Pages
+- Source : `Deploy from a branch`
+- Branch : `main`
+- Folder : `/root`
 
-GitHub Pages doit servir le dossier généré `dist/`, pas les sources du repo.
-
-La configuration Vite utilise `base: '/ResurGo_Fitness/'` pour l'URL :
+URL :
 
 ```text
 https://sicho95.github.io/ResurGo_Fitness/
 ```
 
-Le workflow `.github/workflows/pages.yml` installe, teste, build puis publie `dist/`.
+Pas de Vite, pas de React, pas de GitHub Actions, pas de Jekyll, pas de build.
 
-## V1 incluse
+## Fonctionnalités V1 statique
 
-- PWA installable avec manifest, service worker et cache des schémas offline.
-- Données locales dans IndexedDB via Dexie.
-- Export/import JSON complet pour sauvegarde iCloud et migration multi-device.
-- Multi-profils, profil de départ Damien, tests/niveaux par domaine.
-- Plan adaptatif hebdomadaire et semaine minimale viable.
-- Séance dynamique avec état sauvegardé, saisie réussite/douleur/difficulté, adaptation immédiate.
-- Bibliothèque d’exercices avec SVG locaux offline et URLs vidéo placeholders online.
-- TTS Web Speech API configurable.
-- Statistiques poids/composition/assiduité/course sans nutrition.
-- Worker Cloudflare optionnel pour proxy Garmin et stockage KV des tokens/état de sync.
-
-## Cloudflare Worker Garmin
-
-Le code est dans `workers/resurgo-sync`.
-
-```bash
-cd workers/resurgo-sync
-npm install
-npx wrangler kv namespace create RESURGO_SYNC_KV
-npm run types
-npm run deploy
-```
-
-Ajouter l’id KV dans `workers/resurgo-sync/wrangler.jsonc`, puis configurer les secrets :
-
-```bash
-npx wrangler secret put APP_SHARED_SYNC_TOKEN
-npx wrangler secret put GARMIN_CONSUMER_KEY
-npx wrangler secret put GARMIN_CONSUMER_SECRET
-```
-
-La PWA stocke l’URL Worker et le token personnel dans les réglages locaux. Le Worker stocke l’état Garmin en KV pour faciliter le multi-device.
-
-## Limites V1
-
-- Garmin réel nécessite accès Garmin Health/API et credentials valides. Sans cela, le Worker expose un mock et des endpoints prêts.
-- Apple Santé n’est pas intégré en V1 : une PWA ne peut pas lire HealthKit directement. Une app iOS compagnon pourra pousser des données vers le Worker plus tard.
-- Les vidéos externes ne sont pas cachées offline ; le fallback offline est le schéma SVG + descriptif.
-- Aucun module nutrition, repas, calories ou macros.
+- profils locaux ;
+- plan de semaine ;
+- séance guidée ;
+- bibliothèque d'exercices offline ;
+- TTS navigateur ;
+- statistiques ;
+- export/import JSON ;
+- IndexedDB ;
+- service worker offline ;
+- paramètres Worker Garmin optionnels.
