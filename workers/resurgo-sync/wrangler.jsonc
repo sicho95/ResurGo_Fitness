@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "resurgo-fitness-sync",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "APP_ORIGIN": "http://localhost:5173",
+    "GARMIN_API_BASE_URL": "https://apis.garmin.com",
+    "GARMIN_AUTH_BASE_URL": "https://connect.garmin.com/oauth-service/oauth"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "RESURGO_SYNC_KV",
+      "id": "3c168ae164334599933533ac7fb4f9f4"
+    }
+  ]
+}
