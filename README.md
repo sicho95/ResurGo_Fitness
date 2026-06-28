@@ -19,6 +19,18 @@ npm run preview
 npm run test:e2e
 ```
 
+## GitHub Pages
+
+GitHub Pages doit servir le dossier généré `dist/`, pas les sources du repo.
+
+La configuration Vite utilise `base: '/ResurGo_Fitness/'` pour l'URL :
+
+```text
+https://sicho95.github.io/ResurGo_Fitness/
+```
+
+Le workflow `.github/workflows/pages.yml` installe, teste, build puis publie `dist/`.
+
 ## V1 incluse
 
 - PWA installable avec manifest, service worker et cache des schémas offline.
