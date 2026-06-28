@@ -19,7 +19,7 @@ Configuration GitHub Pages :
 - Branch : `main`
 - Folder : `/root`
 
-URL :
+URL : 
 
 ```text
 https://sicho95.github.io/ResurGo_Fitness/
