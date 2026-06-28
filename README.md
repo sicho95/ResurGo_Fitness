@@ -1,10 +1,24 @@
 # ResurGo Fitness
 
-PWA sportive 100% statique, prête pour GitHub Pages.
+PWA sportive offline-first 100% statique, prête pour GitHub Pages.
+
+Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour le workflow simple de Damien : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
 
 ## Déploiement GitHub Pages
 
-Ce dépôt est volontairement simple :
+Configuration :
+
+- Source : `Deploy from a branch`
+- Branch : `main`
+- Folder : `/root`
+
+URL attendue :
+
+```text
+https://sicho95.github.io/ResurGo_Fitness/
+```
+
+Fichiers nécessaires à la racine :
 
 - `index.html`
 - `app.js`
@@ -13,29 +27,48 @@ Ce dépôt est volontairement simple :
 - `manifest.webmanifest`
 - `icon.svg`
 
-Configuration GitHub Pages :
+## Fonctionnalités V1
 
-- Source : `Deploy from a branch`
-- Branch : `main`
-- Folder : `/root`
-
-URL : 
-
-```text
-https://sicho95.github.io/ResurGo_Fitness/
-```
-
-Pas de Vite, pas de React, pas de GitHub Actions, pas de Jekyll, pas de build.
-
-## Fonctionnalités V1 statique
-
-- profils locaux ;
-- plan de semaine ;
-- séance guidée ;
-- bibliothèque d'exercices offline ;
-- TTS navigateur ;
-- statistiques ;
-- export/import JSON ;
-- IndexedDB ;
+- multi-profils locaux ;
+- tests initiaux et niveaux par famille ;
+- plan hebdomadaire adaptatif ;
+- semaine minimale viable ;
+- séance dynamique guidée ;
+- prévisualisation, timer, séries, douleur, difficulté, réussite ;
+- TTS navigateur configurable ;
+- bibliothèque d'exercices avec schémas SVG locaux offline ;
+- URLs vidéo online placeholders ;
+- statistiques poids/corps/activité ;
+- sources de données manuelle, JSON, mock Garmin et Worker ;
+- stockage IndexedDB ;
 - service worker offline ;
-- paramètres Worker Garmin optionnels.
+- export/import JSON complet, avec option d'inclure ou non le token Worker ;
+- code Worker Cloudflare optionnel dans `workers/resurgo-sync/`.
+
+## Modèle de données
+
+Voir `docs/data-model.md`.
+
+## Architecture
+
+Voir `docs/architecture.md`.
+
+## Garmin et Cloudflare
+
+La PWA fonctionne sans Garmin et sans Worker. Pour une synchronisation Garmin réelle, ne jamais mettre de secret Garmin dans `app.js`. Le Worker Cloudflare sert de proxy sécurisé et de stockage KV optionnel.
+
+La V1 inclut :
+
+- champs Worker dans les réglages ;
+- appel `/health` ;
+- appel mock `/v1/garmin/mock-sync` ;
+- code de Worker prêt à adapter.
+
+Garmin Connect officiel nécessite un accès API Garmin approuvé. Sans cet accès, la V1 reste utilisable en manuel et par import JSON.
+
+## Limites iOS/PWA
+
+- Apple Health n'est pas intégré en V1.
+- Une PWA iOS n'a pas un accès complet et direct à Santé comme une app native.
+- Les notifications, le TTS et l'installation PWA dépendent des règles Safari/iOS.
+- Les vidéos ne sont pas mises en cache : offline, l'app affiche le schéma et le descriptif.
