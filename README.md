@@ -2,7 +2,7 @@
 
 PWA sportive offline-first 100% statique, prête pour GitHub Pages.
 
-Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour le workflow simple de Damien : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
+Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour le workflow simple : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
 
 ## Déploiement GitHub Pages
 
