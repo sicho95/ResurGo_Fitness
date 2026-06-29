@@ -25,7 +25,7 @@ La V1 est volontairement une PWA vanilla statique :
 - Profil : données corporelles, douleurs, fatigue, historique sportif, préférences de source.
 - Tests : niveaux running, push, pull, jambes, gainage frontal, gainage latéral, mobilité.
 - Plan : génération de semaine, version courte, protection selon douleur/fatigue.
-- Séance : exercice courant, séries, timer, TTS, douleur, réussite, résumé.
+- Séance : exercice courant, séries, timer, TTS séquencé, douleur, réussite, résumé.
 - Repos : compte à rebours affiché et vocal, puis reprise manuelle de la série suivante.
 - Exercices : lien vidéo online externe, schéma animé offline distinct par type de mouvement, fiche texte et carte locale des zones musculaires travaillées.
 - Adaptation : progression, maintien, correction, protection.

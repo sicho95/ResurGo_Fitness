@@ -36,7 +36,7 @@ Fichiers nécessaires à la racine :
 - séance dynamique guidée ;
 - prévisualisation, timer, séries, douleur, difficulté, réussite ;
 - repos visible entre séries, compte à rebours vocal, reprise manuelle quand l'utilisateur est prêt ;
-- TTS navigateur configurable ;
+- TTS navigateur configurable, avec lecture guidée des consignes une par une et mini-pauses naturelles ;
 - bibliothèque élargie d'exercices avec fiches détaillées, étapes, sécurité et schémas SVG animés offline ;
 - vidéos online ouvertes en onglet externe avec source homogène configurable, sans iframe bloquée par CSP ;
 - statistiques poids/corps/activité avec graphiques ;
