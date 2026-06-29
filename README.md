@@ -2,7 +2,7 @@
 
 PWA sportive offline-first 100% statique, prête pour GitHub Pages.
 
-Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour le workflow simple : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
+Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour le workflow simple de Damien : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
 
 ## Déploiement GitHub Pages
 
@@ -38,8 +38,12 @@ Fichiers nécessaires à la racine :
 - repos visible entre séries, compte à rebours vocal, reprise manuelle quand l'utilisateur est prêt ;
 - TTS navigateur configurable ;
 - bibliothèque élargie d'exercices avec fiches détaillées, étapes, sécurité et schémas SVG animés offline ;
-- vidéos online en iframe avec source homogène configurable, sans dépendance YouTube imposée ;
+- vidéos online ouvertes en onglet externe avec source homogène configurable, sans iframe bloquée par CSP ;
 - statistiques poids/corps/activité avec graphiques ;
+- dashboard stats mobile inspiré Garmin : mini-cartes, jauges, courbes rapides et mode sombre premium ;
+- thème `Auto système`, `Sombre` ou `Clair` dans les réglages ;
+- écran séance plus friendly façon coach premium : objectif clair, séries visibles, repos manuel, zones travaillées ;
+- visualisation locale offline des muscles sollicités par exercice ;
 - saisie manuelle course/marche : durée, distance, vitesse moyenne, fréquence cardiaque moyenne/max, ressenti, douleur ;
 - saisie manuelle balance type Garmin Index S2 : poids, graisse, eau, IMC, masse osseuse, muscle, tour ventre, graisse viscérale ;
 - sources de données manuelle, JSON, mock Garmin et Worker ;
