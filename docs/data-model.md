@@ -14,7 +14,13 @@ Export racine :
   "metrics": [],
   "activities": [],
   "sources": [],
-  "settings": {}
+  "settings": {
+    "theme": "auto",
+    "tts": {},
+    "workerUrl": "",
+    "workerToken": "",
+    "videoBase": "https://musclewiki.com"
+  }
 }
 ```
 
@@ -111,6 +117,10 @@ Export racine :
   "pain": 1
 }
 ```
+
+## Settings
+
+`settings.theme` accepte `auto`, `dark` ou `light`. `auto` suit le thème système de l'appareil.
 
 ## Session Rest
 

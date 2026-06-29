@@ -14,7 +14,7 @@ La V1 est volontairement une PWA vanilla statique :
 ## Modules
 
 - `index.html` : shell HTML minimal.
-- `styles.css` : design mobile-first, safe-area iOS, tablette responsive.
+- `styles.css` : design mobile-first, safe-area iOS, tablette responsive, thèmes auto/sombre/clair.
 - `app.js` : application complète, moteurs métier, IndexedDB, import/export, TTS.
 - `sw.js` : cache offline du shell.
 - `manifest.webmanifest` : installation PWA.
@@ -27,8 +27,10 @@ La V1 est volontairement une PWA vanilla statique :
 - Plan : génération de semaine, version courte, protection selon douleur/fatigue.
 - Séance : exercice courant, séries, timer, TTS, douleur, réussite, résumé.
 - Repos : compte à rebours affiché et vocal, puis reprise manuelle de la série suivante.
+- Exercices : vidéo online, schéma animé offline, fiche texte et carte locale des zones musculaires travaillées.
 - Adaptation : progression, maintien, correction, protection.
 - Données : mesures manuelles, pesées complètes, activités course/marche, imports JSON, mock Garmin.
+- UI stats : dashboard en mini-cartes, jauges, courbes rapides, formulaires manuels sous les graphiques.
 
 ## Offline
 

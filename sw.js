@@ -1,4 +1,4 @@
-const CACHE = "resurgo-static-v1-ux2";
+const CACHE = "resurgo-static-v1-garmin-dashboard";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
