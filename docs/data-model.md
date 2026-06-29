@@ -29,7 +29,8 @@ Export racine :
 ```json
 {
   "id": "profile_x",
-  "name": "Damien",
+  "name": "Profil principal",
+  "gender": "male",
   "age": 40,
   "heightCm": 180,
   "startWeightKg": 100,
