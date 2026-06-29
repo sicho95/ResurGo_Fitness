@@ -38,7 +38,7 @@ Fichiers nécessaires à la racine :
 - repos visible entre séries, compte à rebours vocal, reprise manuelle quand l'utilisateur est prêt ;
 - TTS navigateur configurable, avec lecture guidée des consignes une par une et mini-pauses naturelles ;
 - bibliothèque élargie d'exercices avec fiches détaillées, étapes, sécurité et schémas SVG animés offline ;
-- vidéos online ouvertes en onglet externe avec source homogène configurable, sans iframe bloquée par CSP ;
+- vidéos online intégrées quand une URL directe `.mp4` est disponible ; pas d'ouverture externe imposée ;
 - statistiques poids/corps/activité avec graphiques ;
 - dashboard stats mobile inspiré Garmin : mini-cartes, jauges, courbes rapides et mode sombre premium ;
 - thème `Auto système`, `Sombre` ou `Clair` dans les réglages ;
