@@ -1,0 +1,36 @@
+tion) await swRegistration.update();
+    }catch{}
+    render();
+  }
+  function registerPwaEvents(){
+    window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredInstallPrompt=e; render(); });
+    window.addEventListener("appinstalled",()=>{ deferredInstallPrompt=null; state.settings.hideInstallPrompt=true; save("App installée.").then(render); });
+    let refreshing=false;
+    navigator.serviceWorker?.addEventListener("controllerchange",()=>{ if(refreshing) return; refreshing=true; window.location.reload(); });
+  }
+  async function registerServiceWorker(){
+    if(!("serviceWorker" in navigator)) return;
+    swRegistration=await navigator.serviceWorker.register("./sw.js").catch(()=>null);
+    if(!swRegistration) return;
+    if(swRegistration.waiting){ updateWaiting=swRegistration.waiting; applyHotUpdate(); }
+    swRegistration.addEventListener("updatefound",()=>{ const nw=swRegistration.installing; if(!nw) return; nw.addEventListener("statechange",()=>{ if(nw.state==="installed"&&navigator.serviceWorker.controller){ updateWaiting=nw; applyHotUpdate(); } }); });
+    await checkOnlineVersion();
+  }
+  function render(){ applyTheme(); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
+  function on(id,fn){ const x=el(id); if(x) x.onclick=fn; }
+  function bind(){
+    $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
+    on("createProfile",createProfile); on("startToday",()=>start(plan()[0]?.id)); on("shortWeek",()=>{const p=profile(); if(p){makeWeek(p.id,true); save("Semaine courte générée.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); save("Repos actif enregistré.").then(render);}});
+    on("installPwa",installPwa); on("dismissPwa",()=>{state.settings.hideInstallPrompt=true; save().then(render);});
+    $$("[data-rate-target]").forEach(b=>b.onclick=()=>{const input=el(b.dataset.rateTarget), val=Number(b.dataset.rateValue), m=mood[val]; if(!input||!m) return; input.value=val; const field=b.closest(".smileyField"), summary=field?.querySelector("summary"); field?.classList.remove("bad","warn","ok","good","great"); field?.classList.add(m.tone); field?.querySelectorAll("[data-rate-target]").forEach(x=>x.classList.toggle("selected",x===b)); if(summary) summary.innerHTML=`<b>${m.face}</b><small>${val}/5 · ${m.label}</small>`;});
+    on("saveQuick",()=>{const p=profile(); if(p){p.health.backPain=scoreToLoad(n("quickBack")); p.health.kneePain=scoreToLoad(n("quickKnee")); p.health.tendonPain=scoreToLoad(n("quickKnee")); p.health.fatigue=scoreToLoad(n("quickFatigue")); save("Check rapide enregistré.").then(render);}}); on("regen",()=>{const p=profile(); if(p){makeWeek(p.id); save("Semaine générée.").then(render);}});
+    on("startTimer",startTimer); on("continueAfterRest",continueAfterRest); on("skipRest",continueAfterRest); on("okSet",()=>log("yes",0,"ok")); on("partialSet",()=>log("partial",1,"hard")); on("painSet",()=>log("stop",3,"too_hard")); on("speakCue",()=>speakExerciseGuide(currentEx(),"Rappel.")); on("abortSession",()=>{const r=run(); if(r){r.abortedAt=new Date().toISOString(); state.ui.view="today"; stopTimer(); save("Séance arrêtée.").then(render);}});
+    on("addMetric",addMetric); on("addRun",addRun); on("saveProfile",()=>{const p=profile(); if(!p)return; p.name=text("profileName")||p.name; p.gender=el("gender")?.value||p.gender||"male"; p.age=n("age")||p.age; p.heightCm=n("heightCm")||p.heightCm; p.startWeightKg=n("startWeightKg")||p.startWeightKg; p.targetWeightKg=n("targetWeightKg")||p.targetWeightKg; p.availabilityDays=n("availabilityDays")||p.availabilityDays; p.equipment=text("equipment"); p.sportsHistory=text("sportsHistory"); ["backPain","kneePain","tendonPain","fatigue"].forEach(k=>p.health[k]=scoreToLoad(n(k))); p.health.irradiating=el("irradiating").checked; p.health.neurological=el("neurological").checked; Object.keys(levels).forEach(k=>p.levels[k]=el(`level_${k}`).value); makeWeek(p.id); save("Profil et plan mis à jour.").then(render);});
+    $$('[data-save-video]').forEach(b=>b.onclick=()=>{state.exerciseVideos=state.exerciseVideos||{}; const id=b.dataset.saveVideo, v=text(`video_${id}`); if(v) state.exerciseVideos[id]=v; else delete state.exerciseVideos[id]; save("URL vidéo enregistrée.").then(render);});
+    on("saveTheme",()=>{state.settings.theme=el("themeMode").value; save("Thème enregistré.").then(render);}); on("saveTts",()=>{state.settings.tts.enabled=el("ttsEnabled").value==="true"; state.settings.tts.rate=n("ttsRate")||1; state.settings.tts.volume=n("ttsVolume"); save("Voix enregistrée.").then(render);}); on("testVoice",()=>speak("ResurGo Fitness est prêt pour la séance.")); on("saveWorker",()=>{state.settings.workerUrl=text("workerUrl"); state.settings.workerToken=el("workerToken").value; save("Worker enregistré.").then(render);}); on("testWorker",testWorker); on("mockGarmin",mockGarmin);
+    on("exportJson",()=>exportJson(false)); on("exportJsonSecrets",()=>exportJson(true)); on("deleteProfile",()=>{const p=profile(); if(p&&confirm("Supprimer ce profil local ?")){state.profiles=state.profiles.filter(x=>x.id!==p.id); state.activeProfileId=state.profiles[0]?.id||null; save("Profil supprimé.").then(render);}}); on("resetAll",()=>{if(confirm("Effacer toutes les données locales ResurGo Fitness ?")){state=clone(empty); save("Données locales effacées.").then(render);}});
+    const imp=el("importJson"); if(imp) imp.onchange=e=>e.target.files[0]&&importJson(e.target.files[0]); const s=el("search"); if(s) s.oninput=e=>{state.ui.search=e.target.value; render();}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; render();};
+  }
+  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{})},ui:{...empty.ui,...(state.ui||{})}}; render(); registerServiceWorker(); window.addEventListener("online",checkOnlineVersion); }
+  init();
+})();
