@@ -26,12 +26,13 @@ La V1 est volontairement une PWA vanilla statique :
 - Tests : niveaux running, push, pull, jambes, gainage frontal, gainage latéral, mobilité.
 - Plan : génération de semaine, version courte, protection selon douleur/fatigue.
 - Séance : exercice courant, séries, timer, TTS, douleur, réussite, résumé.
+- Repos : compte à rebours affiché et vocal, puis reprise manuelle de la série suivante.
 - Adaptation : progression, maintien, correction, protection.
-- Données : mesures manuelles, activités, imports JSON, mock Garmin.
+- Données : mesures manuelles, pesées complètes, activités course/marche, imports JSON, mock Garmin.
 
 ## Offline
 
-Le service worker met en cache le shell applicatif. IndexedDB conserve les données. Les vidéos restent online uniquement.
+Le service worker met en cache le shell applicatif. IndexedDB conserve les données. Les vidéos restent online uniquement. Chaque exercice garde une fiche texte et un schéma SVG animé utilisables offline.
 
 ## Worker
 

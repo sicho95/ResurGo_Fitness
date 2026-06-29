@@ -84,6 +84,34 @@ Export racine :
   "measuredAt": "2026-06-28T00:00:00.000Z",
   "weightKg": 100,
   "bodyFatPct": 28,
-  "waistCm": 105
+  "waterPct": 48,
+  "bmi": 30.8,
+  "boneKg": 3.2,
+  "muscleKg": 62,
+  "waistCm": 105,
+  "visceralFat": 12
 }
 ```
+
+## Activity
+
+```json
+{
+  "id": "activity_x",
+  "profileId": "profile_x",
+  "source": "manual",
+  "type": "run",
+  "startedAt": "2026-06-29T00:00:00.000Z",
+  "distanceKm": 5.2,
+  "durationSeconds": 2100,
+  "avgSpeedKmh": 8.9,
+  "hrAvg": 145,
+  "hrMax": 171,
+  "feeling": 6,
+  "pain": 1
+}
+```
+
+## Session Rest
+
+Pendant une séance, `sessionRuns[].mode` peut valoir `work`, `resting` ou `done`. Quand `mode` vaut `resting`, `restNext` indique la prochaine série ou le prochain exercice, mais la reprise reste manuelle.

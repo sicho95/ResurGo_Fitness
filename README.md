@@ -35,10 +35,13 @@ Fichiers nécessaires à la racine :
 - semaine minimale viable ;
 - séance dynamique guidée ;
 - prévisualisation, timer, séries, douleur, difficulté, réussite ;
+- repos visible entre séries, compte à rebours vocal, reprise manuelle quand l'utilisateur est prêt ;
 - TTS navigateur configurable ;
-- bibliothèque d'exercices avec schémas SVG locaux offline ;
-- URLs vidéo online placeholders ;
-- statistiques poids/corps/activité ;
+- bibliothèque élargie d'exercices avec fiches détaillées, étapes, sécurité et schémas SVG animés offline ;
+- vidéos online en iframe avec source homogène configurable, sans dépendance YouTube imposée ;
+- statistiques poids/corps/activité avec graphiques ;
+- saisie manuelle course/marche : durée, distance, vitesse moyenne, fréquence cardiaque moyenne/max, ressenti, douleur ;
+- saisie manuelle balance type Garmin Index S2 : poids, graisse, eau, IMC, masse osseuse, muscle, tour ventre, graisse viscérale ;
 - sources de données manuelle, JSON, mock Garmin et Worker ;
 - stockage IndexedDB ;
 - service worker offline ;
@@ -71,4 +74,4 @@ Garmin Connect officiel nécessite un accès API Garmin approuvé. Sans cet acc�
 - Apple Health n'est pas intégré en V1.
 - Une PWA iOS n'a pas un accès complet et direct à Santé comme une app native.
 - Les notifications, le TTS et l'installation PWA dépendent des règles Safari/iOS.
-- Les vidéos ne sont pas mises en cache : offline, l'app affiche le schéma et le descriptif.
+- Les vidéos ne sont pas mises en cache : offline, l'app affiche le schéma animé et le descriptif.

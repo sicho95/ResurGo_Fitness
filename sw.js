@@ -1,4 +1,4 @@
-const CACHE = "resurgo-static-v1-complete";
+const CACHE = "resurgo-static-v1-ux2";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
 self.addEventListener("install", event => {
