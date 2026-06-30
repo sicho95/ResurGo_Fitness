@@ -13,6 +13,7 @@ Export racine :
   "sessionRuns": [],
   "metrics": [],
   "activities": [],
+  "exerciseVideos": {},
   "sources": [],
   "settings": {
     "theme": "auto",
@@ -118,6 +119,18 @@ Export racine :
   "pain": 1
 }
 ```
+
+## Exercise Videos
+
+```json
+{
+  "exerciseVideos": {
+    "dead_bug": "https://media.musclewiki.com/media/uploads/videos/branded/male-Bodyweight-dead-bug-side.mp4"
+  }
+}
+```
+
+Les valeurs remplacent l'URL vidéo fournie par défaut pour un exercice. Utiliser de préférence une URL directe `.mp4` pour intégration dans l'app.
 
 ## Settings
 

@@ -1,16 +1,30 @@
 { const d=await db(); return new Promise((ok,ko)=>{ const r=d.transaction(STORE).objectStore(STORE).get(k); r.onsuccess=()=>ok(r.result); r.onerror=()=>ko(r.error); }); }
   async function put(k,v){ const d=await db(); return new Promise((ok,ko)=>{ const r=d.transaction(STORE,"readwrite").objectStore(STORE).put(v,k); r.onsuccess=ok; r.onerror=()=>ko(r.error); }); }
-  async function save(msg=""){ if(msg) state.ui.message=msg; await put("app",state); }
+  async function save(msg=""){
+    if (msg) {
+      state.ui.message = msg;
+      if (messageTimer) clearTimeout(messageTimer);
+      messageTimer = setTimeout(async () => {
+        if (state.ui.message === msg) {
+          state.ui.message = "";
+          await put("app", state);
+          render();
+        }
+      }, 3000);
+    }
+    await put("app",state);
+  }
   const profile=()=>state.profiles.find(p=>p.id===state.activeProfileId);
   const plan=()=>profile()?state.plans.filter(s=>s.profileId===profile().id&&!s.completedAt):[];
   const run=()=>state.sessionRuns.find(r=>!r.completedAt&&!r.abortedAt);
   const exercise=id=>ex.find(x=>x.id===id)||ex[0];
   const currentEx=()=>{ const r=run(), s=state.plans.find(x=>x.id===r?.sessionId); return exercise(s?.exerciseIds[r.exerciseIndex]); };
   const latestMetric=()=>{ const p=profile(); const a=p?state.metrics.filter(m=>m.profileId===p.id&&m.weightKg).sort((a,b)=>new Date(a.measuredAt)-new Date(b.measuredAt)):[]; return a[a.length-1]||null; };
+  const loadScore = id => { const raw = el(id)?.value; return raw === "" || raw == null ? null : scoreToLoad(Number(raw)); };
 
   function createProfile(){
     const name = text("newProfileName") || `Profil ${state.profiles.length + 1}`;
-    const p={ id:uid("profile"), name, gender:el("newGender")?.value||"male", createdAt:new Date().toISOString(), age:n("newAge")||null, heightCm:n("newHeight")||null, startWeightKg:n("newWeight")||null, targetWeightKg:n("newTarget")||null, availabilityDays:3, equipment:"élastique, chaise, tapis", sportsHistory:"", health:{backPain:0,kneePain:0,tendonPain:0,fatigue:1,irradiating:false,neurological:false}, levels:{running:"R1",push:"P1",pull:"T1",legs:"J1",frontCore:"G1",sideCore:"L1",mobility:"M1"}, dataPreferences:{primaryWeight:"garmin_index_s2",primaryActivities:"garmin",dedup:true} };
+    const p={ id:uid("profile"), name, gender:el("newGender")?.value||"male", createdAt:new Date().toISOString(), age:num("newAge"), heightCm:num("newHeight"), startWeightKg:num("newWeight"), targetWeightKg:num("newTarget"), availabilityDays:3, equipment:"élastique, chaise, tapis", sportsHistory:"", health:{backPain:null,kneePain:null,tendonPain:null,fatigue:null,irradiating:false,neurological:false}, levels:{running:"R1",push:"P1",pull:"T1",legs:"J1",frontCore:"G1",sideCore:"L1",mobility:"M1"}, dataPreferences:{primaryWeight:"garmin_index_s2",primaryActivities:"garmin",dedup:true} };
     state.profiles.push(p); state.activeProfileId=p.id; state.assessments.push({id:uid("assessment"),profileId:p.id,date:TODAY,tests:clone(p.levels)}); makeWeek(p.id); save("Profil créé.").then(render);
   }
   function makeWeek(pid,short=false){
@@ -25,10 +39,15 @@
     state.plans.push(...sets.map((s,i)=>({id:uid(`session${i}`),profileId:pid,title:s[0],minutes:s[1],type:s[2],phase:1,week:1,date:TODAY,exerciseIds:s[3],short,completedAt:null})));
   }
   function decision(p){
-    const planned=state.plans.filter(s=>s.profileId===p.id), done=planned.filter(s=>s.completedAt).length, adh=planned.length?done/planned.length:0, pain=Math.max(p.health.backPain,p.health.kneePain,p.health.tendonPain);
-    if(p.health.irradiating||p.health.neurological||pain>=3||p.health.fatigue>=5) return ["red","Protection","Douleur/fatigue élevée : mobilité, marche, gainage profond, aucune progression."];
-    if(adh<.4||p.health.fatigue>=4) return ["orange","Correction","Semaine minimale viable et reprise du rythme."];
-    if(adh>=.65&&pain<=2&&p.health.fatigue<=3) return ["green","Progression","Augmentation légère possible la semaine suivante."];
+    const planned=state.plans.filter(s=>s.profileId===p.id), done=planned.filter(s=>s.completedAt).length, adh=planned.length?done/planned.length:0;
+    const scores=[p.health.backPain,p.health.kneePain,p.health.tendonPain].filter(v=>v!=null);
+    const pain=scores.length?Math.max(...scores):0;
+    const fatigue=p.health.fatigue ?? 0;
+    const hasCheck=scores.length>0||p.health.fatigue!=null||p.health.irradiating||p.health.neurological;
+    if(!done && !hasCheck) return ["blue","Démarrage","Base installée. Renseigne le check rapide puis lance la première semaine."];
+    if(p.health.irradiating||p.health.neurological||pain>=3||fatigue>=5) return ["red","Protection","Douleur ou fatigue élevée : priorité à la sécurité, au repos et à la mobilité."];
+    if(adh<.4||fatigue>=4) return ["orange","Semaine minimale viable","Volume réduit pour garder l'habitude sans surcharger."];
+    if(adh>=.65&&pain<=2&&fatigue<=3) return ["green","Progression","Semaine normale et légère progression possibles si tout reste propre."];
     return ["blue","Maintien","Répéter proprement sans chercher la performance."];
   }
   function start(id){ const s=state.plans.find(x=>x.id===id); if(!s) return; state.sessionRuns=state.sessionRuns.filter(x=>x.completedAt||x.abortedAt); state.sessionRuns.push({id:uid("run"),profileId:s.profileId,sessionId:s.id,exerciseIndex:0,setIndex:0,mode:"work",logs:[],safetyAlerts:[],startedAt:new Date().toISOString(),completedAt:null,abortedAt:null}); state.ui.view="session"; speakExerciseGuide(currentEx(),"Prochain exercice."); save("Séance lancée.").then(render); }

@@ -22,9 +22,10 @@
     schemaVersion:"1.1.0-vanilla", activeProfileId:null, profiles:[], assessments:[], plans:[], sessionRuns:[], metrics:[], activities:[], exerciseVideos:{},
     sources:[{id:"manual",label:"Manuel",enabled:true,priority:3},{id:"json_import",label:"Import JSON",enabled:true,priority:2},{id:"mock_garmin",label:"Mock Garmin",enabled:true,priority:1},{id:"worker",label:"Worker Cloudflare",enabled:false,priority:1}],
     settings:{ theme:"auto", hideInstallPrompt:false, tts:{enabled:true,rate:1,pitch:1,volume:1,countdown:true,rest:true,cues:true,safetyAlways:true}, workerUrl:"", workerToken:"", videoBase:videos.defaultBase },
-    ui:{ view:"today", search:"", filter:"all", message:"" }
+    ui:{ view:"today", search:"", searchDraft:"", filter:"all", message:"", modal:null }
   };
-  let state = clone(empty), tick = null, left = 0, voiceSeq = 0, deferredInstallPrompt = null, swRegistration = null, updateWaiting = null, remoteVersion = APP_VERSION;
+  let state = clone(empty), tick = null, left = 0, voiceSeq = 0, deferredInstallPrompt = null, swRegistration = null, updateWaiting = null, remoteVersion = APP_VERSION, messageTimer = null;
+  let bodyMapSvg = { male:"", female:"" };
 
   function E(id,name,family,type,sets,amount,rest,short,steps,safety,path) {
     return { id,name,family,type,sets,rest,short,steps,safety,cue:steps[0], reps:type==="reps"?amount:null, seconds:type==="time"?amount:null, videoPath:path };

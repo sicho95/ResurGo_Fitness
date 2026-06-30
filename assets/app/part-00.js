@@ -1,10 +1,11 @@
 (() => {
-  const APP_VERSION = "1.2.2", DB = "resurgo-fitness-v1", STORE = "state", TODAY = new Date().toISOString().slice(0, 10);
+  const APP_VERSION = "1.2.3", DB = "resurgo-fitness-v1", STORE = "state", TODAY = new Date().toISOString().slice(0, 10);
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)], el = id => document.getElementById(id);
   const uid = p => `${p}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const clone = v => typeof structuredClone === "function" ? structuredClone(v) : JSON.parse(JSON.stringify(v));
   const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
   const n = id => { const v = Number(el(id)?.value); return Number.isFinite(v) ? v : 0; };
+  const num = id => { const raw = el(id)?.value; if (raw == null || raw === "") return null; const v = Number(raw); return Number.isFinite(v) ? v : null; };
   const text = id => el(id)?.value?.trim() || "";
   const sec = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
   const levels = { running:["R0","R1","R2","R3","R4"], push:["P0","P1","P2","P3","P4"], pull:["T0","T1","T2","T3","T4"], legs:["J0","J1","J2","J3","J4"], frontCore:["G0","G1","G2","G3","G4"], sideCore:["L0","L1","L2","L3","L4"], mobility:["M0","M1","M2","M3","M4"] };
@@ -23,6 +24,7 @@
     defaultBase: "https://musclewiki.com",
     note: "Les vidéos sont online seulement. ResurGo Fitness intègre les URLs directes .mp4 ; les pages web d'exercices ne sont pas affichées car elles sont souvent bloquées par CSP."
   };
+  const bodyMapAssets = { male:"./assets/bodymaps/male.svg", female:"./assets/bodymaps/female.svg" };
   const ex = [
     E("warmup_flow","Echauffement mobilité","warmup","time",1,300,0,"Mobilité douce complète.",["Respire par le nez.","Mobilise chevilles, hanches, épaules.","Garde une amplitude confortable."],"Pas de mouvement brutal.","/"),
     E("dead_bug","Dead bug","core","reps",3,8,40,"Gainage profond au sol.",["Allonge-toi sur le dos, genoux à 90 degrés.","Rentre légèrement les côtes.","Descends bras et jambe opposés sans cambrer.","Reviens lentement et alterne."],"Stop si douleur lombaire vive.","https://media.musclewiki.com/media/uploads/videos/branded/male-Recovery-dead-bugs-cross-lateral-front.mp4"),
