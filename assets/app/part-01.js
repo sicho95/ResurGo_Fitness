@@ -24,7 +24,7 @@
     settings:{ theme:"auto", hideInstallPrompt:false, tts:{enabled:true,rate:1,pitch:1,volume:1,countdown:true,rest:true,cues:true,safetyAlways:true}, workerUrl:"", workerToken:"", videoBase:videos.defaultBase },
     ui:{ view:"today", search:"", searchDraft:"", filter:"all", message:"", modal:null }
   };
-  let state = clone(empty), tick = null, left = 0, voiceSeq = 0, deferredInstallPrompt = null, swRegistration = null, updateWaiting = null, remoteVersion = APP_VERSION, messageTimer = null;
+  let state = clone(empty), tick = null, left = 0, voiceSeq = 0, deferredInstallPrompt = null, swRegistration = null, updateWaiting = null, remoteVersion = APP_VERSION, messageTimer = null, smileyDismissBound = false;
   let bodyMapSvg = { male:"", female:"" };
 
   function E(id,name,family,type,sets,amount,rest,short,steps,safety,path) {
