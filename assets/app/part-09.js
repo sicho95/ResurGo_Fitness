@@ -20,8 +20,8 @@
     const p=profile(); if(!p) return;
     p.name=text("profileName")||p.name; p.gender=el("gender")?.value||p.gender||"male"; p.age=num("age")??p.age; p.heightCm=num("heightCm")??p.heightCm; p.startWeightKg=num("startWeightKg")??p.startWeightKg; p.targetWeightKg=num("targetWeightKg")??p.targetWeightKg; p.availabilityDays=num("availabilityDays")??p.availabilityDays; p.equipment=text("equipment"); p.sportsHistory=text("sportsHistory");
     ["backPain","kneePain","tendonPain","fatigue"].forEach(k=>p.health[k]=loadScore(k));
-    p.health.irradiating=$$('input[name="irradiating"]').find(x=>x.checked)?.value==="true";
-    p.health.neurological=$$('input[name="neurological"]').find(x=>x.checked)?.value==="true";
+    p.health.irradiating=!!el("irradiating")?.checked;
+    p.health.neurological=!!el("neurological")?.checked;
     Object.keys(levels).forEach(k=>{ const x=el(`level_${k}`); if(x) p.levels[k]=x.value; });
     if(regen) makeWeek(p.id);
     save(msg);
@@ -43,7 +43,7 @@
     $$("[data-save-video]").forEach(b=>b.onclick=()=>{state.exerciseVideos=state.exerciseVideos||{}; const id=b.dataset.saveVideo, v=text(`video_${id}`); if(v) state.exerciseVideos[id]=v; else delete state.exerciseVideos[id]; save("URL vidéo enregistrée.").then(render);});
     $$("[data-theme-choice]").forEach(b=>b.onclick=()=>{state.settings.theme=b.dataset.themeChoice; save().then(render);}); ["ttsEnabled","ttsRate","ttsVolume"].forEach(id=>{const x=el(id); if(x) x.onchange=saveTtsSettings;}); on("testVoice",()=>speak("ResurGo Fitness est prêt pour la séance.")); ["workerUrl","workerToken"].forEach(id=>{const x=el(id); if(x) x.onchange=saveWorkerSettings;}); on("testWorker",testWorker); on("mockGarmin",mockGarmin);
     ["profileName","gender","age","heightCm","startWeightKg","targetWeightKg","availabilityDays","equipment","sportsHistory"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>saveProfileFields();});
-    Object.keys(levels).forEach(k=>{const x=el(`level_${k}`); if(x) x.onchange=()=>saveProfileFields();}); $$('input[name="irradiating"],input[name="neurological"]').forEach(x=>x.onchange=()=>saveProfileFields());
+    Object.keys(levels).forEach(k=>{const x=el(`level_${k}`); if(x) x.onchange=()=>saveProfileFields();}); ["irradiating","neurological"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>{const label=x.nextElementSibling; if(label) label.textContent=x.checked?"Oui":"Non"; saveProfileFields();};});
     on("exportJson",()=>exportJson(false)); on("exportJsonSecrets",()=>exportJson(true)); on("deleteProfile",()=>{const p=profile(); if(p&&confirmTwice("Supprimer ce profil local ?","Confirmation définitive : supprimer ce profil et ses réglages ?")){state.profiles=state.profiles.filter(x=>x.id!==p.id); state.activeProfileId=state.profiles[0]?.id||null; save("Profil supprimé.").then(render);}}); on("resetAll",()=>{if(confirmTwice("Effacer toutes les données locales ResurGo Fitness ?","Confirmation définitive : tout effacer sur cet appareil ?")){state=clone(empty); save("Données locales effacées.").then(render);}});
     const imp=el("importJson"); if(imp) imp.onchange=e=>e.target.files[0]&&importJson(e.target.files[0]); const sf=el("exerciseSearchForm"); if(sf) sf.onsubmit=e=>{e.preventDefault(); state.ui.search=text("searchDraft"); state.ui.searchDraft=state.ui.search; save().then(render);}; const sd=el("searchDraft"); if(sd) sd.oninput=e=>{state.ui.searchDraft=e.target.value; if(!e.target.value){state.ui.search=""; save().then(render);}}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; save().then(render);};
   }
