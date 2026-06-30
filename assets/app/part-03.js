@@ -18,8 +18,8 @@
   function bodyStateItems(kind,p){
     const kneeScore=healthScore(p.health.kneePain == null && p.health.tendonPain == null ? null : Math.max(p.health.kneePain ?? 0,p.health.tendonPain ?? 0));
     return kind==="quick"
-      ? [{id:"quickBack",label:"Dos",score:healthScore(p.health.backPain)},{id:"quickKnee",label:"Genou / tendon",score:kneeScore},{id:"quickFatigue",label:"Énergie / fatigue",score:healthScore(p.health.fatigue)}]
-      : [{id:"profileBack",label:"Dos",score:healthScore(p.health.backPain)},{id:"profileKnee",label:"Genou / tendon",score:kneeScore},{id:"profileFatigue",label:"Énergie / fatigue",score:healthScore(p.health.fatigue)}];
+      ? [{id:"quickBack",label:"Dos",score:healthScore(p.health.backPain)},{id:"quickKnee",label:"Genoux / Tendons",score:kneeScore},{id:"quickFatigue",label:"Énergie / Fatigue",score:healthScore(p.health.fatigue)}]
+      : [{id:"profileBack",label:"Dos",score:healthScore(p.health.backPain)},{id:"profileKnee",label:"Genoux / Tendons",score:kneeScore},{id:"profileFatigue",label:"Énergie / Fatigue",score:healthScore(p.health.fatigue)}];
   }
   function bodyStateControls(kind,p,extraClass="quickSmiley"){ return `<div class="smileyGrid ${extraClass}">${bodyStateItems(kind,p).map(x=>ratingControl(x.id,x.label,x.score)).join("")}</div>`; }
   function ratingControl(id,label,score){

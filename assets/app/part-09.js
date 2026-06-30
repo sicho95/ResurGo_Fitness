@@ -32,6 +32,15 @@
   function saveTtsSettings(){ state.settings.tts.enabled=el("ttsEnabled")?.value==="true"; state.settings.tts.rate=n("ttsRate")||1; state.settings.tts.volume=n("ttsVolume"); save(); }
   function saveWorkerSettings(){ state.settings.workerUrl=text("workerUrl"); state.settings.workerToken=el("workerToken")?.value||""; save(); }
   function confirmTwice(first,second){ return confirm(first)&&confirm(second); }
+  function placeSmileyMenu(details){
+    const menu=details?.querySelector(".smileyChoices"), summary=details?.querySelector("summary");
+    if(!menu||!summary) return;
+    menu.style.top=""; menu.style.left=""; menu.style.right=""; menu.style.width=""; menu.style.transform="";
+    if(window.matchMedia("(max-width: 430px)").matches){
+      const box=summary.getBoundingClientRect();
+      menu.style.top=`${Math.min(box.bottom+6, window.innerHeight-menu.offsetHeight-12)}px`;
+    }
+  }
   function render(){ applyTheme(); document.body.classList.toggle("modalOpen",!!state.ui.modal); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
   function on(id,fn){ const x=el(id); if(x) x.onclick=fn; }
   function bind(){
@@ -47,6 +56,8 @@
     $$("[data-theme-choice]").forEach(b=>b.onclick=()=>{state.settings.theme=b.dataset.themeChoice; save().then(render);}); ["ttsEnabled","ttsRate","ttsVolume"].forEach(id=>{const x=el(id); if(x) x.onchange=saveTtsSettings;}); on("testVoice",()=>speak("ResurGo Fitness est prêt pour la séance.")); ["workerUrl","workerToken"].forEach(id=>{const x=el(id); if(x) x.onchange=saveWorkerSettings;}); on("testWorker",testWorker); on("mockGarmin",mockGarmin);
     ["profileName","gender","age","heightCm","startWeightKg","targetWeightKg","availabilityDays","equipment","sportsHistory"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>saveProfileFields();});
     Object.keys(levels).forEach(k=>{const x=el(`level_${k}`); if(x) x.onchange=()=>saveProfileFields();}); ["irradiating","neurological"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>{const stateText=x.nextElementSibling?.querySelector(".switchState"); if(stateText) stateText.textContent=x.checked?"Oui":"Non"; saveProfileFields();};});
+    $$(".smileyField details").forEach(details=>{ const summary=details.querySelector("summary"); if(summary) summary.onclick=e=>{ e.preventDefault(); const willOpen=!details.open; $$(".smileyField details[open]").forEach(x=>{ if(x!==details) x.open=false; }); details.open=willOpen; if(willOpen) requestAnimationFrame(()=>placeSmileyMenu(details)); }; });
+    if(!smileyDismissBound){ document.addEventListener("pointerdown",e=>{ if(e.target.closest(".smileyField")) return; $$(".smileyField details[open]").forEach(x=>x.open=false); }); window.addEventListener("resize",()=>$$(".smileyField details[open]").forEach(placeSmileyMenu)); smileyDismissBound=true; }
     on("exportJson",()=>exportJson(false)); on("exportJsonSecrets",()=>exportJson(true)); on("deleteProfile",()=>{const p=profile(); if(p&&confirmTwice("Supprimer ce profil local ?","Confirmation définitive : supprimer ce profil et ses réglages ?")){state.profiles=state.profiles.filter(x=>x.id!==p.id); state.activeProfileId=state.profiles[0]?.id||null; save("Profil supprimé.").then(render);}}); on("resetAll",()=>{if(confirmTwice("Effacer toutes les données locales ResurGo Fitness ?","Confirmation définitive : tout effacer sur cet appareil ?")){state=clone(empty); save("Données locales effacées.").then(render);}});
     const imp=el("importJson"); if(imp) imp.onchange=e=>e.target.files[0]&&importJson(e.target.files[0]); const sf=el("exerciseSearchForm"); if(sf) sf.onsubmit=e=>{e.preventDefault(); state.ui.search=text("searchDraft"); state.ui.searchDraft=state.ui.search; save().then(render);}; const sd=el("searchDraft"); if(sd) sd.oninput=e=>{state.ui.searchDraft=e.target.value; if(!e.target.value){state.ui.search=""; save().then(render);}}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; save().then(render);};
   }
