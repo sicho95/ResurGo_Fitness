@@ -25,7 +25,7 @@
   function createProfile(){
     const name = text("newProfileName") || `Profil ${state.profiles.length + 1}`;
     const p={ id:uid("profile"), name, gender:el("newGender")?.value||"male", createdAt:new Date().toISOString(), age:num("newAge"), heightCm:num("newHeight"), startWeightKg:num("newWeight"), targetWeightKg:num("newTarget"), availabilityDays:3, equipment:"élastique, chaise, tapis", sportsHistory:"", health:{backPain:null,kneePain:null,tendonPain:null,fatigue:null,irradiating:false,neurological:false}, levels:{running:"R1",push:"P1",pull:"T1",legs:"J1",frontCore:"G1",sideCore:"L1",mobility:"M1"}, dataPreferences:{primaryWeight:"garmin_index_s2",primaryActivities:"garmin",dedup:true} };
-    state.profiles.push(p); state.activeProfileId=p.id; state.assessments.push({id:uid("assessment"),profileId:p.id,date:TODAY,tests:clone(p.levels)}); makeWeek(p.id); save("Profil créé.").then(render);
+    state.profiles.push(p); state.activeProfileId=p.id; state.ui.modal=null; state.assessments.push({id:uid("assessment"),profileId:p.id,date:TODAY,tests:clone(p.levels)}); makeWeek(p.id); save("Profil créé.").then(render);
   }
   function makeWeek(pid,short=false){
     const p=state.profiles.find(x=>x.id===pid); if(!p) return;

@@ -45,7 +45,7 @@ Fichiers nécessaires à la racine :
 - écran séance plus friendly façon coach premium : objectif clair, séries visibles, repos manuel, zones travaillées ;
 - visualisation locale offline des muscles sollicités par exercice ;
 - saisie manuelle course/marche : durée, distance, vitesse moyenne, fréquence cardiaque moyenne/max, ressenti, douleur ;
-- saisie manuelle balance type Garmin Index S2 : poids, graisse, eau, IMC, masse osseuse, muscle, tour ventre, graisse viscérale ;
+- saisie manuelle balance type Garmin Index S2 : poids, graisse, eau, IMC, masse osseuse, muscle, tour ventre ;
 - sources de données manuelle, JSON, mock Garmin et Worker ;
 - stockage IndexedDB ;
 - service worker offline ;

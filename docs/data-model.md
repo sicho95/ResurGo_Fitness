@@ -96,8 +96,7 @@ Export racine :
   "bmi": 30.8,
   "boneKg": 3.2,
   "muscleKg": 62,
-  "waistCm": 105,
-  "visceralFat": 12
+  "waistCm": 105
 }
 ```
 
