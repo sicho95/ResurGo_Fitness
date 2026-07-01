@@ -1,5 +1,5 @@
 (() => {
-  const APP_VERSION = "1.3.3", APP_BUILD = "1.3.3-local.a3bea40d.20260701T123953Z", DB = "resurgo-fitness-v1", STORE = "state", TODAY = new Date().toISOString().slice(0, 10);
+  const APP_VERSION = "__APP_VERSION__", APP_BUILD = "__APP_BUILD__", DB = "resurgo-fitness-v1", STORE = "state", TODAY = new Date().toISOString().slice(0, 10);
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)], el = id => document.getElementById(id);
   const uid = p => `${p}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const clone = v => typeof structuredClone === "function" ? structuredClone(v) : JSON.parse(JSON.stringify(v));

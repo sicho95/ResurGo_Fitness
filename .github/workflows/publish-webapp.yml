@@ -5,7 +5,16 @@ on:
     branches:
       - main
     paths:
-      - "src/**"
+      - "app.js"
+      - "index.html"
+      - "styles.css"
+      - "sw.js"
+      - "manifest.webmanifest"
+      - "icon.svg"
+      - "version.json"
+      - "assets/**"
+      - "docs/**"
+      - "workers/**"
       - "scripts/build-static.mjs"
       - ".github/workflows/publish-webapp.yml"
 

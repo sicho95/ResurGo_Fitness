@@ -1,7 +1,7 @@
 {
   "version": "1.3.3",
-  "buildId": "1.3.3-local.e14fd488.20260701T091946Z",
+  "buildId": "__APP_BUILD__",
   "name": "ResurGo Fitness",
-  "updatedAt": "2026-07-01",
-  "commitSha": "e14fd488"
+  "updatedAt": "__BUILD_DATE__",
+  "commitSha": "__COMMIT_SHA__"
 }

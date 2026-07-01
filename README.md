@@ -2,23 +2,20 @@
 
 PWA sportive offline-first 100% statique, prête pour GitHub Pages.
 
-Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour un workflow simple : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
+## Source et publication
 
-## Source et build
-
-- `main` contient la source de developpement ;
-- `src/` contient l'application source ;
-- la branche `WebApp` est generee automatiquement pour GitHub Pages ;
+- `main` contient l'unique source de développement, directement à la racine du dépôt ;
+- la branche `WebApp` est générée automatiquement pour GitHub Pages ;
 - `node scripts/build-static.mjs` construit un build local dans `.webapp-build/`.
 
-Voir `src/README.md` pour le detail du rebuild manuel et de la publication.
+Le workflow GitHub copie la source racine vers `.webapp-build/`, injecte les métadonnées de build, puis force le contenu sur `WebApp`.
 
 ## Déploiement GitHub Pages
 
 Configuration :
 
 - Source : `Deploy from a branch`
-- Branch : `main`
+- Branch : `WebApp`
 - Folder : `/root`
 
 URL attendue :
@@ -26,15 +23,6 @@ URL attendue :
 ```text
 https://sicho95.github.io/ResurGo_Fitness/
 ```
-
-Fichiers nécessaires à la racine :
-
-- `index.html`
-- `app.js`
-- `styles.css`
-- `sw.js`
-- `manifest.webmanifest`
-- `icon.svg`
 
 ## Fonctionnalités V1
 
