@@ -4,6 +4,14 @@ PWA sportive offline-first 100% statique, prête pour GitHub Pages.
 
 Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle est pensée pour un workflow simple : déposer les fichiers à la racine du dépôt, activer GitHub Pages, puis utiliser l'app sur iPhone/iPad comme PWA installable.
 
+## Source et build
+
+- `src/` contient la source de developpement ;
+- la racine contient la version publiee par GitHub Pages ;
+- `node scripts/build-static.mjs` reconstruit la racine a partir de `src/`.
+
+Voir `src/README.md` pour le detail du rebuild manuel.
+
 ## Déploiement GitHub Pages
 
 Configuration :
