@@ -6,11 +6,12 @@ Cette version ne nécessite ni Node, ni Vite, ni React, ni GitHub Actions. Elle 
 
 ## Source et build
 
-- `src/` contient la source de developpement ;
-- la racine contient la version publiee par GitHub Pages ;
-- `node scripts/build-static.mjs` reconstruit la racine a partir de `src/`.
+- `main` contient la source de developpement ;
+- `src/` contient l'application source ;
+- la branche `WebApp` est generee automatiquement pour GitHub Pages ;
+- `node scripts/build-static.mjs` construit un build local dans `.webapp-build/`.
 
-Voir `src/README.md` pour le detail du rebuild manuel.
+Voir `src/README.md` pour le detail du rebuild manuel et de la publication.
 
 ## Déploiement GitHub Pages
 

@@ -21,5 +21,6 @@
       const r=await fetch(`./version.json?ts=${Date.now()}`,{cache:"no-store"});
       const v=await r.json();
       remoteVersion=v.version||APP_VERSION;
-      if(remoteVersion!==APP_VERSION) state.ui.message=`Nouvelle version ${remoteVersion} détectée. Mise à jour en cours.`;
+      remoteBuild=v.buildId||remoteVersion;
+      if(remoteBuild!==APP_BUILD||remoteVersion!==APP_VERSION) state.ui.message=`Nouvelle version ${remoteVersion} détectée. Mise à jour en cours.`;
       if(swRegistration) await swRegistration.update();

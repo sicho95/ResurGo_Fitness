@@ -18,17 +18,16 @@ node scripts/build-static.mjs
 
 Ce script :
 
-1. concatene `src/app/part-*.js` dans `app.js` ;
-2. copie les fichiers statiques vers la racine ;
-3. copie les bodymaps vers `assets/bodymaps/` ;
-4. copie `docs/` et `workers/` ;
-5. supprime `assets/app/` a la racine pour eviter de publier des sources dupliquees.
+1. concatene `src/app/part-*.js` dans un `app.js` publie ;
+2. injecte `version`, `buildId`, `updatedAt` et `commitSha` ;
+3. copie les fichiers statiques et assets dans `.webapp-build/` ;
+4. prepare le contenu qui sera publie dans la branche `WebApp`.
 
 Workflow recommande :
 
 1. modifier `src/` ;
 2. lancer `node scripts/build-static.mjs` ;
-3. verifier le diff Git ;
-4. commit `src/` + racine publiee.
+3. verifier localement `.webapp-build/` ;
+4. commit seulement la source.
 
-Sur GitHub, le workflow `.github/workflows/build-published.yml` rebuild automatiquement la racine quand un commit sur `main` touche `src/`.
+Sur GitHub, le workflow `.github/workflows/publish-webapp.yml` rebuild automatiquement la branche `WebApp` quand un commit sur `main` touche `src/`.

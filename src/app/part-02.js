@@ -104,20 +104,20 @@
     if(!state.settings.notifications.enabled||!("Notification" in window)||Notification.permission!=="granted") return;
     reminderTimer=setTimeout(async()=>{ await showTodayNotification(); scheduleSessionReminder(); },nextReminderDelay());
   }
-  async function requestSessionNotifications({test=true,silent=false}={}){
-    if(!("Notification" in window)){ if(!silent) save("Notifications non supportées sur cet appareil.").then(render); return false; }
+  async function requestSessionNotifications({test=true,silent=false,rerender=true}={}){
+    if(!("Notification" in window)){ if(!silent) save("Notifications non supportées sur cet appareil.").then(()=>{ if(rerender) render(); }); return false; }
     const permission=Notification.permission==="granted"?"granted":await Notification.requestPermission();
     state.settings.notifications.enabled=permission==="granted";
     if(permission==="granted"){
       state.settings.notifications.askedOnInstall=true;
       if(test) await showTodayNotification({force:true});
       await save(silent?"":test?"Notification envoyée.":"Rappels de séance activés.");
-      render();
+      if(rerender) render();
       return true;
     }
     state.settings.notifications.askedOnInstall=true;
     await save(silent?"":"Notifications refusées ou bloquées.");
-    render();
+    if(rerender) render();
     return false;
   }
 

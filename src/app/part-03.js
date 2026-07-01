@@ -12,7 +12,7 @@
     if(ios) return `<div class="pwaPrompt"><div><strong>Installer ResurGo Fitness</strong><span>Sur iPhone/iPad : Partager, puis “Sur l'écran d'accueil”.</span></div><button class="secondary" id="dismissPwa">OK</button></div>`;
     return "";
   }
-  function updatePrompt(){ return remoteVersion!==APP_VERSION||updateWaiting ? `<div class="pwaPrompt update"><div><strong>Mise à jour ${esc(remoteVersion)} détectée</strong><span>Installation automatique en cours. Les données locales sont conservées.</span></div></div>` : ""; }
+  function updatePrompt(){ return remoteBuild!==APP_BUILD||remoteVersion!==APP_VERSION||updateWaiting ? `<div class="pwaPrompt update"><div><strong>Mise à jour ${esc(remoteVersion)} détectée</strong><span>Installation automatique en cours. Les données locales sont conservées.</span></div></div>` : ""; }
   function healthScore(v){ return v == null || v === "" ? null : Math.max(0,Math.min(5,5-Number(v))); }
   function scoreToLoad(v){ return v == null || v === "" || Number.isNaN(Number(v)) ? null : Math.max(0,Math.min(5,5-Number(v))); }
   function bodyStateItems(kind,p){

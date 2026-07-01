@@ -34,13 +34,21 @@
   }
   function saveTtsSettings(){ state.settings.tts.enabled=el("ttsEnabled")?.value==="true"; state.settings.tts.rate=n("ttsRate")||1; state.settings.tts.volume=n("ttsVolume"); save(); }
   function saveWorkerSettings(){ state.settings.workerUrl=text("workerUrl"); state.settings.workerToken=el("workerToken")?.value||""; save(); }
-  function saveNotificationSettings(){
+  async function saveNotificationSettings(){
     state.settings.notifications.enabled=!!el("notifEnabled")?.checked;
     state.settings.notifications.reminderTime=el("notifTime")?.value||"08:00";
     const stateText=el("notifEnabled")?.nextElementSibling?.querySelector(".switchState");
     if(stateText) stateText.textContent=state.settings.notifications.enabled?"Oui":"Non";
-    if(state.settings.notifications.enabled&&notificationPermission()!=="granted") return requestSessionNotifications({test:false});
-    save("Rappels mis à jour.").then(()=>{ scheduleSessionReminder(); render(); });
+    if(state.settings.notifications.enabled&&notificationPermission()!=="granted"){
+      await requestSessionNotifications({test:false,rerender:false});
+      const refreshedText=el("notifEnabled")?.nextElementSibling?.querySelector(".switchState");
+      if(refreshedText) refreshedText.textContent=state.settings.notifications.enabled?"Oui":"Non";
+    }else{
+      await save();
+    }
+    const status=el("notificationStatus");
+    if(status) status.textContent=notificationStatusText();
+    scheduleSessionReminder();
   }
   function confirmTwice(first,second){ return confirm(first)&&confirm(second); }
   function placeSmileyMenu(details){
