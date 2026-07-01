@@ -1,0 +1,14 @@
+{
+  "name": "ResurGo Fitness",
+  "short_name": "ResurGo Fitness",
+  "description": "Coach sportif offline-first, prêt pour GitHub Pages.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f7f9f4",
+  "theme_color": "#12231f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
