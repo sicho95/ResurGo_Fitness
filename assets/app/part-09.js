@@ -3,7 +3,7 @@
   }
   function registerPwaEvents(){
     window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredInstallPrompt=e; render(); });
-    window.addEventListener("appinstalled",()=>{ deferredInstallPrompt=null; state.settings.hideInstallPrompt=true; save("App installée.").then(render); });
+    window.addEventListener("appinstalled",async()=>{ deferredInstallPrompt=null; state.settings.hideInstallPrompt=true; await save("App installée."); render(); if(state.settings.notifications.enabled&&notificationPermission()==="default"&&!state.settings.notifications.askedOnInstall) await requestSessionNotifications({test:false,silent:true}); });
     navigator.serviceWorker?.addEventListener("message", e=>{ if(e.data?.type==="OPEN_VIEW"){ state.ui.view=e.data.view||"today"; save().then(render); } });
     let refreshing=false;
     navigator.serviceWorker?.addEventListener("controllerchange",()=>{ if(refreshing) return; refreshing=true; window.location.reload(); });
@@ -35,9 +35,11 @@
   function saveTtsSettings(){ state.settings.tts.enabled=el("ttsEnabled")?.value==="true"; state.settings.tts.rate=n("ttsRate")||1; state.settings.tts.volume=n("ttsVolume"); save(); }
   function saveWorkerSettings(){ state.settings.workerUrl=text("workerUrl"); state.settings.workerToken=el("workerToken")?.value||""; save(); }
   function saveNotificationSettings(){
-    state.settings.notifications.enabled=el("notifEnabled")?.value==="true";
+    state.settings.notifications.enabled=!!el("notifEnabled")?.checked;
     state.settings.notifications.reminderTime=el("notifTime")?.value||"08:00";
-    if(state.settings.notifications.enabled&&notificationPermission()!=="granted") return requestSessionNotifications();
+    const stateText=el("notifEnabled")?.nextElementSibling?.querySelector(".switchState");
+    if(stateText) stateText.textContent=state.settings.notifications.enabled?"Oui":"Non";
+    if(state.settings.notifications.enabled&&notificationPermission()!=="granted") return requestSessionNotifications({test:false});
     save("Rappels mis à jour.").then(()=>{ scheduleSessionReminder(); render(); });
   }
   function confirmTwice(first,second){ return confirm(first)&&confirm(second); }
@@ -62,7 +64,7 @@
     on("openMetricModal",()=>{state.ui.modal="metric"; render();}); on("openActivityModal",()=>{state.ui.modal="activity"; render();}); on("openNewProfile",()=>{state.ui.modal="newProfile"; render();}); on("openReadinessInfo",()=>{state.ui.modal="readiness"; render();}); on("openWeightChart",()=>{state.ui.modal="weightChart"; render();}); on("closeModal",()=>{state.ui.modal=null; render();});
     on("addMetric",addMetric); on("addRun",addRun); on("saveProfile",()=>saveProfileFields({regen:true,msg:"Profil et plan mis à jour."})); on("regenProfilePlan",()=>saveProfileFields({regen:true,msg:"Plan régénéré."}));
     $$("[data-save-video]").forEach(b=>b.onclick=()=>{state.exerciseVideos=state.exerciseVideos||{}; const id=b.dataset.saveVideo, v=text(`video_${id}`); if(v) state.exerciseVideos[id]=v; else delete state.exerciseVideos[id]; save("URL vidéo enregistrée.").then(render);});
-    $$("[data-theme-choice]").forEach(b=>b.onclick=()=>{state.settings.theme=b.dataset.themeChoice; save().then(render);}); ["ttsEnabled","ttsRate","ttsVolume"].forEach(id=>{const x=el(id); if(x) x.onchange=saveTtsSettings;}); on("testVoice",()=>speak("ResurGo Fitness est prêt pour la séance.")); ["notifEnabled","notifTime"].forEach(id=>{const x=el(id); if(x) x.onchange=saveNotificationSettings;}); on("enableNotifications",requestSessionNotifications); on("testNotification",()=>showTodayNotification({force:true}).then(ok=>save(ok?"Notification envoyée.":"Aucune séance à notifier aujourd'hui.").then(render))); on("clearBadge",()=>clearAppBadge().then(()=>save("Badge retiré.").then(render))); ["workerUrl","workerToken"].forEach(id=>{const x=el(id); if(x) x.onchange=saveWorkerSettings;}); on("testWorker",testWorker); on("mockGarmin",mockGarmin);
+    $$("[data-theme-choice]").forEach(b=>b.onclick=()=>{state.settings.theme=b.dataset.themeChoice; save().then(render);}); ["ttsEnabled","ttsRate","ttsVolume"].forEach(id=>{const x=el(id); if(x) x.onchange=saveTtsSettings;}); on("testVoice",()=>speak("ResurGo Fitness est prêt pour la séance.")); ["notifEnabled","notifTime"].forEach(id=>{const x=el(id); if(x) x.onchange=saveNotificationSettings;}); on("testNotification",async()=>{ if(notificationPermission()!=="granted"){ const ok=await requestSessionNotifications({test:true}); if(!ok) return; } else save((await showTodayNotification({force:true}))?"Notification envoyée.":"Aucune séance à notifier aujourd'hui.").then(render); }); ["workerUrl","workerToken"].forEach(id=>{const x=el(id); if(x) x.onchange=saveWorkerSettings;}); on("testWorker",testWorker); on("mockGarmin",mockGarmin);
     ["profileName","gender","age","heightCm","startWeightKg","targetWeightKg","targetMonths","availabilityDays","equipment","sportsHistory"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>saveProfileFields();});
     Object.keys(levels).forEach(k=>{const x=el(`level_${k}`); if(x) x.onchange=()=>saveProfileFields();}); ["irradiating","neurological"].forEach(id=>{const x=el(id); if(x) x.onchange=()=>{const stateText=x.nextElementSibling?.querySelector(".switchState"); if(stateText) stateText.textContent=x.checked?"Oui":"Non"; saveProfileFields();};});
     $$(".smileyField details").forEach(details=>{ const summary=details.querySelector("summary"); if(summary) summary.onclick=e=>{ e.preventDefault(); const willOpen=!details.open; $$(".smileyField details[open]").forEach(x=>{ if(x!==details) x.open=false; }); details.open=willOpen; if(willOpen) requestAnimationFrame(()=>placeSmileyMenu(details)); }; });

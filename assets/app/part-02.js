@@ -68,7 +68,7 @@
     return "Autorisation à demander.";
   }
   function todayReminderSession(){ const p=profile(); if(!p) return null; const pick=coachPickToday(p); return pick.rest?null:pick.session; }
-  function reminderBody(s){ return s ? `${typeLabel(s.type)} · ${s.minutes} min · ${s.exerciseIds.length} blocs` : "Aucune séance active aujourd'hui."; }
+  function reminderBody(s){ return s ? `Séance du jour :\n${s.title}` : "Aucune séance active aujourd'hui."; }
   async function updateAppBadge(){
     const s=todayReminderSession(), count=s?1:0;
     try{
@@ -81,8 +81,8 @@
     const s=todayReminderSession();
     if(!s||!("Notification" in window)||Notification.permission!=="granted") return false;
     if(!force&&state.settings.notifications.lastNotifiedDate===TODAY) return false;
-    const title="Séance du jour";
-    const options={body:`${s.title} · ${reminderBody(s)}`,tag:`resurgo-session-${TODAY}`,renotify:force,icon:"./icon.svg",badge:"./icon.svg",data:{view:"today",sessionId:s.id,date:TODAY}};
+    const title="ResurGo Fitness";
+    const options={body:reminderBody(s),tag:`resurgo-session-${TODAY}`,renotify:force,icon:"./icon.svg",badge:"./icon.svg",data:{view:"today",sessionId:s.id,date:TODAY}};
     const reg=swRegistration||await navigator.serviceWorker?.ready.catch(()=>null);
     if(reg?.showNotification) await reg.showNotification(title,options);
     else new Notification(title,options);
@@ -104,15 +104,21 @@
     if(!state.settings.notifications.enabled||!("Notification" in window)||Notification.permission!=="granted") return;
     reminderTimer=setTimeout(async()=>{ await showTodayNotification(); scheduleSessionReminder(); },nextReminderDelay());
   }
-  async function requestSessionNotifications(){
-    if(!("Notification" in window)){ save("Notifications non supportées sur cet appareil.").then(render); return; }
+  async function requestSessionNotifications({test=true,silent=false}={}){
+    if(!("Notification" in window)){ if(!silent) save("Notifications non supportées sur cet appareil.").then(render); return false; }
     const permission=Notification.permission==="granted"?"granted":await Notification.requestPermission();
     state.settings.notifications.enabled=permission==="granted";
     if(permission==="granted"){
-      await showTodayNotification({force:true});
-      await save("Rappels de séance activés.");
-    } else await save("Notifications refusées ou bloquées.");
+      state.settings.notifications.askedOnInstall=true;
+      if(test) await showTodayNotification({force:true});
+      await save(silent?"":test?"Notification envoyée.":"Rappels de séance activés.");
+      render();
+      return true;
+    }
+    state.settings.notifications.askedOnInstall=true;
+    await save(silent?"":"Notifications refusées ou bloquées.");
     render();
+    return false;
   }
 
   function createProfile(){
