@@ -1,3 +1,5 @@
+// Construire l'artefact statique publiable à partir des sources de développement.
+// Le bundle final destiné à WebApp est généré ici, pas maintenu à la main.
 import { execSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -11,6 +13,18 @@ const staticDir = path.join(root, "static");
 const assetsDir = path.join(root, "assets");
 const docsDir = path.join(root, "docs");
 const workersDir = path.join(root, "workers");
+const appBuildOrder = [
+  "bootstrap.js",
+  "exercise-library.js",
+  "planning-state.js",
+  "runtime-ui.js",
+  "views-main.js",
+  "views-settings-stats.js",
+  "exercise-rendering.js",
+  "diagrams.js",
+  "visualization-stats.js",
+  "app-init.js"
+];
 
 function argValue(flag, fallback) {
   const index = process.argv.indexOf(flag);
@@ -66,11 +80,8 @@ async function copyDir(from, to, meta = null) {
 }
 
 async function writeBundle(outDir, meta) {
-  const parts = (await fs.readdir(appDir))
-    .filter(name => /^part-\d+\.js$/.test(name))
-    .sort((a, b) => a.localeCompare(b, "en"));
   const chunks = [];
-  for (const part of parts) {
+  for (const part of appBuildOrder) {
     chunks.push(await fs.readFile(path.join(appDir, part), "utf8"));
   }
   const bundle = replaceTokens(chunks.join("\n").trimEnd(), meta);

@@ -1,3 +1,5 @@
+// Exposer un Worker minimal pour la synchro distante et le mock Garmin.
+// Le routage reste volontairement simple et lisible sans framework.
 const json = (body, status = 200, origin = "*") => new Response(JSON.stringify(body), {
   status,
   headers: {

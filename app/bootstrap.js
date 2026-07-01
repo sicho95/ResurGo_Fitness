@@ -1,3 +1,5 @@
+// Initialiser le socle applicatif partagé :
+// constantes, helpers et début de bibliothèque d'exercices.
 (() => {
   const APP_VERSION = "__APP_VERSION__", APP_BUILD = "__APP_BUILD__", DB = "resurgo-fitness-v1", STORE = "state", TODAY = new Date().toISOString().slice(0, 10);
   const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)], el = id => document.getElementById(id);

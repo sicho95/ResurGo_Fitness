@@ -1,3 +1,5 @@
+  // Brancher ici tous les événements DOM.
+  // Ce module reste le point d'entrée final du bundle applicatif.
     }catch{}
     render();
   }

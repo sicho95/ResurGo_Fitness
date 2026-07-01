@@ -1,3 +1,4 @@
+  // Générer les fiches d'exercices et les zones anatomiques à partir de la bibliothèque centrale.
   function needProfile(){ return `<section class="hero"><h1>Profil requis</h1><p>Crée un profil pour activer cette page.</p>${newProfileBox()}</section>`; }
   function videoSrc(x){ const p=state.exerciseVideos?.[x.id]||x.videoPath||"/"; return /^https?:\/\//.test(p)?p:(state.settings.videoBase||videos.defaultBase)+p; }
   function media(x,compact=false){ const raw=state.exerciseVideos?.[x.id]||x.videoPath||"", hasVideo=!!raw&&raw!=="/"&&/\.mp4($|\?)/i.test(raw), src=hasVideo?videoSrc(x):""; return `${hasVideo?`<div class="videoFrame"><video controls playsinline preload="metadata" src="${esc(src)}"></video></div>`:""}<details ${compact?"":"open"}><summary>Schéma animé offline</summary>${diagram(x)}</details>`; }

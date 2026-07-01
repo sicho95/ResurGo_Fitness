@@ -5,12 +5,12 @@ PWA sportive offline-first 100% statique, prête pour GitHub Pages.
 ## Source et publication
 
 - `main` contient l'unique source de développement, découpée à la racine du dépôt ;
-- `app/` contient la logique JavaScript découpée en fragments ;
+- `app/` contient la logique JavaScript découpée par responsabilités (`bootstrap`, `exercise-library`, `planning-state`, `views`, `rendering`, `init`) ;
 - `static/` contient les fichiers statiques source (`index.html`, `styles.css`, `sw.js`, `manifest.webmanifest`, `version.json`, `icon.svg`) ;
 - la branche `WebApp` est générée automatiquement pour GitHub Pages ;
 - `node scripts/build-static.mjs` construit un build local dans `.webapp-build/`.
 
-Le workflow GitHub concatène `app/part-*.js` en `app.js`, injecte les métadonnées de build et copie les statiques vers `.webapp-build/`, puis force le contenu sur `WebApp`.
+Le workflow GitHub concatène les modules de `app/` dans un ordre de build explicite pour produire `app.js`, injecte les métadonnées de build et copie les statiques vers `.webapp-build/`, puis force le contenu sur `WebApp`.
 
 ## Déploiement GitHub Pages
 
