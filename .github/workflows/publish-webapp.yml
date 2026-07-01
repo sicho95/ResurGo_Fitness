@@ -5,13 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "app.js"
-      - "index.html"
-      - "styles.css"
-      - "sw.js"
-      - "manifest.webmanifest"
-      - "icon.svg"
-      - "version.json"
+      - "app/**"
+      - "static/**"
       - "assets/**"
       - "docs/**"
       - "workers/**"

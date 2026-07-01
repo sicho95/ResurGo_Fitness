@@ -6,10 +6,11 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, "..");
+const appDir = path.join(root, "app");
+const staticDir = path.join(root, "static");
 const assetsDir = path.join(root, "assets");
 const docsDir = path.join(root, "docs");
 const workersDir = path.join(root, "workers");
-const sourceFiles = ["app.js", "index.html", "styles.css", "sw.js", "manifest.webmanifest", "icon.svg", "version.json"];
 
 function argValue(flag, fallback) {
   const index = process.argv.indexOf(flag);
@@ -64,15 +65,28 @@ async function copyDir(from, to, meta = null) {
   }
 }
 
-async function copyRootSource(outDir, meta) {
-  for (const file of sourceFiles) {
-    await copyFile(path.join(root, file), path.join(outDir, file), meta);
+async function writeBundle(outDir, meta) {
+  const parts = (await fs.readdir(appDir))
+    .filter(name => /^part-\d+\.js$/.test(name))
+    .sort((a, b) => a.localeCompare(b, "en"));
+  const chunks = [];
+  for (const part of parts) {
+    chunks.push(await fs.readFile(path.join(appDir, part), "utf8"));
+  }
+  const bundle = replaceTokens(chunks.join("\n").trimEnd(), meta);
+  await fs.writeFile(path.join(outDir, "app.js"), `${bundle}\n`, "utf8");
+}
+
+async function copyStatic(outDir, meta) {
+  const files = await fs.readdir(staticDir);
+  for (const file of files) {
+    await copyFile(path.join(staticDir, file), path.join(outDir, file), meta);
   }
 }
 
 async function main() {
   const outDir = path.resolve(root, argValue("--out", ".webapp-build"));
-  const template = JSON.parse(await fs.readFile(path.join(root, "version.json"), "utf8"));
+  const template = JSON.parse(await fs.readFile(path.join(staticDir, "version.json"), "utf8"));
   const baseVersion = String(template.version || "0.0.0").trim();
   const sha = process.env.GITHUB_SHA?.slice(0, 7) || gitShortSha();
   const runNumber = process.env.GITHUB_RUN_NUMBER?.trim();
@@ -86,7 +100,8 @@ async function main() {
 
   await fs.rm(outDir, { recursive: true, force: true });
   await ensureDir(outDir);
-  await copyRootSource(outDir, meta);
+  await writeBundle(outDir, meta);
+  await copyStatic(outDir, meta);
   await copyDir(assetsDir, path.join(outDir, "assets"));
   await copyDir(docsDir, path.join(outDir, "docs"));
   await copyDir(workersDir, path.join(outDir, "workers"));

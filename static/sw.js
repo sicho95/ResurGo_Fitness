@@ -1,4 +1,4 @@
-const CACHE = "resurgo-fitness-static-1.3.3-local.e14fd488.20260701T091946Z";
+const CACHE = "resurgo-fitness-static-__APP_BUILD__";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg", "./version.json", "./assets/bodymaps/male.svg", "./assets/bodymaps/female.svg"];
 
 self.addEventListener("install", event => {
