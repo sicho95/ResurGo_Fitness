@@ -1,4 +1,4 @@
-const CACHE = "resurgo-fitness-static-1.2.5";
+const CACHE = "resurgo-fitness-static-1.3.3";
 const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg", "./version.json", "./assets/app/part-00.js", "./assets/app/part-01.js", "./assets/app/part-02.js", "./assets/app/part-03.js", "./assets/app/part-04.js", "./assets/app/part-05.js", "./assets/app/part-06.js", "./assets/app/part-07.js", "./assets/app/part-08.js", "./assets/app/part-09.js", "./assets/bodymaps/male.svg", "./assets/bodymaps/female.svg"];
 
 self.addEventListener("install", event => {
@@ -11,6 +11,33 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
+
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  const target = new URL("./#today", self.location.href).href;
+  event.waitUntil(clients.matchAll({ type:"window", includeUncontrolled:true }).then(list => {
+    const opened = list.find(client => client.url.startsWith(self.location.origin));
+    if (opened) {
+      opened.postMessage({ type:"OPEN_VIEW", view:"today" });
+      return opened.focus();
+    }
+    return clients.openWindow(target);
+  }));
+});
+
+self.addEventListener("push", event => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch {}
+  const title = data.title || "Séance du jour";
+  const options = {
+    body: data.body || "Ouvre ResurGo Fitness pour voir la séance conseillée.",
+    tag: data.tag || "resurgo-session",
+    icon: "./icon.svg",
+    badge: "./icon.svg",
+    data: data.data || { view:"today" }
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("fetch", event => {
