@@ -27,6 +27,7 @@
     note: "Les vidéos sont online seulement. ResurGo Fitness intègre les URLs directes .mp4 ; les pages web d'exercices ne sont pas affichées car elles sont souvent bloquées par CSP."
   };
   const bodyMapAssets = { male:"./assets/bodymaps/male.svg", female:"./assets/bodymaps/female.svg" };
+  globalThis.__resurgoExerciseDiagram = null;
   const familyLabels = { warmup:"Échauffement", core:"Gainage", push:"Poussée", pull:"Tirage", legs:"Jambes", knee_rehab:"Genou / kiné", mobility:"Mobilité", cardio:"Cardio", cooldown:"Retour au calme" };
   const ex = [
     E("warmup_flow","Échauffement mobilité","warmup","time",1,300,0,"Mobilité douce complète.",["Debout, respire par le nez.","Debout, mobilise chevilles, hanches, épaules.","Debout, garde une amplitude confortable."],"Pas de mouvement brutal.","/"),
