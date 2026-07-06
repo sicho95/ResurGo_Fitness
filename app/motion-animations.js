@@ -22,7 +22,7 @@
         {head:[82,158],neck:[112,162],hip:[222,172],lhand:[132,196],rhand:[168,196],lknee:[306,170],lfoot:[394,172],rknee:[308,172],rfoot:[398,174],extra:"press"},
         {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[306,176],lfoot:[394,178],rknee:[308,178],rfoot:[398,180],extra:"towel"}
       ]},
-      straight_leg_raise:{...common, posture:"Allongé sur le dos", prop:"sol stable", cues:["Une jambe pliée","Monte jambe tendue","Redescends lentement"], poses:[
+      straight_leg_raise:{...common, posture:"Allongé sur le dos", prop:"sol stable", cues:["Jambe gauche pliée, droite tendue","Monte la jambe droite tendue","Redescends la jambe droite tendue"], poses:[
         {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[282,138],lfoot:[346,196],rknee:[308,176],rfoot:[398,178]},
         {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[286,128],lfoot:[386,108],rknee:[308,176],rfoot:[398,178]},
         {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[290,150],lfoot:[380,148],rknee:[308,176],rfoot:[398,178]}
@@ -132,29 +132,6 @@
     return "";
   }
 
-  function motionHighlights(kind,p){
-    const hipX=p.hip[0], hipY=p.hip[1], kneeX=(p.lknee[0]+p.rknee[0])/2, kneeY=(p.lknee[1]+p.rknee[1])/2;
-    const leftQuadX=(p.hip[0]+p.lknee[0])/2, leftQuadY=(p.hip[1]+p.lknee[1])/2;
-    const rightQuadX=(p.hip[0]+p.rknee[0])/2, rightQuadY=(p.hip[1]+p.rknee[1])/2;
-    const leftHamX=leftQuadX-8, leftHamY=leftQuadY+4;
-    const rightHamX=rightQuadX+8, rightHamY=rightQuadY+4;
-    const gluteX=hipX-10, gluteY=hipY+6;
-    const cues={
-      quad:`<ellipse cx="${leftQuadX}" cy="${leftQuadY}" rx="18" ry="34" class="motionHot"/><ellipse cx="${rightQuadX}" cy="${rightQuadY}" rx="18" ry="34" class="motionHot"/>`,
-      ham:`<ellipse cx="${leftHamX}" cy="${leftHamY}" rx="16" ry="30" class="motionWarm"/><ellipse cx="${rightHamX}" cy="${rightHamY}" rx="16" ry="30" class="motionWarm"/>`,
-      hip:`<ellipse cx="${hipX}" cy="${hipY}" rx="26" ry="18" class="motionJointHalo"/>`,
-      knee:`<circle cx="${kneeX}" cy="${kneeY}" r="20" class="motionJointHalo"/>`,
-      glute:`<ellipse cx="${gluteX}" cy="${gluteY}" rx="24" ry="18" class="motionHot"/>`
-    };
-    if(kind==="quad_set"||kind==="seated_knee_extension") return `${cues.quad}${cues.knee}`;
-    if(kind==="straight_leg_raise") return `${cues.quad}${cues.hip}${cues.knee}`;
-    if(kind==="standing_hamstring_curl") return `${cues.ham}${cues.knee}${cues.hip}`;
-    if(kind==="clamshell"||kind==="hip_abduction_side") return `${cues.glute}${cues.hip}${cues.knee}`;
-    if(kind==="bridge"||kind==="hinge") return `${cues.glute}${cues.ham}`;
-    if(kind==="calf") return `<ellipse cx="${(p.lknee[0]+p.lfoot[0])/2}" cy="${(p.lknee[1]+p.lfoot[1])/2}" rx="14" ry="28" class="motionWarm"/><ellipse cx="${(p.rknee[0]+p.rfoot[0])/2}" cy="${(p.rknee[1]+p.rfoot[1])/2}" rx="14" ry="28" class="motionWarm"/>`;
-    return "";
-  }
-
   function motionAvatar(p, gender, kind){
     const q=k=>p[k], palette=motionPalette(gender), hair=gender==="female"
       ? `<path d="M${q("head")[0]-16} ${q("head")[1]-8} q-16 22 6 38" fill="none" stroke="${palette.hair}" stroke-width="10" stroke-linecap="round"/>`
@@ -163,7 +140,6 @@
     const shirt=`<path d="M${q("neck")[0]-28} ${q("neck")[1]+4} Q ${q("neck")[0]} ${q("neck")[1]-12} ${q("neck")[0]+28} ${q("neck")[1]+4} L ${q("hip")[0]+18} ${q("hip")[1]-8} Q ${q("hip")[0]} ${q("hip")[1]+18} ${q("hip")[0]-18} ${q("hip")[1]-8} Z" fill="${palette.shirt}" opacity=".96"/>`;
     const shorts=`<path d="M${q("hip")[0]-24} ${q("hip")[1]-2} L ${q("hip")[0]+24} ${q("hip")[1]-2} L ${q("hip")[0]+18} ${q("hip")[1]+28} L ${q("hip")[0]-18} ${q("hip")[1]+28} Z" fill="${palette.shorts}"/>`;
     return `<g class="motionFigure">
-      ${motionHighlights(kind,p)}
       ${motionExtra(p)}
       ${shirt}
       ${shorts}
@@ -204,38 +180,22 @@
     </g>`;
   }
 
-  function motionDots(data,color){
-    return data.cues.map((cue,i)=>`<g transform="translate(${526+i*60},118)">
-      <circle r="18" class="motionDot"/>
-      <circle r="10" fill="${color}" opacity="${i===0?1:.45}">
-        <animate attributeName="opacity" dur="4.8s" repeatCount="indefinite" values="${i===0?"1;1;.35;.35;.35;1":i===1?".35;.35;1;1;.35;.35":".35;.35;.35;.35;1;.35"}" keyTimes="0;0.24;0.33;0.57;0.66;1"/>
-      </circle>
-      <text y="5" text-anchor="middle" class="motionDotText">${i+1}</text>
-      <text x="0" y="38" text-anchor="middle" class="motionDotLabel">${esc(cue)}</text>
-    </g>`).join("");
-  }
-
   function diagram(x){
     const data=motionFrames(x), kind=motionKind(x), gender=profile()?.gender==="female"?"female":"male";
     const color={core:"#2d8cff",push:"#f57b45",pull:"#735cff",legs:"#24c05a",knee_rehab:"#19a974",mobility:"#8bbf2d",cardio:"#ff4d57",warmup:"#49a99a",cooldown:"#8a9691"}[x.family]||"#2d8cff";
     const scenes=data.poses.map((pose,i)=>motionScene({...pose,cue:data.cues[i]},i,gender,color,kind)).join("");
-    return `<svg class="motionSvg" viewBox="0 0 734 338" role="img" aria-label="Diaporama offline ${esc(x.name)}">
+    return `<svg class="motionSvg" viewBox="0 0 520 338" role="img" aria-label="Diaporama offline ${esc(x.name)}">
       <defs>
         <linearGradient id="motionBackdrop" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#f7fbf8"/>
           <stop offset="100%" stop-color="#edf5f0"/>
         </linearGradient>
       </defs>
-      <rect width="734" height="338" rx="22" class="motionBg"/>
-      <rect x="0" y="0" width="734" height="338" rx="22" fill="url(#motionBackdrop)" opacity=".92"/>
+      <rect width="520" height="338" rx="22" class="motionBg"/>
+      <rect x="0" y="0" width="520" height="338" rx="22" fill="url(#motionBackdrop)" opacity=".92"/>
       <text x="24" y="30" class="motionTitle">${esc(x.name)}</text>
-      <text x="710" y="30" class="motionAvatar" text-anchor="end">${gender==="female"?"Profil femme":"Profil homme"}</text>
       <text x="24" y="48" class="motionMeta">${esc(data.posture)} · ${esc(data.prop)}</text>
       ${scenes}
-      <rect x="510" y="72" width="198" height="234" rx="20" class="motionAside"/>
-      <text x="530" y="100" class="motionAsideTitle">Zones et repères</text>
-      <text x="530" y="144" class="motionAsideText">${esc(data.focus)}</text>
-      ${motionDots(data,color)}
     </svg>`;
   }
 
