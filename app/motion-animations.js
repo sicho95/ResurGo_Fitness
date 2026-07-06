@@ -1,9 +1,10 @@
-  // Remplacer les anciens croquis par une animation offline lisible.
-  // Le rendu fonctionne comme un GIF SVG : trois poses restent visibles et le focus tourne en boucle.
+  // Remplacer les croquis filaires par un diaporama SVG en boucle plus lisible.
+  // Chaque exercice affiche une seule grande scène animée avec une silhouette
+  // habillée, des repères de posture et des zones mises en évidence.
   function motionKind(x){
     if(["quad_set","straight_leg_raise","seated_knee_extension","standing_hamstring_curl","clamshell","hip_abduction_side"].includes(x.id)) return x.id;
-    if(["glute_bridge"].includes(x.id)) return "bridge";
-    if(["calf_raise"].includes(x.id)) return "calf";
+    if(x.id==="glute_bridge") return "bridge";
+    if(x.id==="calf_raise") return "calf";
     if(x.family==="cardio") return "cardio";
     if(x.family==="pull") return "pull";
     if(x.family==="push") return "push";
@@ -16,161 +17,225 @@
     const kind=motionKind(x);
     const common={title:x.name, focus:targets(x).slice(0,3).join(" / ")};
     const frames={
-      quad_set:{...common, prop:"serviette", cues:["Jambe tendue","Écrase la serviette","Relâche lentement"], poses:[
-        {head:[42,118],neck:[64,123],hip:[132,135],lhand:[78,154],rhand:[104,154],lknee:[178,135],lfoot:[224,136],rknee:[175,136],rfoot:[224,138],extra:"towel"},
-        {head:[42,118],neck:[64,123],hip:[132,132],lhand:[78,154],rhand:[104,154],lknee:[178,132],lfoot:[224,134],rknee:[175,132],rfoot:[224,136],extra:"press"},
-        {head:[42,118],neck:[64,123],hip:[132,135],lhand:[78,154],rhand:[104,154],lknee:[178,135],lfoot:[224,136],rknee:[175,136],rfoot:[224,138],extra:"towel"}
+      quad_set:{...common, posture:"Allongé sur le dos", prop:"serviette sous le genou", cues:["Mets la jambe longue","Écrase la serviette","Relâche sans à-coup"], poses:[
+        {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[306,176],lfoot:[394,178],rknee:[308,178],rfoot:[398,180],extra:"towel"},
+        {head:[82,158],neck:[112,162],hip:[222,172],lhand:[132,196],rhand:[168,196],lknee:[306,170],lfoot:[394,172],rknee:[308,172],rfoot:[398,174],extra:"press"},
+        {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[306,176],lfoot:[394,178],rknee:[308,178],rfoot:[398,180],extra:"towel"}
       ]},
-      straight_leg_raise:{...common, prop:"sol", cues:["Cuisse contractée","Lève la jambe tendue","Redescends contrôlé"], poses:[
-        {head:[42,118],neck:[64,123],hip:[132,136],lhand:[78,154],rhand:[104,154],lknee:[174,107],lfoot:[205,154],rknee:[178,136],rfoot:[228,138]},
-        {head:[42,118],neck:[64,123],hip:[132,136],lhand:[78,154],rhand:[104,154],lknee:[174,107],lfoot:[205,154],rknee:[178,105],rfoot:[226,82]},
-        {head:[42,118],neck:[64,123],hip:[132,136],lhand:[78,154],rhand:[104,154],lknee:[174,107],lfoot:[205,154],rknee:[178,124],rfoot:[228,126]}
+      straight_leg_raise:{...common, posture:"Allongé sur le dos", prop:"sol stable", cues:["Une jambe pliée","Monte jambe tendue","Redescends lentement"], poses:[
+        {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[282,138],lfoot:[346,196],rknee:[308,176],rfoot:[398,178]},
+        {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[286,128],lfoot:[386,108],rknee:[308,176],rfoot:[398,178]},
+        {head:[82,158],neck:[112,162],hip:[222,176],lhand:[132,196],rhand:[168,196],lknee:[290,150],lfoot:[380,148],rknee:[308,176],rfoot:[398,178]}
       ]},
-      seated_knee_extension:{...common, prop:"chaise", cues:["Assis droit","Tends doucement","Redescends sans choc"], poses:[
-        {head:[86,62],neck:[86,86],hip:[104,128],lhand:[72,120],rhand:[118,120],lknee:[142,158],lfoot:[143,194],rknee:[112,158],rfoot:[112,194],extra:"chair"},
-        {head:[86,62],neck:[86,86],hip:[104,128],lhand:[72,120],rhand:[118,120],lknee:[142,158],lfoot:[205,158],rknee:[112,158],rfoot:[112,194],extra:"chair"},
-        {head:[86,62],neck:[86,86],hip:[104,128],lhand:[72,120],rhand:[118,120],lknee:[142,158],lfoot:[174,176],rknee:[112,158],rfoot:[112,194],extra:"chair"}
+      seated_knee_extension:{...common, posture:"Assis sur une chaise", prop:"chaise stable", cues:["Assis bien droit","Tends en contrôle","Redescends sans choc"], poses:[
+        {head:[192,72],neck:[192,104],hip:[230,164],lhand:[152,150],rhand:[232,150],lknee:[304,198],lfoot:[308,266],rknee:[244,198],rfoot:[248,266],extra:"chair"},
+        {head:[192,72],neck:[192,104],hip:[230,164],lhand:[152,150],rhand:[232,150],lknee:[304,198],lfoot:[408,198],rknee:[244,198],rfoot:[248,266],extra:"chair"},
+        {head:[192,72],neck:[192,104],hip:[230,164],lhand:[152,150],rhand:[232,150],lknee:[304,198],lfoot:[372,228],rknee:[244,198],rfoot:[248,266],extra:"chair"}
       ]},
-      standing_hamstring_curl:{...common, prop:"chaise", cues:["Debout stable","Talon vers fesse","Retour lent"], poses:[
-        {head:[106,42],neck:[106,66],hip:[106,118],lhand:[70,102],rhand:[148,102],lknee:[94,156],lfoot:[88,196],rknee:[122,156],rfoot:[130,196],extra:"support"},
-        {head:[106,42],neck:[106,66],hip:[106,118],lhand:[70,102],rhand:[148,102],lknee:[94,156],lfoot:[88,196],rknee:[122,156],rfoot:[164,134],extra:"support"},
-        {head:[106,42],neck:[106,66],hip:[106,118],lhand:[70,102],rhand:[148,102],lknee:[94,156],lfoot:[88,196],rknee:[122,156],rfoot:[148,164],extra:"support"}
+      standing_hamstring_curl:{...common, posture:"Debout avec appui", prop:"chaise ou barre", cues:["Tiens le support","Talon vers la fesse","Redescends en contrôle"], poses:[
+        {head:[208,58],neck:[208,92],hip:[208,162],lhand:[150,136],rhand:[256,136],lknee:[184,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"support"},
+        {head:[208,58],neck:[208,92],hip:[208,162],lhand:[150,136],rhand:[256,136],lknee:[184,226],lfoot:[176,292],rknee:[232,226],rfoot:[298,188],extra:"support"},
+        {head:[208,58],neck:[208,92],hip:[208,162],lhand:[150,136],rhand:[256,136],lknee:[184,226],lfoot:[176,292],rknee:[232,226],rfoot:[274,238],extra:"support"}
       ]},
-      clamshell:{...common, prop:"sol", cues:["Côté stable","Ouvre le genou","Referme contrôlé"], poses:[
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,174],lfoot:[215,185],rknee:[178,174],rfoot:[215,185]},
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,142],lfoot:[215,154],rknee:[178,174],rfoot:[215,185]},
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,160],lfoot:[215,173],rknee:[178,174],rfoot:[215,185]}
+      clamshell:{...common, posture:"Allongé sur le côté", prop:"tapis", cues:["Pieds ensemble","Ouvre le genou","Referme en gardant le bassin stable"], poses:[
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[308,246],lfoot:[378,260],rknee:[308,246],rfoot:[378,260]},
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[304,194],lfoot:[378,208],rknee:[308,246],rfoot:[378,260]},
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[306,222],lfoot:[378,234],rknee:[308,246],rfoot:[378,260]}
       ]},
-      hip_abduction_side:{...common, prop:"sol", cues:["Côté stable","Lève la jambe","Redescends lentement"], poses:[
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,174],lfoot:[222,184],rknee:[178,146],rfoot:[224,146]},
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,174],lfoot:[222,184],rknee:[176,116],rfoot:[224,90]},
-        {head:[54,128],neck:[82,130],hip:[146,146],lhand:[72,162],rhand:[105,156],lknee:[178,174],lfoot:[222,184],rknee:[178,134],rfoot:[224,122]}
+      hip_abduction_side:{...common, posture:"Allongé sur le côté", prop:"tapis", cues:["Corps empilé","Monte la jambe du dessus","Redescends lentement"], poses:[
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[308,246],lfoot:[386,258],rknee:[308,214],rfoot:[392,214]},
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[308,246],lfoot:[386,258],rknee:[302,168],rfoot:[392,132]},
+        {head:[102,202],neck:[138,198],hip:[248,214],lhand:[146,232],rhand:[184,224],lknee:[308,246],lfoot:[386,258],rknee:[306,188],rfoot:[392,164]}
       ]},
-      bridge:{...common, prop:"sol", cues:["Pieds au sol","Monte le bassin","Garde le dos long"], poses:[
-        {head:[48,132],neck:[74,136],hip:[148,154],lhand:[62,174],rhand:[92,174],lknee:[180,112],lfoot:[224,176],rknee:[194,116],rfoot:[242,176]},
-        {head:[48,132],neck:[74,136],hip:[148,116],lhand:[62,174],rhand:[92,174],lknee:[180,112],lfoot:[224,176],rknee:[194,116],rfoot:[242,176]},
-        {head:[48,132],neck:[74,136],hip:[148,138],lhand:[62,174],rhand:[92,174],lknee:[180,112],lfoot:[224,176],rknee:[194,116],rfoot:[242,176]}
+      bridge:{...common, posture:"Allongé sur le dos", prop:"pieds au sol", cues:["Pieds proches des fesses","Monte le bassin","Redescends sans cambrer"], poses:[
+        {head:[86,186],neck:[120,190],hip:[246,214],lhand:[132,232],rhand:[176,232],lknee:[302,152],lfoot:[378,246],rknee:[338,156],rfoot:[418,246]},
+        {head:[86,186],neck:[120,190],hip:[246,156],lhand:[132,232],rhand:[176,232],lknee:[302,152],lfoot:[378,246],rknee:[338,156],rfoot:[418,246]},
+        {head:[86,186],neck:[120,190],hip:[246,186],lhand:[132,232],rhand:[176,232],lknee:[302,152],lfoot:[378,246],rknee:[338,156],rfoot:[418,246]}
       ]},
-      calf:{...common, prop:"mur", cues:["Debout stable","Monte sur pointes","Descends lentement"], poses:[
-        {head:[112,42],neck:[112,66],hip:[112,118],lhand:[74,90],rhand:[150,90],lknee:[100,156],lfoot:[90,196],rknee:[126,156],rfoot:[136,196],extra:"wall"},
-        {head:[112,34],neck:[112,58],hip:[112,110],lhand:[74,82],rhand:[150,82],lknee:[100,148],lfoot:[92,188],rknee:[126,148],rfoot:[138,188],extra:"wall"},
-        {head:[112,42],neck:[112,66],hip:[112,118],lhand:[74,90],rhand:[150,90],lknee:[100,156],lfoot:[90,196],rknee:[126,156],rfoot:[136,196],extra:"wall"}
+      calf:{...common, posture:"Debout face au mur", prop:"mur", cues:["Appui léger","Monte sur pointes","Descends lentement"], poses:[
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[164,132],rhand:[256,132],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"wall"},
+        {head:[210,44],neck:[210,78],hip:[210,148],lhand:[164,118],rhand:[256,118],lknee:[188,212],lfoot:[176,278],rknee:[232,212],rfoot:[246,278],extra:"wall"},
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[164,132],rhand:[256,132],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"wall"}
       ]},
-      push:{...common, prop:"support", cues:["Corps gainé","Descends en bloc","Repousse"], poses:[
-        {head:[74,100],neck:[104,112],hip:[180,142],lhand:[116,190],rhand:[145,190],lknee:[198,176],lfoot:[248,190],rknee:[202,176],rfoot:[260,190],extra:"incline"},
-        {head:[78,132],neck:[108,142],hip:[184,164],lhand:[116,194],rhand:[145,194],lknee:[198,184],lfoot:[248,194],rknee:[202,184],rfoot:[260,194],extra:"incline"},
-        {head:[74,100],neck:[104,112],hip:[180,142],lhand:[116,190],rhand:[145,190],lknee:[198,176],lfoot:[248,190],rknee:[202,176],rfoot:[260,190],extra:"incline"}
+      push:{...common, posture:"Incliné sur support", prop:"support stable", cues:["Corps gainé","Descends en bloc","Repousse"], poses:[
+        {head:[140,130],neck:[176,144],hip:[286,184],lhand:[194,258],rhand:[240,258],lknee:[326,232],lfoot:[414,252],rknee:[334,232],rfoot:[430,252],extra:"incline"},
+        {head:[150,174],neck:[186,186],hip:[294,216],lhand:[194,262],rhand:[240,262],lknee:[326,240],lfoot:[414,258],rknee:[334,240],rfoot:[430,258],extra:"incline"},
+        {head:[140,130],neck:[176,144],hip:[286,184],lhand:[194,258],rhand:[240,258],lknee:[326,232],lfoot:[414,252],rknee:[334,232],rfoot:[430,252],extra:"incline"}
       ]},
-      pull:{...common, prop:"élastique", cues:["Ancre solide","Tire les coudes","Retour maîtrisé"], poses:[
-        {head:[110,42],neck:[110,66],hip:[110,118],lhand:[178,104],rhand:[178,104],lknee:[96,160],lfoot:[78,196],rknee:[126,160],rfoot:[146,196],extra:"band"},
-        {head:[110,42],neck:[110,66],hip:[110,118],lhand:[136,104],rhand:[142,104],lknee:[96,160],lfoot:[78,196],rknee:[126,160],rfoot:[146,196],extra:"band"},
-        {head:[110,42],neck:[110,66],hip:[110,118],lhand:[158,104],rhand:[164,104],lknee:[96,160],lfoot:[78,196],rknee:[126,160],rfoot:[146,196],extra:"band"}
+      pull:{...common, posture:"Debout avec élastique", prop:"élastique", cues:["Ancre solide","Tire les coudes","Retour contrôlé"], poses:[
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[308,136],rhand:[308,136],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"band"},
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[246,140],rhand:[252,140],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"band"},
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[280,138],rhand:[286,138],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292],extra:"band"}
       ]},
-      cardio:{...common, prop:"terrain plat", cues:["Foulée courte","Aisance respiratoire","Reste régulier"], poses:[
-        {head:[98,42],neck:[98,66],hip:[90,118],lhand:[64,100],rhand:[126,92],lknee:[78,158],lfoot:[42,194],rknee:[112,154],rfoot:[156,180]},
-        {head:[120,42],neck:[120,66],hip:[112,118],lhand:[150,100],rhand:[88,92],lknee:[126,154],lfoot:[168,180],rknee:[98,158],rfoot:[64,194]},
-        {head:[142,42],neck:[142,66],hip:[134,118],lhand:[108,100],rhand:[170,92],lknee:[122,158],lfoot:[86,194],rknee:[156,154],rfoot:[200,180]}
+      cardio:{...common, posture:"Course facile sur plat", prop:"terrain plat", cues:["Petite foulée","Aisance respiratoire","Reste régulier"], poses:[
+        {head:[178,64],neck:[178,96],hip:[154,164],lhand:[112,138],rhand:[220,126],lknee:[130,224],lfoot:[84,286],rknee:[192,216],rfoot:[252,256]},
+        {head:[210,64],neck:[210,96],hip:[186,164],lhand:[252,138],rhand:[168,126],lknee:[232,216],lfoot:[290,256],rknee:[172,224],rfoot:[124,286]},
+        {head:[242,64],neck:[242,96],hip:[218,164],lhand:[200,138],rhand:[286,126],lknee:[194,224],lfoot:[148,286],rknee:[258,216],rfoot:[316,256]}
       ]},
-      dead_bug:{...common, prop:"sol", cues:["Dos plaqué","Bras/jambe opposés","Retour lent"], poses:[
-        {head:[48,132],neck:[74,136],hip:[148,146],lhand:[112,78],rhand:[150,78],lknee:[148,95],lfoot:[182,95],rknee:[194,98],rfoot:[226,98]},
-        {head:[48,132],neck:[74,136],hip:[148,146],lhand:[58,88],rhand:[150,78],lknee:[148,95],lfoot:[182,95],rknee:[218,142],rfoot:[256,156]},
-        {head:[48,132],neck:[74,136],hip:[148,146],lhand:[112,78],rhand:[78,88],lknee:[188,142],lfoot:[226,156],rknee:[194,98],rfoot:[226,98]}
+      dead_bug:{...common, posture:"Allongé sur le dos", prop:"tapis", cues:["Dos plaqué","Bras et jambe opposés","Retour lent"], poses:[
+        {head:[90,186],neck:[124,190],hip:[248,210],lhand:[188,122],rhand:[246,120],lknee:[246,128],lfoot:[312,128],rknee:[320,132],rfoot:[382,132]},
+        {head:[90,186],neck:[124,190],hip:[248,210],lhand:[116,136],rhand:[246,120],lknee:[246,128],lfoot:[312,128],rknee:[356,204],rfoot:[432,222]},
+        {head:[90,186],neck:[124,190],hip:[248,210],lhand:[188,122],rhand:[150,136],lknee:[312,204],lfoot:[386,222],rknee:[320,132],rfoot:[382,132]}
       ]},
-      bird_dog:{...common, prop:"tapis", cues:["À quatre pattes","Allonge opposés","Bassin stable"], poses:[
-        {head:[76,82],neck:[102,98],hip:[180,126],lhand:[102,180],rhand:[142,180],lknee:[178,182],lfoot:[164,206],rknee:[218,182],rfoot:[238,206]},
-        {head:[76,82],neck:[102,98],hip:[180,126],lhand:[44,122],rhand:[142,180],lknee:[178,182],lfoot:[164,206],rknee:[252,114],rfoot:[292,98]},
-        {head:[76,82],neck:[102,98],hip:[180,126],lhand:[102,180],rhand:[198,122],lknee:[120,114],lfoot:[80,98],rknee:[218,182],rfoot:[238,206]}
+      bird_dog:{...common, posture:"À quatre pattes", prop:"tapis", cues:["Mains et genoux au sol","Allonge opposés","Bassin stable"], poses:[
+        {head:[126,118],neck:[160,134],hip:[280,172],lhand:[164,252],rhand:[222,252],lknee:[278,252],lfoot:[258,288],rknee:[338,252],rfoot:[368,288]},
+        {head:[126,118],neck:[160,134],hip:[280,172],lhand:[84,164],rhand:[222,252],lknee:[278,252],lfoot:[258,288],rknee:[392,158],rfoot:[452,136]},
+        {head:[126,118],neck:[160,134],hip:[280,172],lhand:[164,252],rhand:[286,164],lknee:[198,158],lfoot:[138,136],rknee:[338,252],rfoot:[368,288]}
       ]},
-      front_plank:{...common, prop:"tapis", cues:["Coudes sous épaules","Ligne droite","Respire"], poses:[
-        {head:[64,100],neck:[94,112],hip:[178,136],lhand:[88,184],rhand:[116,184],lknee:[196,172],lfoot:[256,184],rknee:[202,172],rfoot:[268,184]},
-        {head:[64,96],neck:[94,108],hip:[178,132],lhand:[88,184],rhand:[116,184],lknee:[196,172],lfoot:[256,184],rknee:[202,172],rfoot:[268,184]},
-        {head:[64,100],neck:[94,112],hip:[178,136],lhand:[88,184],rhand:[116,184],lknee:[196,172],lfoot:[256,184],rknee:[202,172],rfoot:[268,184]}
+      front_plank:{...common, posture:"Planche sur avant-bras", prop:"tapis", cues:["Coudes sous épaules","Corps aligné","Respire"], poses:[
+        {head:[136,136],neck:[172,150],hip:[286,182],lhand:[168,256],rhand:[204,256],lknee:[326,226],lfoot:[432,244],rknee:[336,226],rfoot:[448,244]},
+        {head:[136,128],neck:[172,142],hip:[286,174],lhand:[168,256],rhand:[204,256],lknee:[326,226],lfoot:[432,244],rknee:[336,226],rfoot:[448,244]},
+        {head:[136,136],neck:[172,150],hip:[286,182],lhand:[168,256],rhand:[204,256],lknee:[326,226],lfoot:[432,244],rknee:[336,226],rfoot:[448,244]}
       ]},
-      side_plank_knees:{...common, prop:"tapis", cues:["Côté stable","Hanches alignées","Change de côté"], poses:[
-        {head:[76,124],neck:[104,130],hip:[164,146],lhand:[98,184],rhand:[130,152],lknee:[190,172],lfoot:[230,184],rknee:[198,176],rfoot:[238,188]},
-        {head:[76,112],neck:[104,118],hip:[164,124],lhand:[98,184],rhand:[130,140],lknee:[190,160],lfoot:[230,178],rknee:[198,164],rfoot:[238,182]},
-        {head:[76,124],neck:[104,130],hip:[164,146],lhand:[98,184],rhand:[130,152],lknee:[190,172],lfoot:[230,184],rknee:[198,176],rfoot:[238,188]}
+      side_plank_knees:{...common, posture:"Planche latérale genoux", prop:"tapis", cues:["Appui coude","Monte le bassin","Garde l’alignement"], poses:[
+        {head:[156,188],neck:[192,194],hip:[278,212],lhand:[186,258],rhand:[236,218],lknee:[324,244],lfoot:[392,258],rknee:[338,250],rfoot:[408,266]},
+        {head:[156,166],neck:[192,172],hip:[278,176],lhand:[186,258],rhand:[236,196],lknee:[324,208],lfoot:[392,240],rknee:[338,214],rfoot:[408,248]},
+        {head:[156,188],neck:[192,194],hip:[278,212],lhand:[186,258],rhand:[236,218],lknee:[324,244],lfoot:[392,258],rknee:[338,250],rfoot:[408,266]}
       ]},
-      hollow_hold:{...common, prop:"sol", cues:["Dos plaqué","Bras et jambes loin","Stop si cambrure"], poses:[
-        {head:[52,132],neck:[78,136],hip:[150,148],lhand:[112,90],rhand:[142,88],lknee:[176,112],lfoot:[220,120],rknee:[190,118],rfoot:[238,132]},
-        {head:[52,132],neck:[78,136],hip:[150,148],lhand:[62,88],rhand:[90,82],lknee:[196,146],lfoot:[254,158],rknee:[206,154],rfoot:[270,172]},
-        {head:[52,132],neck:[78,136],hip:[150,148],lhand:[90,92],rhand:[120,88],lknee:[184,130],lfoot:[236,142],rknee:[196,138],rfoot:[250,154]}
+      hollow_hold:{...common, posture:"Allongé sur le dos", prop:"sol", cues:["Dos collé","Allonge bras et jambes","Arrête si le dos creuse"], poses:[
+        {head:[92,186],neck:[126,190],hip:[248,212],lhand:[188,136],rhand:[236,132],lknee:[290,154],lfoot:[364,166],rknee:[314,164],rfoot:[390,182]},
+        {head:[92,186],neck:[126,190],hip:[248,212],lhand:[118,132],rhand:[160,124],lknee:[326,206],lfoot:[430,226],rknee:[344,216],rfoot:[454,242]},
+        {head:[92,186],neck:[126,190],hip:[248,212],lhand:[154,138],rhand:[198,134],lknee:[304,178],lfoot:[398,196],rknee:[324,188],rfoot:[420,212]}
       ]},
-      hinge:{...common, prop:"chaise ou sol", cues:["Debout stable","Hanches arrière","Retour haut"], poses:[
-        {head:[112,42],neck:[112,66],hip:[112,118],lhand:[90,116],rhand:[136,116],lknee:[100,158],lfoot:[88,196],rknee:[126,158],rfoot:[140,196]},
-        {head:[150,62],neck:[146,84],hip:[112,126],lhand:[124,126],rhand:[168,126],lknee:[100,158],lfoot:[88,196],rknee:[126,158],rfoot:[140,196]},
-        {head:[112,42],neck:[112,66],hip:[112,118],lhand:[90,116],rhand:[136,116],lknee:[100,158],lfoot:[88,196],rknee:[126,158],rfoot:[140,196]}
+      hinge:{...common, posture:"Debout", prop:"sol ou chaise derrière", cues:["Hanches vers l’arrière","Buste long","Reviens debout"], poses:[
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[174,158],rhand:[246,158],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]},
+        {head:[266,98],neck:[254,128],hip:[210,174],lhand:[226,172],rhand:[294,172],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]},
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[174,158],rhand:[246,158],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]}
       ]},
-      core:{...common, prop:"tapis", cues:["Installe-toi","Gaine doucement","Reste propre"], poses:[
-        {head:[80,92],neck:[106,106],hip:[170,130],lhand:[96,174],rhand:[136,174],lknee:[172,174],lfoot:[214,194],rknee:[212,172],rfoot:[254,194]},
-        {head:[80,86],neck:[106,100],hip:[170,122],lhand:[72,132],rhand:[156,132],lknee:[172,156],lfoot:[214,184],rknee:[212,156],rfoot:[254,184]},
-        {head:[80,92],neck:[106,106],hip:[170,130],lhand:[96,174],rhand:[136,174],lknee:[172,174],lfoot:[214,194],rknee:[212,172],rfoot:[254,194]}
+      core:{...common, posture:"Au sol", prop:"tapis", cues:["Installe-toi","Gaine proprement","Respire"], poses:[
+        {head:[150,126],neck:[184,144],hip:[274,182],lhand:[170,248],rhand:[222,248],lknee:[280,236],lfoot:[344,274],rknee:[330,234],rfoot:[392,274]},
+        {head:[150,116],neck:[184,132],hip:[274,166],lhand:[136,186],rhand:[254,186],lknee:[280,212],lfoot:[344,260],rknee:[330,212],rfoot:[392,260]},
+        {head:[150,126],neck:[184,144],hip:[274,182],lhand:[170,248],rhand:[222,248],lknee:[280,236],lfoot:[344,274],rknee:[330,234],rfoot:[392,274]}
       ]},
-      mobility:{...common, prop:"amplitude douce", cues:["Place-toi","Bouge lentement","Respire"], poses:[
-        {head:[112,42],neck:[112,66],hip:[112,118],lhand:[76,104],rhand:[148,104],lknee:[96,158],lfoot:[78,196],rknee:[128,158],rfoot:[150,196]},
-        {head:[136,48],neck:[132,72],hip:[112,118],lhand:[86,94],rhand:[190,70],lknee:[96,158],lfoot:[78,196],rknee:[128,158],rfoot:[150,196]},
-        {head:[96,48],neck:[100,72],hip:[112,118],lhand:[34,70],rhand:[138,94],lknee:[96,158],lfoot:[78,196],rknee:[128,158],rfoot:[150,196]}
+      mobility:{...common, posture:"Amplitude douce", prop:"mouvement contrôlé", cues:["Place-toi","Bouge lentement","Respire"], poses:[
+        {head:[210,58],neck:[210,92],hip:[210,162],lhand:[156,136],rhand:[264,136],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]},
+        {head:[250,72],neck:[244,104],hip:[210,162],lhand:[168,124],rhand:[320,90],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]},
+        {head:[168,72],neck:[174,104],hip:[210,162],lhand:[100,90],rhand:[252,124],lknee:[188,226],lfoot:[176,292],rknee:[232,226],rfoot:[246,292]}
       ]}
     };
     return frames[kind]||frames.mobility;
   }
 
+  function motionPalette(gender){
+    return gender==="female"
+      ? {skin:"#f2c3ac",skinLine:"#8d5e4d",shirt:"#1f6f8b",shorts:"#233147",hair:"#2d2430"}
+      : {skin:"#efbf9f",skinLine:"#8b614f",shirt:"#2d7f64",shorts:"#1d2d38",hair:"#2a292b"};
+  }
+
   function motionExtra(p){
-    if(p.extra==="chair") return `<path d="M122 130h54v18h-22v56h-16v-56h-16z" class="motionProp"/><path d="M176 148v56" class="motionPropLine"/>`;
-    if(p.extra==="support") return `<path d="M44 106h42v10H44z" class="motionProp"/><path d="M54 116v88M78 116v88" class="motionPropLine"/>`;
-    if(p.extra==="wall") return `<path d="M56 42v164" class="motionPropLine"/><path d="M44 42h16M44 72h16M44 102h16M44 132h16M44 162h16" class="motionPropLine thin"/>`;
-    if(p.extra==="band") return `<path d="M190 102 C176 110 158 112 142 104" class="motionBand"/><circle cx="194" cy="102" r="5" class="motionAnchor"/>`;
-    if(p.extra==="incline") return `<path d="M104 198h58v-62h16v62h58v12H104z" class="motionProp"/>`;
-    if(p.extra==="towel"||p.extra==="press") return `<path d="M158 150 q22 ${p.extra==="press"?2:9} 44 0" class="motionTowel"/>`;
+    if(p.extra==="chair") return `<g class="motionSceneProp"><rect x="214" y="146" width="86" height="20" rx="8"/><path d="M224 166v104M286 166v104" class="motionPropLine"/><path d="M300 166v104" class="motionPropLine"/></g>`;
+    if(p.extra==="support") return `<g class="motionSceneProp"><rect x="106" y="130" width="74" height="14" rx="7"/><path d="M118 144v130M158 144v130" class="motionPropLine"/></g>`;
+    if(p.extra==="wall") return `<g class="motionSceneProp"><path d="M126 46v258" class="motionPropLine"/><path d="M114 58h24M114 98h24M114 138h24M114 178h24M114 218h24" class="motionPropLine thin"/></g>`;
+    if(p.extra==="band") return `<g class="motionSceneProp"><path d="M314 132 C288 148 254 150 232 140" class="motionBand"/><circle cx="322" cy="132" r="7" class="motionAnchor"/></g>`;
+    if(p.extra==="incline") return `<g class="motionSceneProp"><path d="M194 264h102v-74h20v74h98v16H194z"/></g>`;
+    if(p.extra==="towel"||p.extra==="press") return `<path d="M284 184 q28 ${p.extra==="press"?2:12} 64 0" class="motionTowel"/>`;
     return "";
   }
 
-  function motionSkeleton(p, gender){
-    const q=k=>p[k], line=(a,b,cls="")=>`<line class="${cls}" x1="${q(a)[0]}" y1="${q(a)[1]}" x2="${q(b)[0]}" y2="${q(b)[1]}"/>`;
-    const torsoWidth=gender==="female"?14:11, headHair=gender==="female"?`<path d="M${q("head")[0]-11} ${q("head")[1]-5} q-9 18 4 31" class="motionHair"/>`:"";
-    return `<g class="motionPerson ${gender}">
+  function motionHighlights(kind,p){
+    const hipX=p.hip[0], hipY=p.hip[1], kneeX=(p.lknee[0]+p.rknee[0])/2, kneeY=(p.lknee[1]+p.rknee[1])/2;
+    const leftQuadX=(p.hip[0]+p.lknee[0])/2, leftQuadY=(p.hip[1]+p.lknee[1])/2;
+    const rightQuadX=(p.hip[0]+p.rknee[0])/2, rightQuadY=(p.hip[1]+p.rknee[1])/2;
+    const leftHamX=leftQuadX-8, leftHamY=leftQuadY+4;
+    const rightHamX=rightQuadX+8, rightHamY=rightQuadY+4;
+    const gluteX=hipX-10, gluteY=hipY+6;
+    const cues={
+      quad:`<ellipse cx="${leftQuadX}" cy="${leftQuadY}" rx="18" ry="34" class="motionHot"/><ellipse cx="${rightQuadX}" cy="${rightQuadY}" rx="18" ry="34" class="motionHot"/>`,
+      ham:`<ellipse cx="${leftHamX}" cy="${leftHamY}" rx="16" ry="30" class="motionWarm"/><ellipse cx="${rightHamX}" cy="${rightHamY}" rx="16" ry="30" class="motionWarm"/>`,
+      hip:`<ellipse cx="${hipX}" cy="${hipY}" rx="26" ry="18" class="motionJointHalo"/>`,
+      knee:`<circle cx="${kneeX}" cy="${kneeY}" r="20" class="motionJointHalo"/>`,
+      glute:`<ellipse cx="${gluteX}" cy="${gluteY}" rx="24" ry="18" class="motionHot"/>`
+    };
+    if(kind==="quad_set"||kind==="seated_knee_extension") return `${cues.quad}${cues.knee}`;
+    if(kind==="straight_leg_raise") return `${cues.quad}${cues.hip}${cues.knee}`;
+    if(kind==="standing_hamstring_curl") return `${cues.ham}${cues.knee}${cues.hip}`;
+    if(kind==="clamshell"||kind==="hip_abduction_side") return `${cues.glute}${cues.hip}${cues.knee}`;
+    if(kind==="bridge"||kind==="hinge") return `${cues.glute}${cues.ham}`;
+    if(kind==="calf") return `<ellipse cx="${(p.lknee[0]+p.lfoot[0])/2}" cy="${(p.lknee[1]+p.lfoot[1])/2}" rx="14" ry="28" class="motionWarm"/><ellipse cx="${(p.rknee[0]+p.rfoot[0])/2}" cy="${(p.rknee[1]+p.rfoot[1])/2}" rx="14" ry="28" class="motionWarm"/>`;
+    return "";
+  }
+
+  function motionAvatar(p, gender, kind){
+    const q=k=>p[k], palette=motionPalette(gender), hair=gender==="female"
+      ? `<path d="M${q("head")[0]-16} ${q("head")[1]-8} q-16 22 6 38" fill="none" stroke="${palette.hair}" stroke-width="10" stroke-linecap="round"/>`
+      : `<path d="M${q("head")[0]-12} ${q("head")[1]-11} q12 -10 24 0" fill="none" stroke="${palette.hair}" stroke-width="10" stroke-linecap="round"/>`;
+    const limb=(a,b,width)=>`<line x1="${q(a)[0]}" y1="${q(a)[1]}" x2="${q(b)[0]}" y2="${q(b)[1]}" stroke="${palette.skin}" stroke-width="${width}" stroke-linecap="round"/><line x1="${q(a)[0]}" y1="${q(a)[1]}" x2="${q(b)[0]}" y2="${q(b)[1]}" stroke="${palette.skinLine}" stroke-width="${Math.max(4,width/4)}" stroke-linecap="round" opacity=".42"/>`;
+    const shirt=`<path d="M${q("neck")[0]-28} ${q("neck")[1]+4} Q ${q("neck")[0]} ${q("neck")[1]-12} ${q("neck")[0]+28} ${q("neck")[1]+4} L ${q("hip")[0]+18} ${q("hip")[1]-8} Q ${q("hip")[0]} ${q("hip")[1]+18} ${q("hip")[0]-18} ${q("hip")[1]-8} Z" fill="${palette.shirt}" opacity=".96"/>`;
+    const shorts=`<path d="M${q("hip")[0]-24} ${q("hip")[1]-2} L ${q("hip")[0]+24} ${q("hip")[1]-2} L ${q("hip")[0]+18} ${q("hip")[1]+28} L ${q("hip")[0]-18} ${q("hip")[1]+28} Z" fill="${palette.shorts}"/>`;
+    return `<g class="motionFigure">
+      ${motionHighlights(kind,p)}
       ${motionExtra(p)}
-      ${headHair}
-      <circle cx="${q("head")[0]}" cy="${q("head")[1]}" r="13" class="motionHead"/>
-      <path d="M${q("neck")[0]} ${q("neck")[1]} Q ${(q("neck")[0]+q("hip")[0])/2} ${(q("neck")[1]+q("hip")[1])/2+torsoWidth} ${q("hip")[0]} ${q("hip")[1]}" class="motionTorso"/>
-      ${line("neck","lhand","motionArm")}${line("neck","rhand","motionArm")}
-      ${line("hip","lknee","motionLeg")}${line("lknee","lfoot","motionLeg")}
-      ${line("hip","rknee","motionLeg")}${line("rknee","rfoot","motionLeg")}
-      <circle cx="${q("lhand")[0]}" cy="${q("lhand")[1]}" r="5" class="motionJoint"/>
-      <circle cx="${q("rhand")[0]}" cy="${q("rhand")[1]}" r="5" class="motionJoint"/>
-      <circle cx="${q("lfoot")[0]}" cy="${q("lfoot")[1]}" r="6" class="motionFoot"/>
-      <circle cx="${q("rfoot")[0]}" cy="${q("rfoot")[1]}" r="6" class="motionFoot"/>
+      ${shirt}
+      ${shorts}
+      ${limb("neck","lhand",18)}${limb("neck","rhand",18)}
+      ${limb("hip","lknee",22)}${limb("lknee","lfoot",18)}
+      ${limb("hip","rknee",22)}${limb("rknee","rfoot",18)}
+      <line x1="${q("neck")[0]}" y1="${q("neck")[1]}" x2="${q("hip")[0]}" y2="${q("hip")[1]}" stroke="${palette.skin}" stroke-width="28" stroke-linecap="round"/>
+      <line x1="${q("neck")[0]}" y1="${q("neck")[1]}" x2="${q("hip")[0]}" y2="${q("hip")[1]}" stroke="${palette.skinLine}" stroke-width="6" stroke-linecap="round" opacity=".4"/>
+      <circle cx="${q("head")[0]}" cy="${q("head")[1]}" r="22" fill="${palette.skin}"/>
+      <circle cx="${q("head")[0]}" cy="${q("head")[1]}" r="22" fill="none" stroke="${palette.skinLine}" stroke-width="4" opacity=".45"/>
+      ${hair}
+      <circle cx="${q("lhand")[0]}" cy="${q("lhand")[1]}" r="7" fill="${palette.skin}" stroke="${palette.skinLine}" stroke-width="2" opacity=".9"/>
+      <circle cx="${q("rhand")[0]}" cy="${q("rhand")[1]}" r="7" fill="${palette.skin}" stroke="${palette.skinLine}" stroke-width="2" opacity=".9"/>
+      <ellipse cx="${q("lfoot")[0]}" cy="${q("lfoot")[1]+4}" rx="13" ry="8" class="motionShoe"/>
+      <ellipse cx="${q("rfoot")[0]}" cy="${q("rfoot")[1]+4}" rx="13" ry="8" class="motionShoe"/>
     </g>`;
   }
 
-  function motionFrame(frame, index, gender, color){
-    const x=index*238+18, active=["1;.42;.42;1",".42;1;.42;.42",".42;.42;1;.42"][index];
-    const border=["1;.2;.2;1",".2;1;.2;.2",".2;.2;1;.2"][index];
-    return `<g transform="translate(${x},34)">
-      <rect class="motionCardBg" width="216" height="214" rx="16"/>
-      <rect class="motionCardFocus" width="216" height="214" rx="16" stroke="${color}">
-        <animate attributeName="opacity" values="${border}" dur="3.6s" repeatCount="indefinite"/>
-      </rect>
-      <path d="M22 198h172" class="motionGround"/>
-      <g opacity=".95">
-        <animate attributeName="opacity" values="${active}" dur="3.6s" repeatCount="indefinite"/>
-        ${motionSkeleton(frame, gender)}
-      </g>
-      <text x="18" y="25" class="motionStep">${index+1}</text>
-      <text x="48" y="24" class="motionCue">${esc(frame.cue)}</text>
+  function sceneOpacity(index){
+    const values=[
+      "1;1;0;0;0;1",
+      "0;0;1;1;0;0",
+      "0;0;0;0;1;0"
+    ][index];
+    return `<animate attributeName="opacity" dur="4.8s" repeatCount="indefinite" values="${values}" keyTimes="0;0.24;0.33;0.57;0.66;1"/>`;
+  }
+
+  function motionScene(frame,index,gender,color,kind){
+    const stepTitles=["Départ","Mouvement","Retour"];
+    return `<g class="motionScene" opacity="${index===0?1:0}">
+      ${sceneOpacity(index)}
+      <rect x="24" y="54" width="466" height="252" rx="22" class="motionSceneBg"/>
+      <path d="M52 274h408" class="motionGround"/>
+      ${motionAvatar(frame, gender, kind)}
+      <rect x="318" y="72" width="150" height="36" rx="18" fill="${color}" opacity=".13"/>
+      <text x="392" y="95" text-anchor="middle" class="motionStage">${stepTitles[index]}</text>
+      <text x="56" y="300" class="motionPosture">${esc(frame.cue)}</text>
     </g>`;
+  }
+
+  function motionDots(data,color){
+    return data.cues.map((cue,i)=>`<g transform="translate(${526+i*60},118)">
+      <circle r="18" class="motionDot"/>
+      <circle r="10" fill="${color}" opacity="${i===0?1:.45}">
+        <animate attributeName="opacity" dur="4.8s" repeatCount="indefinite" values="${i===0?"1;1;.35;.35;.35;1":i===1?".35;.35;1;1;.35;.35":".35;.35;.35;.35;1;.35"}" keyTimes="0;0.24;0.33;0.57;0.66;1"/>
+      </circle>
+      <text y="5" text-anchor="middle" class="motionDotText">${i+1}</text>
+      <text x="0" y="38" text-anchor="middle" class="motionDotLabel">${esc(cue)}</text>
+    </g>`).join("");
   }
 
   function diagram(x){
-    const data=motionFrames(x), gender=profile()?.gender==="female"?"female":"male";
+    const data=motionFrames(x), kind=motionKind(x), gender=profile()?.gender==="female"?"female":"male";
     const color={core:"#2d8cff",push:"#f57b45",pull:"#735cff",legs:"#24c05a",knee_rehab:"#19a974",mobility:"#8bbf2d",cardio:"#ff4d57",warmup:"#49a99a",cooldown:"#8a9691"}[x.family]||"#2d8cff";
-    const frames=data.poses.map((pose,i)=>motionFrame({...pose,cue:data.cues[i]},i,gender,color)).join("");
-    return `<svg class="motionSvg" viewBox="0 0 734 306" role="img" aria-label="Animation offline ${esc(x.name)}">
-      <rect width="734" height="306" rx="22" class="motionBg"/>
-      <text x="24" y="28" class="motionTitle">${esc(x.name)}</text>
-      <text x="710" y="28" class="motionAvatar" text-anchor="end">${gender==="female"?"Profil femme":"Profil homme"}</text>
-      ${frames}
-      <text x="24" y="286" class="motionMeta">${esc(data.prop)} · ${esc(data.focus)}</text>
+    const scenes=data.poses.map((pose,i)=>motionScene({...pose,cue:data.cues[i]},i,gender,color,kind)).join("");
+    return `<svg class="motionSvg" viewBox="0 0 734 338" role="img" aria-label="Diaporama offline ${esc(x.name)}">
+      <defs>
+        <linearGradient id="motionBackdrop" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#f7fbf8"/>
+          <stop offset="100%" stop-color="#edf5f0"/>
+        </linearGradient>
+      </defs>
+      <rect width="734" height="338" rx="22" class="motionBg"/>
+      <rect x="0" y="0" width="734" height="338" rx="22" fill="url(#motionBackdrop)" opacity=".92"/>
+      <text x="24" y="30" class="motionTitle">${esc(x.name)}</text>
+      <text x="710" y="30" class="motionAvatar" text-anchor="end">${gender==="female"?"Profil femme":"Profil homme"}</text>
+      <text x="24" y="48" class="motionMeta">${esc(data.posture)} · ${esc(data.prop)}</text>
+      ${scenes}
+      <rect x="510" y="72" width="198" height="234" rx="20" class="motionAside"/>
+      <text x="530" y="100" class="motionAsideTitle">Zones et repères</text>
+      <text x="530" y="144" class="motionAsideText">${esc(data.focus)}</text>
+      ${motionDots(data,color)}
     </svg>`;
   }
 
@@ -189,7 +254,7 @@
 
   function media(x,compact=false){
     const raw=state.exerciseVideos?.[x.id]||x.videoPath||"", hasVideo=!!raw&&raw!=="/"&&/\.mp4($|\?)/i.test(raw), src=hasVideo?videoSrc(x):"";
-    return `${hasVideo?`<div class="videoFrame"><video controls playsinline preload="metadata" src="${esc(src)}"></video></div>`:""}<details class="motionDetails" ${compact?"":"open"}><summary>Animation offline du mouvement</summary>${diagram(x)}</details>`;
+    return `${hasVideo?`<div class="videoFrame"><video controls playsinline preload="metadata" src="${esc(src)}"></video></div>`:""}<details class="motionDetails" ${compact?"":"open"}><summary>Diaporama offline en boucle</summary>${diagram(x)}</details>`;
   }
 
   function card(x){
