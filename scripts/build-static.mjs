@@ -23,6 +23,7 @@ const appBuildOrder = [
   "exercise-rendering.js",
   "diagrams.js",
   "visualization-stats.js",
+  "motion-animations.js",
   "app-init.js"
 ];
 
