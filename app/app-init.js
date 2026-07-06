@@ -12,7 +12,7 @@
   }
   async function registerServiceWorker(){
     if(!("serviceWorker" in navigator)) return;
-    swRegistration=await navigator.serviceWorker.register("./sw.js").catch(()=>null);
+    swRegistration=await navigator.serviceWorker.register(`./sw.js?build=${encodeURIComponent(APP_BUILD)}`,{updateViaCache:"none"}).catch(()=>null);
     if(!swRegistration) return;
     if(swRegistration.waiting){ updateWaiting=swRegistration.waiting; applyHotUpdate(); }
     swRegistration.addEventListener("updatefound",()=>{ const nw=swRegistration.installing; if(!nw) return; nw.addEventListener("statechange",()=>{ if(nw.state==="installed"&&navigator.serviceWorker.controller){ updateWaiting=nw; applyHotUpdate(); } }); });
