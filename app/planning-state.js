@@ -24,7 +24,18 @@
   const run=()=>state.sessionRuns.find(r=>!r.completedAt&&!r.abortedAt);
   const exercise=id=>ex.find(x=>x.id===id)||ex[0];
   const currentEx=()=>{ const r=run(), s=state.plans.find(x=>x.id===r?.sessionId); return exercise(s?.exerciseIds[r.exerciseIndex]); };
-  const latestMetric=()=>{ const p=profile(); const a=p?state.metrics.filter(m=>m.profileId===p.id&&m.weightKg).sort((a,b)=>new Date(a.measuredAt)-new Date(b.measuredAt)):[]; return a[a.length-1]||null; };
+  function timeValue(value){ const t=Date.parse(value||""); return Number.isFinite(t)?t:0; }
+  function metricTime(m){ return timeValue(m?.measuredAt||m?.date||m?.createdAt); }
+  function activityTime(a){ return timeValue(a?.startedAt||a?.date||a?.createdAt); }
+  const latestMetric=()=>{ const p=profile(); const a=p?state.metrics.filter(m=>m.profileId===p.id&&m.weightKg).sort((a,b)=>metricTime(a)-metricTime(b)):[]; return a[a.length-1]||null; };
+  function latestWeightEntry(p=profile()){
+    if(!p) return null;
+    const metrics=state.metrics.filter(m=>m.profileId===p.id&&m.weightKg).sort((a,b)=>metricTime(a)-metricTime(b));
+    const metric=metrics[metrics.length-1]||null, profileWeight=Number(p.startWeightKg), profileTime=timeValue(p.createdAt);
+    if(metric&&(!Number.isFinite(profileWeight)||profileWeight<=0||metricTime(metric)>=profileTime)) return {...metric,weightKg:Number(metric.weightKg),source:metric.source||"manual"};
+    return Number.isFinite(profileWeight)&&profileWeight>0 ? {id:"profile_start",profileId:p.id,source:"profile",measuredAt:p.createdAt||"",weightKg:profileWeight} : null;
+  }
+  function currentWeightKg(p=profile()){ const entry=latestWeightEntry(p); return entry&&Number.isFinite(Number(entry.weightKg)) ? Number(entry.weightKg) : null; }
   const loadScore = id => { const raw = el(id)?.value; return raw === "" || raw == null ? null : scoreToLoad(Number(raw)); };
   const typeLabel=t=>({strength:"Musculation",cardio:"Course / cardio",mobility:"Mobilité",recovery:"Récupération"}[t]||"Séance");
   const familyLabel=f=>familyLabels[f]||f;
@@ -35,7 +46,7 @@
     const windowDays=weekWindowDays(p), done=completed.length, pain=Math.max(p.health.backPain||0,p.health.kneePain||0,p.health.tendonPain||0), fatigue=p.health.fatigue||0;
     let target=3;
     if(windowDays===7) target++;
-    if((Number(p.startWeightKg)||0)>(Number(p.targetWeightKg)||0)) target++;
+    if((currentWeightKg(p)||0)>0&&(Number(p.targetWeightKg)||0)>0&&(currentWeightKg(p)||0)>(Number(p.targetWeightKg)||0)) target++;
     if(p.levels.running==="R0"||p.levels.legs==="J0") target--;
     if(pain>=2||fatigue>=4) target--;
     if(pain>=3||fatigue>=5||p.health.irradiating||p.health.neurological) target=2;
@@ -44,7 +55,7 @@
     return Math.max(2,Math.min(windowDays===7?5:4,target));
   }
   function normalizeGoal(p){ const loss=(Number(p.startWeightKg)||0)-(Number(p.targetWeightKg)||0), minMonths=6, maxKgMonth=5, needed=loss>0?Math.ceil(loss/maxKgMonth):minMonths; p.targetMonths=Math.max(minMonths,needed,Math.round(Number(p.targetMonths)||minMonths)); p.availabilityDays=weekWindowDays(p); p.equipment="Poids du corps, chaise ou banc, élastique"; return p; }
-  function goalInfo(p){ normalizeGoal(p); const loss=(Number(p.startWeightKg)||0)-(Number(p.targetWeightKg)||0), monthly=loss>0?loss/p.targetMonths:0; return {loss,monthly,months:p.targetMonths,text:loss>0?`${loss.toFixed(1)} kg en ${p.targetMonths} mois · ${monthly.toFixed(1)} kg/mois`:"Objectif maintien ou recomposition",safe:monthly<=5}; }
+  function goalInfo(p){ normalizeGoal(p); const current=currentWeightKg(p), target=Number(p.targetWeightKg)||0, loss=current&&target?current-target:0, needed=loss>0?Math.ceil(loss/5):6; p.targetMonths=Math.max(6,needed,Math.round(Number(p.targetMonths)||6)); const monthly=loss>0?loss/p.targetMonths:0; return {loss,monthly,months:p.targetMonths,currentWeightKg:current,targetWeightKg:target,text:loss>0?`${loss.toFixed(1)} kg restants en ${p.targetMonths} mois · ${monthly.toFixed(1)} kg/mois`:"Objectif maintien ou recomposition",safe:monthly<=5}; }
   function addDaysIso(base,days){ const d=new Date(`${base}T12:00:00`); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
   function dayLabel(iso){ return new Date(`${iso}T12:00:00`).toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"2-digit"}); }
   function scheduleOffsets(days,windowDays=5){ const maps=windowDays===7?{1:[0],2:[0,3],3:[0,2,4],4:[0,2,4,6],5:[0,1,3,5,6]}:{1:[0],2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,3,4]}; return maps[days]||maps[3]; }
