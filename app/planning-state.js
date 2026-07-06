@@ -142,7 +142,39 @@
 
   function createProfile(){
     const name = text("newProfileName") || `Profil ${state.profiles.length + 1}`;
-    const p=normalizeGoal({ id:uid("profile"), name, gender:el("newGender")?.value||"male", createdAt:new Date().toISOString(), age:num("newAge"), heightCm:num("newHeight"), startWeightKg:num("newWeight"), targetWeightKg:num("newTarget"), targetMonths:num("newTargetMonths")||6, availabilityDays:5, equipment:"Poids du corps, chaise ou banc, élastique", sportsHistory:"", health:{backPain:null,kneePain:null,tendonPain:null,fatigue:null,irradiating:false,neurological:false}, levels:{running:"R1",push:"P1",pull:"T1",legs:"J1",frontCore:"G1",sideCore:"L1",mobility:"M1"}, dataPreferences:{primaryWeight:"garmin_index_s2",primaryActivities:"garmin",dedup:true} });
+    const p=normalizeGoal({
+      id:uid("profile"),
+      name,
+      gender:el("newGender")?.value||"male",
+      mediaGender:el("newMediaGender")?.value||"male",
+      createdAt:new Date().toISOString(),
+      age:num("newAge"),
+      heightCm:num("newHeight"),
+      startWeightKg:num("newWeight"),
+      targetWeightKg:num("newTarget"),
+      targetMonths:num("newTargetMonths")||6,
+      availabilityDays:Number(el("newAvailabilityDays")?.value)===7?7:5,
+      equipment:"Poids du corps, chaise ou banc, élastique",
+      sportsHistory:"",
+      health:{
+        backPain:loadScore("newProfileBack"),
+        kneePain:loadScore("newProfileKnee"),
+        tendonPain:loadScore("newProfileKnee"),
+        fatigue:loadScore("newProfileFatigue"),
+        irradiating:!!el("newIrradiating")?.checked,
+        neurological:!!el("newNeurological")?.checked
+      },
+      levels:{
+        running:el("newLevel_running")?.value||"R1",
+        push:el("newLevel_push")?.value||"P1",
+        pull:el("newLevel_pull")?.value||"T1",
+        legs:el("newLevel_legs")?.value||"J1",
+        frontCore:el("newLevel_frontCore")?.value||"G1",
+        sideCore:el("newLevel_sideCore")?.value||"L1",
+        mobility:el("newLevel_mobility")?.value||"M1"
+      },
+      dataPreferences:{primaryWeight:"garmin_index_s2",primaryActivities:"garmin",dedup:true}
+    });
     state.profiles.push(p); state.activeProfileId=p.id; state.ui.modal=null; state.assessments.push({id:uid("assessment"),profileId:p.id,date:TODAY,tests:clone(p.levels)}); makeWeek(p.id); save("Profil créé.").then(render);
   }
   function makeWeek(pid,short=false,next=false){

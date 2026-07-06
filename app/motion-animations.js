@@ -181,7 +181,7 @@
   }
 
   function diagram(x){
-    const data=motionFrames(x), kind=motionKind(x), gender=profile()?.gender==="female"?"female":"male";
+    const data=motionFrames(x), kind=motionKind(x), gender=mediaGenderChoice();
     const color={core:"#2d8cff",push:"#f57b45",pull:"#735cff",legs:"#24c05a",knee_rehab:"#19a974",mobility:"#8bbf2d",cardio:"#ff4d57",warmup:"#49a99a",cooldown:"#8a9691"}[x.family]||"#2d8cff";
     const scenes=data.poses.map((pose,i)=>motionScene({...pose,cue:data.cues[i]},i,gender,color,kind)).join("");
     return `<svg class="motionSvg" viewBox="0 0 520 338" role="img" aria-label="Diaporama offline ${esc(x.name)}">
@@ -197,28 +197,5 @@
       <text x="24" y="48" class="motionMeta">${esc(data.posture)} · ${esc(data.prop)}</text>
       ${scenes}
     </svg>`;
-  }
-
-  function rehabPanel(x){
-    const details={
-      quad_set:["Objectif : réveiller le quadriceps sans plier le genou.","Repère : la serviette s'écrase, la rotule remonte légèrement, la respiration reste libre.","Dosage : 3 séries de 8 à 12 contractions de 5 secondes, douleur maximale 2/5."],
-      straight_leg_raise:["Objectif : renforcer le quadriceps sans flexion profonde.","Repère : la cuisse reste contractée avant et pendant la montée.","Dosage : 2 à 3 séries de 8 à 10 répétitions lentes, repos court."],
-      seated_knee_extension:["Objectif : travailler l'extension en petite amplitude contrôlée.","Repère : le genou ne claque pas en fin de mouvement et la rotule reste confortable.","Dosage : 2 séries de 8 à 12 répétitions, amplitude réduite si gêne."],
-      standing_hamstring_curl:["Objectif : renforcer l'arrière de cuisse pour stabiliser le genou.","Repère : les deux cuisses restent alignées, le bassin ne part pas vers l'avant.","Dosage : 2 séries de 8 à 12 répétitions par côté."],
-      clamshell:["Objectif : améliorer le contrôle hanche-genou-rotule.","Repère : le bassin ne roule pas en arrière, le mouvement vient de la hanche.","Dosage : 2 séries de 10 à 15 répétitions par côté."],
-      hip_abduction_side:["Objectif : renforcer le moyen fessier pour tenir l'axe du genou.","Repère : les orteils restent légèrement vers l'avant, le bassin reste empilé.","Dosage : 2 séries de 8 à 12 répétitions par côté."]
-    }[x.id];
-    if(!details) return "";
-    return `<div class="rehabPanel"><p class="eyebrow">Fiche kiné genou intégrée</p>${details.map(v=>`<p>${esc(v)}</p>`).join("")}<p class="notice">Stop si douleur vive, gonflement, blocage, instabilité ou douleur qui augmente après la séance. Cette fiche ne remplace pas l'avis du kiné ou du médecin.</p></div>`;
-  }
-
-  function media(x,compact=false){
-    const raw=state.exerciseVideos?.[x.id]||x.videoPath||"", hasVideo=!!raw&&raw!=="/"&&/\.mp4($|\?)/i.test(raw), src=hasVideo?videoSrc(x):"";
-    return `${hasVideo?`<div class="videoFrame"><video controls playsinline preload="metadata" src="${esc(src)}"></video></div>`:""}<details class="motionDetails" ${compact?"":"open"}><summary>Diaporama offline en boucle</summary>${diagram(x)}</details>`;
-  }
-
-  function card(x){
-    const sourceLink=x.sourceUrl&&!/\.pdf($|\?)/i.test(x.sourceUrl)?`<p><a class="textLink" href="${esc(x.sourceUrl)}" target="_blank" rel="noopener">Lien explicatif</a></p>`:"";
-    return `<article class="panel exercise"><div class="media">${media(x)}</div><div class="exerciseTitle"><div><p class="eyebrow">${familyLabel(x.family)} · ${x.type} · ${x.sets} série(s)</p><h2>${x.name}</h2></div><details class="editExercise"><summary title="Modifier l'URL vidéo">✎</summary><label>URL vidéo .mp4<input id="video_${x.id}" value="${esc(state.exerciseVideos?.[x.id]||x.videoPath||"")}" placeholder="https://...mp4"></label><button class="secondary" data-save-video="${x.id}">Enregistrer vidéo</button></details></div><p>${x.short}</p>${targetPanel(x)}${rehabPanel(x)}<h3>Comment faire</h3><ol>${x.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>${sourceLink}<p class="notice">${x.safety}</p></article>`;
   }
   globalThis.__resurgoExerciseDiagram = diagram;
