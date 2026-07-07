@@ -40,7 +40,7 @@
   }
   function currentWeightKg(p=profile()){ const entry=latestWeightEntry(p); return entry&&Number.isFinite(Number(entry.weightKg)) ? Number(entry.weightKg) : null; }
   const loadScore = id => { const raw = el(id)?.value; return raw === "" || raw == null ? null : scoreToLoad(Number(raw)); };
-  const typeLabel=t=>({strength:"Musculation",cardio:"Course / cardio",mobility:"Mobilité",recovery:"Récupération"}[t]||"Séance");
+  const typeLabel=t=>({strength:"Musculation",cardio:"Course / cardio",mobility:"Mobilité",recovery:"Récupération",run:"Course",walk:"Marche",bike:"Vélo / cardio"}[t]||"Séance");
   const familyLabel=f=>familyLabels[f]||f;
   function weekWindowDays(p){ return Number(p.availabilityDays)===7 ? 7 : 5; }
   function kneeCare(p){ const load=Math.max(p.health.kneePain??0,p.health.tendonPain??0); return load>=2; }
@@ -166,6 +166,17 @@
     const hard=logs.some(l=>l.success!=="yes"||l.difficulty==="hard"||(l.pain||0)>=2);
     const stopped=logs.some(l=>l.success==="stop"||(l.pain||0)>=3);
     return {hard,stopped};
+  }
+  function applySessionFeedback(profileId,{easeScore,backScore,kneeScore,fatigueScore}={},runState=null){
+    const p=state.profiles.find(x=>x.id===profileId); if(!p) return false;
+    const backLoad=scoreToLoad(backScore), kneeLoad=scoreToLoad(kneeScore), fatigueLoad=scoreToLoad(fatigueScore), outcome=sessionOutcome(runState);
+    if(backLoad!=null) p.health.backPain=backLoad;
+    if(kneeLoad!=null){ p.health.kneePain=kneeLoad; p.health.tendonPain=kneeLoad; }
+    if(fatigueLoad!=null) p.health.fatigue=fatigueLoad;
+    const ease=Number.isFinite(Number(easeScore))&&Number(easeScore)>0 ? Number(easeScore) : 3;
+    const needsLight=outcome.hard||outcome.stopped||ease<=2||(backLoad??0)>=3||(kneeLoad??0)>=3||(fatigueLoad??0)>=3;
+    if(needsLight) refreshPlanAfterActivity(profileId,{short:true});
+    return needsLight;
   }
   function todayPlannedSession(){ return plan().find(s=>(s.date||TODAY)===TODAY)||null; }
   function nextPlannedSession(){ return plan().find(s=>(s.date||TODAY)>=TODAY)||plan()[0]||null; }
@@ -356,10 +367,12 @@
     const doneEx=pain>=3||success==="stop"||r.setIndex+1>=x.sets;
     if(doneEx&&r.exerciseIndex+1>=s.exerciseIds.length){
       r.completedAt=s.completedAt=new Date().toISOString(); r.mode="done";
-      state.activities.push({id:uid("activity"),profileId:r.profileId,source:"manual",type:s.type,startedAt:r.startedAt,durationSeconds:s.minutes*60,sessionRunId:r.id});
-      const outcome=sessionOutcome(r);
-      if(outcome.hard||outcome.stopped) refreshPlanAfterActivity(r.profileId,{short:true});
-      state.ui.view="stats"; speak("Séance terminée. Résumé enregistré.");
+      const activityId=uid("activity");
+      state.activities.push({id:activityId,profileId:r.profileId,source:"session",type:s.type,startedAt:r.startedAt,durationSeconds:s.minutes*60,sessionRunId:r.id,plannedSessionId:s.id,sessionTitle:s.title,sessionEaseScore:null,quickBackScore:null,quickKneeScore:null,quickFatigueScore:null});
+      state.ui.sessionFeedback={runId:r.id,activityId,profileId:r.profileId};
+      state.ui.view="stats";
+      state.ui.modal="sessionFeedback";
+      speak("Séance terminée. Fais le check rapide et note le ressenti.");
     }
     else if(doneEx){r.mode="resting"; r.restNext={exerciseIndex:r.exerciseIndex+1,setIndex:0,label:`Exercice suivant : ${exercise(s.exerciseIds[r.exerciseIndex+1]).name}`}; startRest(x.rest||30);}
     else {r.mode="resting"; r.restNext={exerciseIndex:r.exerciseIndex,setIndex:r.setIndex+1,label:`Série suivante : ${r.setIndex+2} sur ${x.sets}`}; startRest(x.rest||30);}

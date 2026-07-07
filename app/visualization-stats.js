@@ -10,29 +10,58 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
   function chartDateLabel(value,spanDays){ const d=new Date(value); if(spanDays>730) return String(d.getFullYear()); if(spanDays>120) return d.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}); if(spanDays>35) return `S${weekNo(d)}`; return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"}); }
   function chartTickIndexes(rows,count=5){ if(rows.length<=1) return [0]; const max=Math.min(count,rows.length), out=[]; for(let i=0;i<max;i++) out.push(Math.round(i*(rows.length-1)/(max-1))); return [...new Set(out)]; }
   function chartNiceStep(range, target=4){ const raw=Math.max(range,Number.EPSILON)/Math.max(1,target), pow=10**Math.floor(Math.log10(raw)), scaled=raw/pow, nice=scaled<=1?1:scaled<=2?2:scaled<=5?5:10; return nice*pow; }
-  function chartTicks(min,max,target=4){
-    if(min===max){
-      const tickCount=Math.max(5,Math.min(10,target||5)), step=chartNiceStep(Math.max(.1,Math.abs(min)*.01),tickCount-1), before=Math.floor((tickCount-1)/2), minY=Number((min-(before*step)).toPrecision(12)), maxY=Number((minY+step*(tickCount-1)).toPrecision(12)), ticks=[];
-      for(let i=0;i<tickCount;i++) ticks.push(Number((minY+(i*step)).toPrecision(12)));
-      return {ticks,minY,maxY,step};
+  function chartTicks(min,max,target=7){
+    const tickCount=Math.max(5,Math.min(10,Math.round(target)||7)), desired=tickCount-1, center=(min+max)/2, rawRange=max-min;
+    let step;
+    if(rawRange<=0){
+      step=chartNiceStep(Math.max(.1,Math.abs(center)*.01),desired);
+    }else{
+      const comfort=Math.max(rawRange*1.15,Math.abs(center)*.004);
+      step=chartNiceStep(comfort,desired);
     }
-    const step=chartNiceStep(max-min,target), minY=Math.floor(min/step)*step, maxY=Math.ceil(max/step)*step, ticks=[];
-    for(let v=minY,i=0; v<=maxY+step/2&&i<12; v+=step,i++) ticks.push(Number(v.toPrecision(12)));
-    return {ticks,minY,maxY,step};
+    let span=step*desired, minY, maxY;
+    if(rawRange<=0){
+      minY=Number((center-span/2).toPrecision(12));
+      maxY=Number((minY+span).toPrecision(12));
+    }else{
+      minY=Math.floor((center-span/2)/step)*step;
+      maxY=Number((minY+span).toPrecision(12));
+      if(maxY<max){ maxY=Math.ceil(max/step)*step; minY=Number((maxY-span).toPrecision(12)); }
+      if(minY>min){ minY=Math.floor(min/step)*step; maxY=Number((minY+span).toPrecision(12)); }
+    }
+    const ticks=Array.from({length:tickCount},(_,i)=>Number((minY+(i*step)).toPrecision(12)));
+    return {ticks,minY,maxY,step,tickCount};
   }
   function chartFormatValue(v,step){ const decimals=step<1?Math.min(3,Math.ceil(-Math.log10(step))):0; return Number(v.toFixed(decimals)).toLocaleString("fr-FR",{minimumFractionDigits:decimals,maximumFractionDigits:decimals}); }
   function chartUnit(a,b,opts){ if(opts.unit!=null) return opts.unit; const ua=metricUnits?.[a]||"", ub=b?metricUnits?.[b]||"":ua; return ua===ub?ua.trim():""; }
+  function chartLegend(items=[]){ return items.length>1?`<div class="chartLegend">${items.map(x=>`<span><i style="background:${x.color}"></i>${esc(x.label)}</span>`).join("")}</div>`:""; }
   function chart(rows,a,b,target=null,large=false,opts={}){
     if(!rows.length) return "<p class='muted'>Aucune donnée.</p>";
     const series=[a,b].filter(Boolean), vals=rows.flatMap(r=>series.map(k=>metricValue(r,k))).filter(v=>v!=null), rawTarget=target==null||target===""?null:Number(target), targetValue=Number.isFinite(rawTarget)&&rawTarget>0?rawTarget:null;
     if(targetValue!=null) vals.push(targetValue);
     if(!vals.length) return "<p class='muted'>Aucune donnée.</p>";
-    const min=Math.min(...vals), max=Math.max(...vals), pad=min===max?Math.max(.1,Math.abs(min)*.002):(max-min)*.08, W=large?820:520,H=large?620:190, plot=large?{l:54,r:18,t:18,b:30}:{l:62,r:24,t:38,b:46}, targetLines=Math.max(5,Math.min(10,Math.round((H-plot.t-plot.b)/56))), scale=chartTicks(Math.max(0,min-pad),max+pad,targetLines), minY=scale.minY, maxY=scale.maxY, innerW=W-plot.l-plot.r, innerH=H-plot.t-plot.b;
+    const min=Math.min(...vals), max=Math.max(...vals), pad=min===max?0:(max-min)*.08, W=large?820:520,H=large?620:190, plot=large?{l:54,r:18,t:18,b:30}:{l:62,r:24,t:38,b:46}, targetLines=Math.max(5,Math.min(8,Math.round((H-plot.t-plot.b)/76))), scale=chartTicks(min-pad,max+pad,targetLines), minY=scale.minY, maxY=scale.maxY, innerW=W-plot.l-plot.r, innerH=H-plot.t-plot.b;
     const x=i=>rows.length>1?plot.l+i*innerW/(rows.length-1):plot.l+innerW/2, y=v=>H-plot.b-((v-minY)/Math.max(1,maxY-minY)*innerH), pts=k=>rows.map((r,i)=>metricValue(r,k)!=null?`${x(i)},${y(metricValue(r,k))}`:null).filter(Boolean).join(" "), points=(k,color)=>rows.map((r,i)=>metricValue(r,k)!=null?`<circle class="chartPoint" data-point-index="${i}" cx="${x(i)}" cy="${y(metricValue(r,k))}" r="5" fill="${color}"><title>${esc(chartPointLabel(r,k))}</title></circle>`:"").join("");
     const times=rows.map(chartTime).filter(Boolean), spanDays=times.length>1?(Math.max(...times)-Math.min(...times))/86400000:0, yTicks=scale.ticks, xTicks=chartTickIndexes(rows,large?6:4), targetY=targetValue!=null?y(targetValue):null, unit=chartUnit(a,b,opts), legend=opts.legend||(b?"bleu poids · orange secondaire":(a==="waistCm"?"tour de ventre":"poids")), primaryColor=opts.primaryColor||"var(--blue)", secondaryColor=opts.secondaryColor||"var(--orange)", targetLabel=opts.targetLabel||`cible ${targetValue} kg`, key=opts.key||"", total=Number(opts.total)||rows.length;
     const yAxis=yTicks.map(v=>`<line x1="${plot.l}" y1="${y(v)}" x2="${W-plot.r}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${plot.l-8}" y="${y(v)+4}" text-anchor="end" fill="var(--muted)" font-size="12">${chartFormatValue(v,scale.step)}</text>`).join("");
     const xAxis=xTicks.map(i=>`<text x="${x(i)}" y="${H-18}" text-anchor="middle" fill="var(--muted)" font-size="12">${esc(chartDateLabel(chartTime(rows[i]),spanDays))}</text>`).join("");
-    return `<svg class="chart ${large?"chartLarge":""}" viewBox="0 0 ${W} ${H}" data-interactive-chart="${key?1:0}" data-chart-key="${esc(key)}" data-chart-total="${total}"><rect width="${W}" height="${H}" rx="12" fill="var(--chart-bg)"/>${yAxis}<line x1="${plot.l}" y1="${plot.t}" x2="${plot.l}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/><line x1="${plot.l}" y1="${H-plot.b}" x2="${W-plot.r}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/>${xAxis}<text x="${plot.l}" y="24" fill="var(--muted)" font-size="12">${esc(unit||legend)}</text>${targetY!=null?`<line x1="${plot.l}" y1="${targetY}" x2="${W-plot.r}" y2="${targetY}" stroke="var(--green)" stroke-width="3" stroke-dasharray="8 8"/><text x="${W-plot.r-8}" y="${Math.max(20,targetY-8)}" text-anchor="end" fill="var(--green)">${esc(targetLabel)}</text>`:""}<polyline points="${pts(a)}" fill="none" stroke="${primaryColor}" stroke-width="4"/>${b?`<polyline points="${pts(b)}" fill="none" stroke="${secondaryColor}" stroke-width="4"/>`:""}${points(a,primaryColor)}${b?points(b,secondaryColor):""}<text class="chartReadout" x="${W-plot.r}" y="24" text-anchor="end" fill="var(--ink)">${esc(rows.length?chartPointLabel(rows[rows.length-1],a):"")}</text></svg>`;
+    const legendItems=opts.legendItems||(b?[{label:metricLabels[a]||a,color:primaryColor},{label:metricLabels[b]||b,color:secondaryColor}]:[]);
+    return `${chartLegend(legendItems)}<svg class="chart ${large?"chartLarge":""}" viewBox="0 0 ${W} ${H}" data-interactive-chart="${key?1:0}" data-chart-key="${esc(key)}" data-chart-total="${total}"><rect width="${W}" height="${H}" rx="12" fill="var(--chart-bg)"/>${yAxis}<line x1="${plot.l}" y1="${plot.t}" x2="${plot.l}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/><line x1="${plot.l}" y1="${H-plot.b}" x2="${W-plot.r}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/>${xAxis}<text x="${plot.l}" y="24" fill="var(--muted)" font-size="12">${esc(unit||legend)}</text>${targetY!=null?`<line x1="${plot.l}" y1="${targetY}" x2="${W-plot.r}" y2="${targetY}" stroke="var(--green)" stroke-width="3" stroke-dasharray="8 8"/><text x="${W-plot.r-8}" y="${Math.max(20,targetY-8)}" text-anchor="end" fill="var(--green)">${esc(targetLabel)}</text>`:""}<polyline points="${pts(a)}" fill="none" stroke="${primaryColor}" stroke-width="4"/>${b?`<polyline points="${pts(b)}" fill="none" stroke="${secondaryColor}" stroke-width="4"/>`:""}${points(a,primaryColor)}${b?points(b,secondaryColor):""}<text class="chartReadout" x="${W-plot.r}" y="24" text-anchor="end" fill="var(--ink)">${esc(rows.length?chartPointLabel(rows[rows.length-1],a):"")}</text></svg>`;
+  }
+  function dualAxisChart(rows,leftKey,rightKey,large=false,opts={}){
+    if(!rows.length) return "<p class='muted'>Aucune donnée.</p>";
+    const leftVals=rows.map(r=>Number(r?.[leftKey])).filter(v=>Number.isFinite(v)&&v>0), rightVals=rows.map(r=>Number(r?.[rightKey])).filter(v=>Number.isFinite(v)&&v>0);
+    if(!leftVals.length&&!rightVals.length) return "<p class='muted'>Aucune donnée.</p>";
+    const W=large?820:520, H=large?620:190, plot=large?{l:54,r:54,t:18,b:30}:{l:52,r:52,t:38,b:46}, tickCount=Math.max(5,Math.min(8,Math.round((H-plot.t-plot.b)/76))), leftScale=chartTicks(Math.min(...(leftVals.length?leftVals:[0])),Math.max(...(leftVals.length?leftVals:[0])),tickCount), rightScale=chartTicks(Math.min(...(rightVals.length?rightVals:[0])),Math.max(...(rightVals.length?rightVals:[0])),tickCount), innerW=W-plot.l-plot.r, innerH=H-plot.t-plot.b, x=i=>rows.length>1?plot.l+i*innerW/(rows.length-1):plot.l+innerW/2, yLeft=v=>H-plot.b-((v-leftScale.minY)/Math.max(1,leftScale.maxY-leftScale.minY)*innerH), yRight=v=>H-plot.b-((v-rightScale.minY)/Math.max(1,rightScale.maxY-rightScale.minY)*innerH);
+    const times=rows.map(chartTime).filter(Boolean), spanDays=times.length>1?(Math.max(...times)-Math.min(...times))/86400000:0, xTicks=chartTickIndexes(rows,large?6:4), key=opts.key||"", total=Number(opts.total)||rows.length;
+    const grid=Array.from({length:leftScale.ticks.length},(_,i)=>{ const yy=plot.t+(i*innerH/Math.max(1,leftScale.ticks.length-1)), lv=leftScale.ticks[leftScale.ticks.length-1-i], rv=rightScale.ticks[rightScale.ticks.length-1-i]; return `<line x1="${plot.l}" y1="${yy}" x2="${W-plot.r}" y2="${yy}" stroke="var(--line)" stroke-width="1"/><text x="${plot.l-8}" y="${yy+4}" text-anchor="end" fill="var(--muted)" font-size="12">${chartFormatValue(lv,leftScale.step)}</text><text x="${W-plot.r+8}" y="${yy+4}" fill="var(--muted)" font-size="12">${chartFormatValue(rv,rightScale.step)}</text>`; }).join("");
+    const leftColor=opts.leftColor||"var(--blue)", rightColor=opts.rightColor||"var(--orange)";
+    const leftPts=rows.map((r,i)=>Number(r?.[leftKey])>0?`${x(i)},${yLeft(Number(r[leftKey]))}`:null).filter(Boolean).join(" "), rightPts=rows.map((r,i)=>Number(r?.[rightKey])>0?`${x(i)},${yRight(Number(r[rightKey]))}`:null).filter(Boolean).join(" ");
+    const leftPoints=rows.map((r,i)=>Number(r?.[leftKey])>0?`<circle class="chartPoint" data-point-index="${i}" cx="${x(i)}" cy="${yLeft(Number(r[leftKey]))}" r="5" fill="${leftColor}"><title>${esc(opts.pointLabel?opts.pointLabel(r):chartPointLabel(r,leftKey))}</title></circle>`:"").join("");
+    const rightPoints=rows.map((r,i)=>Number(r?.[rightKey])>0?`<circle class="chartPoint" data-point-index="${i}" cx="${x(i)}" cy="${yRight(Number(r[rightKey]))}" r="5" fill="${rightColor}"><title>${esc(opts.pointLabel?opts.pointLabel(r):chartPointLabel(r,rightKey))}</title></circle>`:"").join("");
+    const xAxis=xTicks.map(i=>`<text x="${x(i)}" y="${H-18}" text-anchor="middle" fill="var(--muted)" font-size="12">${esc(chartDateLabel(chartTime(rows[i]),spanDays))}</text>`).join("");
+    const last=rows[rows.length-1];
+    return `${chartLegend([{label:opts.leftLabel||leftKey,color:leftColor},{label:opts.rightLabel||rightKey,color:rightColor}])}<svg class="chart ${large?"chartLarge":""}" viewBox="0 0 ${W} ${H}" data-interactive-chart="${key?1:0}" data-chart-key="${esc(key)}" data-chart-total="${total}"><rect width="${W}" height="${H}" rx="12" fill="var(--chart-bg)"/>${grid}<line x1="${plot.l}" y1="${plot.t}" x2="${plot.l}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/><line x1="${W-plot.r}" y1="${plot.t}" x2="${W-plot.r}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/><line x1="${plot.l}" y1="${H-plot.b}" x2="${W-plot.r}" y2="${H-plot.b}" stroke="var(--line)" stroke-width="1.5"/>${xAxis}<text x="${plot.l}" y="24" fill="${leftColor}" font-size="12">${esc(opts.leftUnit||"km")}</text><text x="${W-plot.r}" y="24" text-anchor="end" fill="${rightColor}" font-size="12">${esc(opts.rightUnit||"min")}</text>${leftPts?`<polyline points="${leftPts}" fill="none" stroke="${leftColor}" stroke-width="4"/>`:""}${rightPts?`<polyline points="${rightPts}" fill="none" stroke="${rightColor}" stroke-width="4"/>`:""}${leftPoints}${rightPoints}<text class="chartReadout" x="${W-plot.r}" y="24" text-anchor="end" fill="var(--ink)">${esc(opts.pointLabel?opts.pointLabel(last):"")}</text></svg>`;
   }
   function bar(rows){ if(!rows.length) return "<p class='muted'>Aucune activité.</p>"; const max=Math.max(...rows.map(r=>r.value),1); return `<div class="bars">${rows.map(r=>`<div><span style="height:${Math.max(8,r.value/max*120)}px"></span><small>${esc(r.label)}</small></div>`).join("")}</div>`; }
   function dateInputIso(id){ const raw=(el(id)?.value||TODAY).slice(0,10); return `${raw}T12:00:00.000Z`; }
@@ -128,6 +157,35 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
     if(item.profileId) refreshPlanAfterActivity(item.profileId);
     state.ui.recordEdit=null;
     save("Activité mise à jour.").then(render);
+  }
+  function saveSessionActivityRecord(id){
+    const item=state.activities.find(x=>x.id===id&&x.sessionRunId); if(!item) return;
+    const easeScore=Number(el(`editSessionEase_${id}`)?.value)||null, backScore=Number(el(`editSessionBack_${id}`)?.value), kneeScore=Number(el(`editSessionKnee_${id}`)?.value), fatigueScore=Number(el(`editSessionFatigue_${id}`)?.value);
+    item.sessionEaseScore=easeScore;
+    item.quickBackScore=Number.isFinite(backScore)?backScore:null;
+    item.quickKneeScore=Number.isFinite(kneeScore)?kneeScore:null;
+    item.quickFatigueScore=Number.isFinite(fatigueScore)?fatigueScore:null;
+    const runState=state.sessionRuns.find(x=>x.id===item.sessionRunId);
+    if(runState) runState.feedback={easeScore:item.sessionEaseScore,backScore:item.quickBackScore,kneeScore:item.quickKneeScore,fatigueScore:item.quickFatigueScore,updatedAt:new Date().toISOString()};
+    if(item.profileId) applySessionFeedback(item.profileId,{easeScore:item.sessionEaseScore,backScore:item.quickBackScore,kneeScore:item.quickKneeScore,fatigueScore:item.quickFatigueScore},runState);
+    state.ui.recordEdit=null;
+    save("Feedback séance mis à jour.").then(render);
+  }
+  function saveSessionFeedback(){
+    const pending=state.ui.sessionFeedback, activityId=pending?.activityId, runId=pending?.runId;
+    if(!pending||!activityId) return;
+    const activity=state.activities.find(x=>x.id===activityId); if(!activity) return;
+    const runState=state.sessionRuns.find(x=>x.id===runId);
+    const easeScore=Number(el("sessionEaseScore")?.value)||null, backScore=Number(el("feedbackBack")?.value), kneeScore=Number(el("feedbackKnee")?.value), fatigueScore=Number(el("feedbackFatigue")?.value);
+    activity.sessionEaseScore=easeScore;
+    activity.quickBackScore=Number.isFinite(backScore)?backScore:null;
+    activity.quickKneeScore=Number.isFinite(kneeScore)?kneeScore:null;
+    activity.quickFatigueScore=Number.isFinite(fatigueScore)?fatigueScore:null;
+    if(runState) runState.feedback={easeScore,backScore:activity.quickBackScore,kneeScore:activity.quickKneeScore,fatigueScore:activity.quickFatigueScore,updatedAt:new Date().toISOString()};
+    applySessionFeedback(activity.profileId,{easeScore,backScore:activity.quickBackScore,kneeScore:activity.quickKneeScore,fatigueScore:activity.quickFatigueScore},runState);
+    state.ui.sessionFeedback=null;
+    state.ui.modal=null;
+    save("Séance enregistrée et récupération prise en compte.").then(render);
   }
   function addMetric(){ const p=profile(), measuredAt=datedInputIso("metricDate"); if(!p) return; const values=metricFields.map(key=>({key,value:num(key)})).filter(x=>x.value!=null); if(!values.length){ save("Mesure incomplète : renseigne au moins une donnée.").then(render); return; } if(!measuredAt){ save("Date de mesure invalide : pas de saisie future.").then(render); return; } values.forEach(({key,value})=>state.metrics.push({id:uid(`metric_${key}`),profileId:p.id,source:"manual",metricKind:key,measuredAt,[key]:value})); state.ui.modal=null; save(`${values.length} point${values.length>1?"s":""} enregistré${values.length>1?"s":""}.`).then(render); }
   function addRun(){ const p=profile(), startedAt=datedInputIso("runDate"), distance=num("runDistance"), duration=num("runDuration"); if(!p) return; if(!distance&&!duration){ save("Activité incomplète : renseigne au moins la distance ou la durée.").then(render); return; } if(!startedAt){ save("Date d'activité invalide : pas de saisie future.").then(render); return; } state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:el("runType").value,startedAt,distanceKm:distance,durationSeconds:duration?duration*60:null,avgSpeedKmh:num("runPace"),hrAvg:num("runHrAvg"),hrMax:num("runHrMax"),feeling:num("runFeeling"),pain:num("runPain")}); refreshPlanAfterActivity(p.id); state.ui.modal=null; save("Activité enregistrée et plan recalculé.").then(render); }
