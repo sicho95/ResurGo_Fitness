@@ -35,14 +35,39 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
   function metricToken(id,key){ return `${id}__${key}`; }
   function parseMetricToken(token){ const i=String(token||"").lastIndexOf("__"); return i>0?{id:String(token).slice(0,i),key:String(token).slice(i+2)}:{id:token,key:"weightKg"}; }
   function chartPointLabel(r,key){ const label=metricLabels[key]||"", unit=metricUnits[key]||"", value=metricValue(r,key), when=new Date(r.measuredAt||r.startedAt||TODAY).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"2-digit"}); return value==null?when:`${when} · ${label} ${value}${unit}`; }
+  function profileStartMetricPoint(p){
+    const startWeight=Number(p?.startWeightKg);
+    return Number.isFinite(startWeight)&&startWeight>0 ? {
+      id:metricToken("profile_start","weightKg"),
+      recordId:"profile_start",
+      profileId:p.id,
+      source:"profile",
+      measuredAt:p.createdAt||`${TODAY}T12:00:00.000Z`,
+      metricKey:"weightKg",
+      metricLabel:"Poids",
+      metricUnit:metricUnits.weightKg||"",
+      metricDisplayValue:startWeight,
+      weightKg:startWeight
+    } : null;
+  }
   function metricRowsFor(p,key,{includeProfileStart=false}={}){ const rows=state.metrics.filter(x=>x.profileId===p.id&&metricValue(x,key)!=null).sort((a,b)=>metricTime(a)-metricTime(b)); if(includeProfileStart&&key==="weightKg"){ const startWeight=Number(p.startWeightKg); if(Number.isFinite(startWeight)&&startWeight>0) rows.unshift({id:"profile_start",profileId:p.id,source:"profile",measuredAt:p.createdAt||`${TODAY}T12:00:00.000Z`,weightKg:startWeight}); } return rows.sort((a,b)=>metricTime(a)-metricTime(b)); }
   function metricRowsForAny(p,keys){ return state.metrics.filter(x=>x.profileId===p.id&&metricFilledKeys(x,keys).length).sort((a,b)=>metricTime(a)-metricTime(b)); }
-  function metricPointRows(p,keys){ return state.metrics.filter(x=>x.profileId===p.id).flatMap(r=>metricFilledKeys(r,keys).map(key=>({...r,id:metricToken(r.id,key),recordId:r.id,metricKey:key,metricLabel:metricLabels[key],metricUnit:metricUnits[key]||"",metricDisplayValue:metricValue(r,key)}))).sort((a,b)=>metricTime(a)-metricTime(b)); }
+  function metricPointRows(p,keys,{includeProfileStart=false}={}){ const rows=state.metrics.filter(x=>x.profileId===p.id).flatMap(r=>metricFilledKeys(r,keys).map(key=>({...r,id:metricToken(r.id,key),recordId:r.id,metricKey:key,metricLabel:metricLabels[key],metricUnit:metricUnits[key]||"",metricDisplayValue:metricValue(r,key)}))); if(includeProfileStart&&keys.includes("weightKg")){ const start=profileStartMetricPoint(p); if(start) rows.push(start); } return rows.sort((a,b)=>metricTime(a)-metricTime(b)); }
   function metricTimelineRows(p,key="weightKg"){ return metricRowsFor(p,key,{includeProfileStart:key==="weightKg"}); }
   function beginRecordEdit(kind,id){ state.ui.recordEdit={kind,id}; render(); }
   function cancelRecordEdit(){ state.ui.recordEdit=null; render(); }
   function deleteMetricRecord(token){
-    const {id,key}=parseMetricToken(token), item=state.metrics.find(x=>x.id===id); if(!item) return;
+    const {id,key}=parseMetricToken(token);
+    if(id==="profile_start"){
+      const p=profile(); if(!p) return;
+      if(!confirm("Tu es sur le point de supprimer le poids initial saisi dans le profil. Veux-tu continuer ?")) return;
+      if(!confirm("Confirmation finale : supprimer ce poids initial du profil ? Il faudra en ressaisir un dans les paramètres du profil pour une génération de plan cohérente.")) return;
+      p.startWeightKg=null;
+      state.ui.recordEdit=null;
+      save("Poids initial du profil supprimé. Pense à en ressaisir un dans le profil.").then(render);
+      return;
+    }
+    const item=state.metrics.find(x=>x.id===id); if(!item) return;
     if(!confirm("Supprimer ce point de mesure local ?")) return;
     if(metricFilledKeys(item).length<=1) state.metrics=state.metrics.filter(x=>x.id!==id); else item[key]=null;
     state.ui.recordEdit=null;
@@ -57,10 +82,18 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
     save("Activité supprimée.").then(render);
   }
   function saveMetricRecord(token){
-    const {id,key}=parseMetricToken(token), item=state.metrics.find(x=>x.id===id); if(!item) return;
-    const rawDate=datedRawValue(`editMetricDate_${token}`); if(!rawDate){ save("Date de mesure invalide : pas de saisie future.").then(render); return; }
+    const {id,key}=parseMetricToken(token);
     const nextValue=num(`editMetricValue_${token}`);
     if(nextValue==null){ save("Mesure incomplète : renseigne une valeur.").then(render); return; }
+    if(id==="profile_start"){
+      const p=profile(); if(!p) return;
+      p.startWeightKg=nextValue;
+      state.ui.recordEdit=null;
+      save("Poids initial du profil mis à jour.").then(render);
+      return;
+    }
+    const item=state.metrics.find(x=>x.id===id); if(!item) return;
+    const rawDate=datedRawValue(`editMetricDate_${token}`); if(!rawDate){ save("Date de mesure invalide : pas de saisie future.").then(render); return; }
     item.measuredAt=`${rawDate}T12:00:00.000Z`;
     item[key]=nextValue;
     item.metricKind=key;
