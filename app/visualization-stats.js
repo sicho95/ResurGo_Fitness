@@ -5,18 +5,67 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
   function bodyPartIds(x){ const byId={quad_set:["quads","knees"],straight_leg_raise:["quads","hips","knees"],seated_knee_extension:["quads","knees"],standing_hamstring_curl:["hamstrings","hips","knees"],clamshell:["glutes","hips","knees"],hip_abduction_side:["glutes","hips","knees"]}; if(byId[x.id]) return byId[x.id]; const t=targets(x).join(" ").toLowerCase(), has=s=>t.includes(s), ids=new Set(); if(has("abdos")||has("oblique")||has("respiration")) ["abdominals","obliques"].forEach(i=>ids.add(i)); if(has("pectoraux")) ids.add("chest"); if(has("épaule")||has("arrière épaules")) ["front-shoulders","rear-shoulders","shoulders","traps"].forEach(i=>ids.add(i)); if(has("dos")||has("dorsal")||has("haut du dos")) ["lats","traps","traps-middle","lowerback","rear-shoulders"].forEach(i=>ids.add(i)); if(has("lombaire")) ["lowerback","lats"].forEach(i=>ids.add(i)); if(has("fessier")||has("hanche")||has("psoas")||has("stabilisateurs de hanche")||has("articulation de hanche")) ["hips","glutes"].forEach(i=>ids.add(i)); if(has("cuisse")||has("ischios")||has("jambes")||has("quadriceps")) ["quads","hamstrings"].forEach(i=>ids.add(i)); if(has("genou")||has("rotule")) ids.add("knees"); if(has("mollet")||has("cheville")) ["calves","ankles"].forEach(i=>ids.add(i)); if(has("bras")||has("biceps")) ids.add("biceps"); if(has("triceps")) ids.add("triceps"); if(has("cardio")||has("coeur")) ["quads","calves","hamstrings"].forEach(i=>ids.add(i)); return [...ids]; }
   function injectedBodyMap(kind, ids, label){ let svg=bodyMapSvg[kind]||""; if(!svg) return `<img class="anatomyMap detailedBodyMap anatomyModel" src="${bodyMapAssets[kind]}" alt="${esc(label)}">`; svg=svg.replace(/<svg\b([^>]*)>/,(m,attrs)=>{ const cleaned=attrs.replace(/\sclass="[^"]*"/,"").replace(/\srole="[^"]*"/,"").replace(/\saria-label="[^"]*"/,""); return `<svg${cleaned} class="anatomyMap detailedBodyMap anatomyModel" role="img" aria-label="${esc(label)}">`; }); ids.forEach(id=>{ svg=svg.replace(new RegExp(`(<[^>]*\\bid="${id}"[^>]*\\bclass=")([^"]*)(")`,`g`),`$1hot $2$3`); svg=svg.replace(new RegExp(`(<[^>]*\\bclass=")([^"]*)("[^>]*\\bid="${id}"[^>]*>)`,`g`),`$1hot $2$3`); }); return svg; }
   function muscleMap(x){ const kind=profile()?.gender==="female"?"female":"male"; return injectedBodyMap(kind,bodyPartIds(x),`Zones travaillées ${x.name}`); }
-  function chart(rows,a,b,target=null,large=false){ if(!rows.length) return "<p class='muted'>Aucune donnée.</p>"; const vals=rows.flatMap(r=>b?[Number(r[a]),Number(r[b])]:[Number(r[a])]).filter(Number.isFinite); if(target!=null) vals.push(Number(target)); if(!vals.length) return "<p class='muted'>Aucune donnée.</p>"; const min=Math.min(...vals), max=Math.max(...vals), W=large?820:520,H=large?310:190, x=i=>30+i*(W-60)/Math.max(1,rows.length-1), y=v=>H-24-((v-min)/Math.max(1,max-min)*(H-55)), pts=k=>rows.map((r,i)=>`${x(i)},${y(Number(r[k])||min)}`).join(" "), targetY=target!=null?y(Number(target)):null, legend=b?"bleu poids · vert cible · orange ventre":(a==="waistCm"?"tour de ventre":"bleu poids · vert cible"); return `<svg class="chart ${large?"chartLarge":""}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" rx="12" fill="var(--chart-bg)"/>${targetY?`<line x1="30" y1="${targetY}" x2="${W-30}" y2="${targetY}" stroke="var(--green)" stroke-width="3" stroke-dasharray="8 8"/><text x="${W-150}" y="${targetY-8}" fill="var(--green)">cible ${target} kg</text>`:""}<polyline points="${pts(a)}" fill="none" stroke="var(--blue)" stroke-width="4"/>${b?`<polyline points="${pts(b)}" fill="none" stroke="var(--orange)" stroke-width="4"/>`:""}<text x="24" y="24" fill="var(--muted)">${legend}</text></svg>`; }
+  function chart(rows,a,b,target=null,large=false,opts={}){ if(!rows.length) return "<p class='muted'>Aucune donnée.</p>"; const vals=rows.flatMap(r=>b?[Number(r[a]),Number(r[b])]:[Number(r[a])]).filter(Number.isFinite); if(target!=null) vals.push(Number(target)); if(!vals.length) return "<p class='muted'>Aucune donnée.</p>"; const min=Math.min(...vals), max=Math.max(...vals), W=large?820:520,H=large?310:190, x=i=>30+i*(W-60)/Math.max(1,rows.length-1), y=v=>H-24-((v-min)/Math.max(1,max-min)*(H-55)), pts=k=>rows.map((r,i)=>`${x(i)},${y(Number(r[k])||min)}`).join(" "), targetY=target!=null?y(Number(target)):null, legend=opts.legend||(b?"bleu poids · vert cible · orange ventre":(a==="waistCm"?"tour de ventre":"bleu poids · vert cible")), primaryColor=opts.primaryColor||"var(--blue)", secondaryColor=opts.secondaryColor||"var(--orange)", targetLabel=opts.targetLabel||`cible ${target} kg`; return `<svg class="chart ${large?"chartLarge":""}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" rx="12" fill="var(--chart-bg)"/>${targetY?`<line x1="30" y1="${targetY}" x2="${W-30}" y2="${targetY}" stroke="var(--green)" stroke-width="3" stroke-dasharray="8 8"/><text x="${W-150}" y="${targetY-8}" fill="var(--green)">${esc(targetLabel)}</text>`:""}<polyline points="${pts(a)}" fill="none" stroke="${primaryColor}" stroke-width="4"/>${b?`<polyline points="${pts(b)}" fill="none" stroke="${secondaryColor}" stroke-width="4"/>`:""}<text x="24" y="24" fill="var(--muted)">${esc(legend)}</text></svg>`; }
   function bar(rows){ if(!rows.length) return "<p class='muted'>Aucune activité.</p>"; const max=Math.max(...rows.map(r=>r.value),1); return `<div class="bars">${rows.map(r=>`<div><span style="height:${Math.max(8,r.value/max*120)}px"></span><small>${esc(r.label)}</small></div>`).join("")}</div>`; }
   function dateInputIso(id){ const raw=(el(id)?.value||TODAY).slice(0,10); return `${raw}T12:00:00.000Z`; }
   function datedInputIso(id){ const raw=(el(id)?.value||TODAY).slice(0,10); return raw>TODAY ? null : `${raw}T12:00:00.000Z`; }
+  function datedRawValue(id){ const raw=(el(id)?.value||TODAY).slice(0,10); return raw>TODAY ? null : raw; }
   function metricTimelineRows(p){
     const rawMetrics=state.metrics.filter(x=>x.profileId===p.id).sort((a,b)=>metricTime(a)-metricTime(b));
     const startWeight=Number(p.startWeightKg);
     const startMetric=Number.isFinite(startWeight)&&startWeight>0?{id:"profile_start",profileId:p.id,source:"profile",measuredAt:p.createdAt||`${TODAY}T12:00:00.000Z`,weightKg:startWeight,waistCm:null}:null;
     return [ ...(startMetric?[startMetric]:[]), ...rawMetrics ].sort((a,b)=>metricTime(a)-metricTime(b));
   }
-  function addMetric(){ const p=profile(), w=num("weightKg"), measuredAt=datedInputIso("metricDate"); if(!p||!w) return; if(!measuredAt){ save("Date de pesée invalide : pas de saisie future.").then(render); return; } state.metrics.push({id:uid("metric"),profileId:p.id,source:"manual",measuredAt,weightKg:w,bodyFatPct:num("bodyFatPct"),waterPct:num("waterPct"),bmi:num("bmi"),boneKg:num("boneKg"),muscleKg:num("muscleKg"),waistCm:num("waistCm")}); state.ui.modal=null; save("Pesée enregistrée.").then(render); }
-  function addRun(){ const p=profile(), startedAt=datedInputIso("runDate"); if(!p) return; if(!startedAt){ save("Date d'activité invalide : pas de saisie future.").then(render); return; } state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:el("runType").value,startedAt,distanceKm:num("runDistance"),durationSeconds:num("runDuration")?num("runDuration")*60:null,avgSpeedKmh:num("runPace"),hrAvg:num("runHrAvg"),hrMax:num("runHrMax"),feeling:num("runFeeling"),pain:num("runPain")}); refreshPlanAfterActivity(p.id); state.ui.modal=null; save("Activité enregistrée et plan recalculé.").then(render); }
+  function beginRecordEdit(kind,id){ state.ui.recordEdit={kind,id}; render(); }
+  function cancelRecordEdit(){ state.ui.recordEdit=null; render(); }
+  function deleteMetricRecord(id){
+    const item=state.metrics.find(x=>x.id===id); if(!item) return;
+    if(!confirm("Supprimer cette pesée locale ?")) return;
+    state.metrics=state.metrics.filter(x=>x.id!==id);
+    state.ui.recordEdit=null;
+    save("Pesée supprimée.").then(render);
+  }
+  function deleteActivityRecord(id){
+    const item=state.activities.find(x=>x.id===id); if(!item) return;
+    if(!confirm("Supprimer cette activité locale ?")) return;
+    state.activities=state.activities.filter(x=>x.id!==id);
+    if(item.profileId) refreshPlanAfterActivity(item.profileId);
+    state.ui.recordEdit=null;
+    save("Activité supprimée.").then(render);
+  }
+  function saveMetricRecord(id){
+    const item=state.metrics.find(x=>x.id===id); if(!item) return;
+    const rawDate=datedRawValue(`editMetricDate_${id}`); if(!rawDate){ save("Date de pesée invalide : pas de saisie future.").then(render); return; }
+    const nextWeight=num(`editMetricWeight_${id}`), nextWaist=num(`editMetricWaist_${id}`);
+    if(!nextWeight&&!nextWaist){ save("Pesée incomplète : renseigne au moins le poids ou le tour de ventre.").then(render); return; }
+    item.measuredAt=`${rawDate}T12:00:00.000Z`;
+    item.weightKg=nextWeight;
+    item.waistCm=nextWaist;
+    item.bodyFatPct=num(`editMetricBodyFat_${id}`);
+    item.waterPct=num(`editMetricWater_${id}`);
+    item.bmi=num(`editMetricBmi_${id}`);
+    state.ui.recordEdit=null;
+    save("Pesée mise à jour.").then(render);
+  }
+  function saveActivityRecord(id){
+    const item=state.activities.find(x=>x.id===id); if(!item) return;
+    const rawDate=datedRawValue(`editActivityDate_${id}`); if(!rawDate){ save("Date d'activité invalide : pas de saisie future.").then(render); return; }
+    const nextDistance=num(`editActivityDistance_${id}`), nextDuration=num(`editActivityDuration_${id}`);
+    if(!nextDistance&&!nextDuration){ save("Activité incomplète : renseigne au moins la distance ou la durée.").then(render); return; }
+    item.startedAt=`${rawDate}T12:00:00.000Z`;
+    item.type=el(`editActivityType_${id}`)?.value||item.type;
+    item.distanceKm=nextDistance;
+    item.durationSeconds=nextDuration?nextDuration*60:null;
+    item.hrAvg=num(`editActivityHrAvg_${id}`);
+    item.hrMax=num(`editActivityHrMax_${id}`);
+    item.feeling=num(`editActivityFeeling_${id}`);
+    item.pain=num(`editActivityPain_${id}`);
+    if(item.profileId) refreshPlanAfterActivity(item.profileId);
+    state.ui.recordEdit=null;
+    save("Activité mise à jour.").then(render);
+  }
+  function addMetric(){ const p=profile(), w=num("weightKg"), waist=num("waistCm"), measuredAt=datedInputIso("metricDate"); if(!p) return; if(!w&&!waist){ save("Pesée incomplète : renseigne au moins le poids ou le tour de ventre.").then(render); return; } if(!measuredAt){ save("Date de pesée invalide : pas de saisie future.").then(render); return; } state.metrics.push({id:uid("metric"),profileId:p.id,source:"manual",measuredAt,weightKg:w,bodyFatPct:num("bodyFatPct"),waterPct:num("waterPct"),bmi:num("bmi"),boneKg:num("boneKg"),muscleKg:num("muscleKg"),waistCm:waist}); state.ui.modal=null; save("Pesée enregistrée.").then(render); }
+  function addRun(){ const p=profile(), startedAt=datedInputIso("runDate"), distance=num("runDistance"), duration=num("runDuration"); if(!p) return; if(!distance&&!duration){ save("Activité incomplète : renseigne au moins la distance ou la durée.").then(render); return; } if(!startedAt){ save("Date d'activité invalide : pas de saisie future.").then(render); return; } state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:el("runType").value,startedAt,distanceKm:distance,durationSeconds:duration?duration*60:null,avgSpeedKmh:num("runPace"),hrAvg:num("runHrAvg"),hrMax:num("runHrMax"),feeling:num("runFeeling"),pain:num("runPain")}); refreshPlanAfterActivity(p.id); state.ui.modal=null; save("Activité enregistrée et plan recalculé.").then(render); }
   function exportJson(secret=false){ const c=clone(state); if(!secret)c.settings.workerToken=""; const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),...c},null,2)],{type:"application/json"})); a.download=`resurgo-export-${TODAY}.json`; a.click(); URL.revokeObjectURL(a.href); }
   async function importJson(file){ const p=JSON.parse(await file.text()); state={...clone(empty),...p,settings:{...empty.settings,...(p.settings||{})},ui:{...empty.ui,...(p.ui||{})}}; delete state.exportedAt; state.profiles.forEach(x=>refreshPlanAfterActivity(x.id)); await save("Import JSON terminé et plan recalculé."); render(); }
   async function worker(path,init={}){ const base=state.settings.workerUrl.replace(/\/$/,""); if(!base) throw new Error("URL Worker manquante."); const h={"content-type":"application/json",...(init.headers||{})}; if(state.settings.workerToken) h.authorization=`Bearer ${state.settings.workerToken}`; const r=await fetch(base+path,{...init,headers:h}), b=await r.json().catch(()=>({})); if(!r.ok) throw new Error(b.error||`Worker ${r.status}`); return b; }
