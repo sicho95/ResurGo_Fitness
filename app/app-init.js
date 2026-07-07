@@ -76,6 +76,32 @@
   function setSegmentedActive(btn){
     btn.parentElement?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));
   }
+  function setChartViewport(key,total,next){
+    state.ui.chartViewport=state.ui.chartViewport||{};
+    const current=chartViewport(key,total), size=Math.max(2,Math.min(total,Math.round(next.size??current.size))), maxOffset=Math.max(0,total-size), offset=Math.max(0,Math.min(maxOffset,Math.round(next.offset??current.offset)));
+    state.ui.chartViewport[key]={window:size,offset};
+    render();
+  }
+  function setChartHover(svg, clientX){
+    const rect=svg.getBoundingClientRect(), view=svg.viewBox.baseVal, visible=[...svg.querySelectorAll(".chartPoint")], count=visible.reduce((m,p)=>Math.max(m,Number(p.dataset.pointIndex)||0),0)+1;
+    if(!rect.width||!count) return;
+    const localX=(clientX-rect.left)/rect.width*view.width, idx=Math.max(0,Math.min(count-1,Math.round((localX-30)/Math.max(1,(view.width-60)/Math.max(1,count-1)))));
+    visible.forEach(p=>p.classList.toggle("active",Number(p.dataset.pointIndex)===idx));
+    const active=svg.querySelector(`.chartPoint[data-point-index="${idx}"] title`), readout=svg.querySelector(".chartReadout");
+    if(readout&&active) readout.textContent=active.textContent||"";
+  }
+  function bindInteractiveCharts(){
+    $$('svg[data-interactive-chart="1"]').forEach(svg=>{
+      const key=svg.dataset.chartKey, total=Number(svg.dataset.chartTotal)||0; if(!key||total<2) return;
+      let startX=null, startOffset=0, pinchStart=null, pinchSize=0;
+      svg.onpointermove=e=>setChartHover(svg,e.clientX);
+      svg.onpointerdown=e=>{ startX=e.clientX; startOffset=chartViewport(key,total).offset; svg.setPointerCapture?.(e.pointerId); };
+      svg.onpointerup=e=>{ if(startX==null) return; const dx=e.clientX-startX, current=chartViewport(key,total), step=Math.round(-dx/Math.max(1,svg.getBoundingClientRect().width)*current.size); startX=null; if(step) setChartViewport(key,total,{size:current.size,offset:startOffset+step}); };
+      svg.onwheel=e=>{ e.preventDefault(); const current=chartViewport(key,total), direction=e.deltaY>0?1:-1, nextSize=current.size+direction*Math.max(1,Math.round(current.size*.18)), center=current.offset+current.size/2; setChartViewport(key,total,{size:nextSize,offset:center-nextSize/2}); };
+      svg.ontouchstart=e=>{ if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY; pinchStart=Math.hypot(dx,dy); pinchSize=chartViewport(key,total).size; } };
+      svg.ontouchmove=e=>{ if(e.touches.length===1) setChartHover(svg,e.touches[0].clientX); if(e.touches.length===2&&pinchStart){ e.preventDefault(); const dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY, ratio=Math.max(.35,Math.min(3,Math.hypot(dx,dy)/pinchStart)), current=chartViewport(key,total), nextSize=Math.round(pinchSize/ratio), center=current.offset+current.size/2; setChartViewport(key,total,{size:nextSize,offset:center-nextSize/2}); } };
+    });
+  }
   function bind(){
     $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
     on("createProfile",createProfile); on("startToday",()=>{const p=profile(), s=p?coachPickToday(p).session:null; if(s) start(s.id);}); on("goPlan",()=>{state.ui.view="plan"; save().then(render);}); on("nextWeek",()=>{const p=profile(); if(p){makeWeek(p.id,false,true); save("Semaine suivante générée.").then(render);}}); on("regenPlan",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan recalculé.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); refreshPlanAfterActivity(p.id); save("Repos actif enregistré et plan recalculé.").then(render);}});
@@ -87,8 +113,7 @@
     on("startTimer",startTimer); on("continueAfterRest",continueAfterRest); on("skipRest",continueAfterRest); on("okSet",()=>log("yes",0,"ok")); on("partialSet",()=>log("partial",1,"hard")); on("painSet",()=>log("stop",3,"too_hard")); on("speakCue",()=>speakExerciseGuide(currentEx(),"Rappel.")); on("abortSession",()=>{const r=run(); if(r){r.abortedAt=new Date().toISOString(); state.ui.view="today"; stopTimer(); save("Séance arrêtée.").then(render);}});
     on("openMetricModal",()=>{state.ui.modal="metric"; render();}); on("openActivityModal",()=>{state.ui.modal="activity"; render();}); on("openNewProfile",()=>{state.ui.modal="newProfile"; render();}); on("openReadinessInfo",()=>{state.ui.modal="readiness"; render();}); on("openWeightChart",()=>{state.ui.modal="weightChart"; render();}); on("closeModal",()=>{state.ui.modal=null; state.ui.recordEdit=null; render();});
     $$("[data-open-chart]").forEach(b=>b.onclick=()=>{ state.ui.modal=`chart_${b.dataset.openChart}`; state.ui.recordEdit=null; state.ui.chartViewport=state.ui.chartViewport||{}; render(); });
-    $$("[data-chart-window]").forEach(x=>x.oninput=e=>{ state.ui.chartViewport=state.ui.chartViewport||{}; const key=x.dataset.chartWindow; state.ui.chartViewport[key]={...(state.ui.chartViewport[key]||{}),window:Math.max(2,Number(e.target.value)||12)}; render(); });
-    $$("[data-chart-offset]").forEach(x=>x.oninput=e=>{ state.ui.chartViewport=state.ui.chartViewport||{}; const key=x.dataset.chartOffset; state.ui.chartViewport[key]={...(state.ui.chartViewport[key]||{}),offset:Math.max(0,Number(e.target.value)||0)}; render(); });
+    bindInteractiveCharts();
     $$("[data-edit-metric]").forEach(b=>b.onclick=()=>beginRecordEdit("metric",b.dataset.editMetric));
     $$("[data-save-metric]").forEach(b=>b.onclick=()=>saveMetricRecord(b.dataset.saveMetric));
     $$("[data-delete-metric]").forEach(b=>b.onclick=()=>deleteMetricRecord(b.dataset.deleteMetric));
