@@ -65,7 +65,7 @@ label{display:grid;gap:6px;color:var(--muted);font-weight:800}input,select,texta
 .historyFold summary::-webkit-details-marker{display:none}
 .historyFold summary::after{content:"▾";font-size:14px;line-height:1;color:var(--muted)}
 .historyFold[open] summary::after{transform:rotate(180deg)}
-.historyList{display:grid;gap:6px;padding:0 12px 12px;max-height:min(28dvh,280px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.historyList{display:grid;gap:6px;padding:0 12px 12px;max-height:min(28dvh,280px);height:auto;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .historyRow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .historyRow:first-child{border-top:0}
 .historyMeta{min-width:0}
