@@ -10,7 +10,16 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
   function chartDateLabel(value,spanDays){ const d=new Date(value); if(spanDays>730) return String(d.getFullYear()); if(spanDays>120) return d.toLocaleDateString("fr-FR",{month:"short",year:"2-digit"}); if(spanDays>35) return `S${weekNo(d)}`; return d.toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"}); }
   function chartTickIndexes(rows,count=5){ if(rows.length<=1) return [0]; const max=Math.min(count,rows.length), out=[]; for(let i=0;i<max;i++) out.push(Math.round(i*(rows.length-1)/(max-1))); return [...new Set(out)]; }
   function chartNiceStep(range, target=4){ const raw=Math.max(range,Number.EPSILON)/Math.max(1,target), pow=10**Math.floor(Math.log10(raw)), scaled=raw/pow, nice=scaled<=1?1:scaled<=2?2:scaled<=5?5:10; return nice*pow; }
-  function chartTicks(min,max,target=4){ if(min===max){ const step=chartNiceStep(Math.max(1,Math.abs(min)*.02),target), base=Math.floor(min/step)*step; return {ticks:[base,base+step,base+step*2],minY:base,maxY:base+step*2,step}; } const step=chartNiceStep(max-min,target), minY=Math.floor(min/step)*step, maxY=Math.ceil(max/step)*step, ticks=[]; for(let v=minY,i=0; v<=maxY+step/2&&i<8; v+=step,i++) ticks.push(Number(v.toPrecision(12))); return {ticks,minY,maxY,step}; }
+  function chartTicks(min,max,target=4){
+    if(min===max){
+      const tickCount=Math.max(5,Math.min(10,target||5)), step=chartNiceStep(Math.max(.1,Math.abs(min)*.01),tickCount-1), before=Math.floor((tickCount-1)/2), minY=Number((min-(before*step)).toPrecision(12)), maxY=Number((minY+step*(tickCount-1)).toPrecision(12)), ticks=[];
+      for(let i=0;i<tickCount;i++) ticks.push(Number((minY+(i*step)).toPrecision(12)));
+      return {ticks,minY,maxY,step};
+    }
+    const step=chartNiceStep(max-min,target), minY=Math.floor(min/step)*step, maxY=Math.ceil(max/step)*step, ticks=[];
+    for(let v=minY,i=0; v<=maxY+step/2&&i<12; v+=step,i++) ticks.push(Number(v.toPrecision(12)));
+    return {ticks,minY,maxY,step};
+  }
   function chartFormatValue(v,step){ const decimals=step<1?Math.min(3,Math.ceil(-Math.log10(step))):0; return Number(v.toFixed(decimals)).toLocaleString("fr-FR",{minimumFractionDigits:decimals,maximumFractionDigits:decimals}); }
   function chartUnit(a,b,opts){ if(opts.unit!=null) return opts.unit; const ua=metricUnits?.[a]||"", ub=b?metricUnits?.[b]||"":ua; return ua===ub?ua.trim():""; }
   function chart(rows,a,b,target=null,large=false,opts={}){
@@ -18,7 +27,7 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
     const series=[a,b].filter(Boolean), vals=rows.flatMap(r=>series.map(k=>metricValue(r,k))).filter(v=>v!=null), rawTarget=target==null||target===""?null:Number(target), targetValue=Number.isFinite(rawTarget)&&rawTarget>0?rawTarget:null;
     if(targetValue!=null) vals.push(targetValue);
     if(!vals.length) return "<p class='muted'>Aucune donnée.</p>";
-    const min=Math.min(...vals), max=Math.max(...vals), pad=min===max?Math.max(.1,Math.abs(min)*.002):(max-min)*.08, scale=chartTicks(Math.max(0,min-pad),max+pad,4), minY=scale.minY, maxY=scale.maxY, W=large?820:520,H=large?470:190, plot=large?{l:54,r:18,t:24,b:32}:{l:62,r:24,t:38,b:46}, innerW=W-plot.l-plot.r, innerH=H-plot.t-plot.b;
+    const min=Math.min(...vals), max=Math.max(...vals), pad=min===max?Math.max(.1,Math.abs(min)*.002):(max-min)*.08, W=large?820:520,H=large?620:190, plot=large?{l:54,r:18,t:18,b:30}:{l:62,r:24,t:38,b:46}, targetLines=Math.max(5,Math.min(10,Math.round((H-plot.t-plot.b)/56))), scale=chartTicks(Math.max(0,min-pad),max+pad,targetLines), minY=scale.minY, maxY=scale.maxY, innerW=W-plot.l-plot.r, innerH=H-plot.t-plot.b;
     const x=i=>rows.length>1?plot.l+i*innerW/(rows.length-1):plot.l+innerW/2, y=v=>H-plot.b-((v-minY)/Math.max(1,maxY-minY)*innerH), pts=k=>rows.map((r,i)=>metricValue(r,k)!=null?`${x(i)},${y(metricValue(r,k))}`:null).filter(Boolean).join(" "), points=(k,color)=>rows.map((r,i)=>metricValue(r,k)!=null?`<circle class="chartPoint" data-point-index="${i}" cx="${x(i)}" cy="${y(metricValue(r,k))}" r="5" fill="${color}"><title>${esc(chartPointLabel(r,k))}</title></circle>`:"").join("");
     const times=rows.map(chartTime).filter(Boolean), spanDays=times.length>1?(Math.max(...times)-Math.min(...times))/86400000:0, yTicks=scale.ticks, xTicks=chartTickIndexes(rows,large?6:4), targetY=targetValue!=null?y(targetValue):null, unit=chartUnit(a,b,opts), legend=opts.legend||(b?"bleu poids · orange secondaire":(a==="waistCm"?"tour de ventre":"poids")), primaryColor=opts.primaryColor||"var(--blue)", secondaryColor=opts.secondaryColor||"var(--orange)", targetLabel=opts.targetLabel||`cible ${targetValue} kg`, key=opts.key||"", total=Number(opts.total)||rows.length;
     const yAxis=yTicks.map(v=>`<line x1="${plot.l}" y1="${y(v)}" x2="${W-plot.r}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${plot.l-8}" y="${y(v)+4}" text-anchor="end" fill="var(--muted)" font-size="12">${chartFormatValue(v,scale.step)}</text>`).join("");
@@ -87,6 +96,8 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
     if(nextValue==null){ save("Mesure incomplète : renseigne une valeur.").then(render); return; }
     if(id==="profile_start"){
       const p=profile(); if(!p) return;
+      const rawDate=datedRawValue(`editMetricDate_${token}`); if(!rawDate){ save("Date de mesure invalide : pas de saisie future.").then(render); return; }
+      p.createdAt=`${rawDate}T12:00:00.000Z`;
       p.startWeightKg=nextValue;
       state.ui.recordEdit=null;
       save("Poids initial du profil mis à jour.").then(render);
@@ -111,8 +122,9 @@ pull:["Posture haute","Tire les coudes vers l'arrière", {head:[172,74],neck:[17
     item.durationSeconds=nextDuration?nextDuration*60:null;
     item.hrAvg=num(`editActivityHrAvg_${id}`);
     item.hrMax=num(`editActivityHrMax_${id}`);
-    item.feeling=num(`editActivityFeeling_${id}`);
-    item.pain=num(`editActivityPain_${id}`);
+    const feelingEl=el(`editActivityFeeling_${id}`), painEl=el(`editActivityPain_${id}`);
+    item.feeling=feelingEl?num(`editActivityFeeling_${id}`):item.feeling;
+    item.pain=painEl?num(`editActivityPain_${id}`):item.pain;
     if(item.profileId) refreshPlanAfterActivity(item.profileId);
     state.ui.recordEdit=null;
     save("Activité mise à jour.").then(render);

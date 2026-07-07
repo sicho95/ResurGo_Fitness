@@ -112,8 +112,9 @@
     on("saveQuick",()=>saveQuickCheck(false)); on("regen",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan régénéré.").then(render);}});
     on("startTimer",startTimer); on("continueAfterRest",continueAfterRest); on("skipRest",continueAfterRest); on("okSet",()=>log("yes",0,"ok")); on("partialSet",()=>log("partial",1,"hard")); on("painSet",()=>log("stop",3,"too_hard")); on("speakCue",()=>speakExerciseGuide(currentEx(),"Rappel.")); on("abortSession",()=>{const r=run(); if(r){r.abortedAt=new Date().toISOString(); state.ui.view="today"; stopTimer(); save("Séance arrêtée.").then(render);}});
     on("openMetricModal",()=>{state.ui.modal="metric"; render();}); on("openActivityModal",()=>{state.ui.modal="activity"; render();}); on("openNewProfile",()=>{state.ui.modal="newProfile"; render();}); on("openReadinessInfo",()=>{state.ui.modal="readiness"; render();}); on("openWeightChart",()=>{state.ui.modal="weightChart"; render();}); on("closeModal",()=>{state.ui.modal=null; state.ui.recordEdit=null; render();});
-    $$("[data-open-chart]").forEach(b=>b.onclick=()=>{ state.ui.modal=`chart_${b.dataset.openChart}`; state.ui.recordEdit=null; state.ui.chartViewport=state.ui.chartViewport||{}; render(); });
+    $$("[data-open-chart]").forEach(b=>b.onclick=()=>{ const key=b.dataset.openChart; state.ui.modal=`chart_${key}`; state.ui.recordEdit=null; state.ui.chartViewport=state.ui.chartViewport||{}; state.ui.chartHistoryOpen={...(state.ui.chartHistoryOpen||{}),[key]:false}; render(); });
     bindInteractiveCharts();
+    $$(".chartHistoryFold").forEach(d=>d.ontoggle=()=>{ const key=String(state.ui.modal||"").replace("chart_",""); if(!key) return; state.ui.chartHistoryOpen=state.ui.chartHistoryOpen||{}; state.ui.chartHistoryOpen[key]=d.open; });
     $$("[data-edit-metric]").forEach(b=>b.onclick=()=>beginRecordEdit("metric",b.dataset.editMetric));
     $$("[data-save-metric]").forEach(b=>b.onclick=()=>saveMetricRecord(b.dataset.saveMetric));
     $$("[data-delete-metric]").forEach(b=>b.onclick=()=>deleteMetricRecord(b.dataset.deleteMetric));
