@@ -25,7 +25,7 @@
     E("cooldown_breathing","Retour au calme respiration","cooldown","time",1,180,0,"Retour au calme.",["Assis ou allongé, allonge l'expiration.","Relâche les épaules.","Observe douleur et fatigue.","Note le ressenti."],"Reste confortable.","/")
   ];
   const empty = {
-    schemaVersion:"1.1.0-vanilla", activeProfileId:null, profiles:[], assessments:[], plans:[], sessionRuns:[], metrics:[], activities:[], exerciseVideos:{},
+    schemaVersion:"1.1.0-vanilla", activeProfileId:null, profiles:[], assessments:[], plans:[], sessionRuns:[], metrics:[], activities:[], exerciseVideos:{}, exerciseMetaOverrides:{},
     sources:[{id:"manual",label:"Manuel",enabled:true,priority:3},{id:"json_import",label:"Import JSON",enabled:true,priority:2},{id:"mock_garmin",label:"Mock Garmin",enabled:true,priority:1},{id:"worker",label:"Worker Cloudflare",enabled:false,priority:1}],
     settings:{ theme:"auto", hideInstallPrompt:false, notifications:{enabled:true,reminderTime:"08:00",lastNotifiedDate:"",askedOnInstall:false}, tts:{enabled:true,rate:1,pitch:1,volume:1,countdown:true,rest:true,cues:true,safetyAlways:true}, workerUrl:"", workerToken:"", videoBase:videos.defaultBase },
     ui:{ view:"today", search:"", searchDraft:"", filter:"all", message:"", modal:null }
@@ -33,8 +33,33 @@
   let state = clone(empty), tick = null, left = 0, voiceSeq = 0, deferredInstallPrompt = null, swRegistration = null, updateWaiting = null, remoteVersion = APP_VERSION, remoteBuild = APP_BUILD, messageTimer = null, smileyDismissBound = false, reminderTimer = null;
   let bodyMapSvg = { male:"", female:"" };
 
+  function exerciseMeta(id,family,type,sets,amount){
+    const durationMin=type==="time"?Math.round((amount||0)/60):0;
+    const rehab=family==="knee_rehab", mobility=family==="mobility"||family==="cooldown"||family==="warmup", cardio=family==="cardio";
+    const heavyIds=["box_squat","split_squat","step_up_low"], lightIds=["quad_set","clamshell","hip_flexor","ankle_wall","hamstring_floss","cooldown_breathing","warmup_flow","brisk_walk","run_walk"];
+    let load="moderate";
+    if(mobility||rehab||lightIds.includes(id)) load="light";
+    else if(heavyIds.includes(id)) load="hard";
+    else if(cardio&&durationMin>=30) load="moderate";
+    return {
+      load,
+      role:mobility?"mobility":rehab?"rehab":cardio?"cardio":"strength",
+      compatibleAddon:mobility||rehab||lightIds.includes(id),
+      recoveryCost:load==="hard"?2:load==="moderate"?1:0
+    };
+  }
+  const trainingLoadOptions = ["light","moderate","hard"];
+  const trainingRoleOptions = ["mobility","rehab","cardio","strength"];
+  const trainingLabels = {
+    load:{light:"Léger",moderate:"Normal",hard:"Dur"},
+    role:{mobility:"Mobilité / étirement",rehab:"Rééducation / kiné",cardio:"Cardio",strength:"Renforcement"}
+  };
+  function effectiveTraining(x){
+    const override=state.exerciseMetaOverrides?.[x.id]||{};
+    return {...x.training,...override};
+  }
   function E(id,name,family,type,sets,amount,rest,short,steps,safety,path,sourceUrl="") {
-    return { id,name,family,type,sets,rest,short,steps,safety,cue:steps[0], reps:type==="reps"?amount:null, seconds:type==="time"?amount:null, videoPath:path, sourceUrl };
+    return { id,name,family,type,sets,rest,short,steps,safety,cue:steps[0], reps:type==="reps"?amount:null, seconds:type==="time"?amount:null, videoPath:path, sourceUrl, training:exerciseMeta(id,family,type,sets,amount) };
   }
   function db(){ return new Promise((ok,ko)=>{ const r=indexedDB.open(DB,1); r.onupgradeneeded=()=>r.result.createObjectStore(STORE); r.onsuccess=()=>ok(r.result); r.onerror=()=>ko(r.error); }); }
   async function get(k)

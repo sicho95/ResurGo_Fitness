@@ -17,12 +17,15 @@
     await put("app",state);
   }
   const profile=()=>state.profiles.find(p=>p.id===state.activeProfileId);
-  const profilePlans=()=>profile()?state.plans.filter(s=>s.profileId===profile().id).sort((a,b)=>new Date(`${a.date||TODAY}T12:00:00`)-new Date(`${b.date||TODAY}T12:00:00`)):[];
+  function sessionSortValue(s){ return `${s.date||TODAY}-${s.secondary?"1":"0"}`; }
+  const profilePlansFor=pid=>state.plans.filter(s=>s.profileId===pid).sort((a,b)=>sessionSortValue(a).localeCompare(sessionSortValue(b)));
+  const profilePlans=()=>profile()?state.plans.filter(s=>s.profileId===profile().id).sort((a,b)=>sessionSortValue(a).localeCompare(sessionSortValue(b))):[];
+  function activeWeekKeyForProfile(pid){ const all=profilePlansFor(pid), open=all.filter(s=>!s.completedAt); return (open[0]||all[all.length-1])?.weekStart||TODAY; }
   function activeWeekKey(){ const all=profilePlans(), open=all.filter(s=>!s.completedAt); return (open[0]||all[all.length-1])?.weekStart||TODAY; }
   const weekPlan=()=>profilePlans().filter(s=>(s.weekStart||s.date||TODAY)===activeWeekKey());
   const plan=()=>weekPlan().filter(s=>!s.completedAt);
   const run=()=>state.sessionRuns.find(r=>!r.completedAt&&!r.abortedAt);
-  const exercise=id=>ex.find(x=>x.id===id)||ex[0];
+  const exercise=id=>{ const base=ex.find(x=>x.id===id)||ex[0]; return base?{...base,training:effectiveTraining(base)}:ex[0]; };
   const currentEx=()=>{ const r=run(), s=state.plans.find(x=>x.id===r?.sessionId); return exercise(s?.exerciseIds[r.exerciseIndex]); };
   function timeValue(value){ const t=Date.parse(value||""); return Number.isFinite(t)?t:0; }
   function metricTime(m){ return timeValue(m?.measuredAt||m?.date||m?.createdAt); }
@@ -58,17 +61,118 @@
   function goalInfo(p){ normalizeGoal(p); const current=currentWeightKg(p), target=Number(p.targetWeightKg)||0, loss=current&&target?current-target:0, needed=loss>0?Math.ceil(loss/5):6; p.targetMonths=Math.max(6,needed,Math.round(Number(p.targetMonths)||6)); const monthly=loss>0?loss/p.targetMonths:0; return {loss,monthly,months:p.targetMonths,currentWeightKg:current,targetWeightKg:target,text:loss>0?`${loss.toFixed(1)} kg restants en ${p.targetMonths} mois · ${monthly.toFixed(1)} kg/mois`:"Objectif maintien ou recomposition",safe:monthly<=5}; }
   function addDaysIso(base,days){ const d=new Date(`${base}T12:00:00`); d.setDate(d.getDate()+days); return d.toISOString().slice(0,10); }
   function dayLabel(iso){ return new Date(`${iso}T12:00:00`).toLocaleDateString("fr-FR",{weekday:"long",day:"2-digit",month:"2-digit"}); }
+  function weekdayIndex(iso){ const day=new Date(`${iso}T12:00:00`).getDay(); return day===0?7:day; }
+  function mondayOfWeek(iso){ return addDaysIso(iso,1-weekdayIndex(iso)); }
+  function nextMonday(iso){ return addDaysIso(mondayOfWeek(iso),7); }
+  function normalizeWeekAnchor(base,windowDays,next=false){
+    if(windowDays===7) return base||TODAY;
+    if(next) return nextMonday(base||TODAY);
+    if(weekdayIndex(TODAY)>=6) return nextMonday(TODAY);
+    return mondayOfWeek(base||TODAY);
+  }
+  function weekDates(anchor,windowDays){
+    if(windowDays===7) return Array.from({length:7},(_,i)=>addDaysIso(anchor,i));
+    const monday=mondayOfWeek(anchor);
+    return Array.from({length:5},(_,i)=>addDaysIso(monday,i));
+  }
+  function weekEndDate(anchor,windowDays){ const dates=weekDates(anchor,windowDays); return dates[dates.length-1]||anchor; }
   function scheduleOffsets(days,windowDays=5){ const maps=windowDays===7?{1:[0],2:[0,3],3:[0,2,4],4:[0,2,4,6],5:[0,1,3,5,6]}:{1:[0],2:[0,3],3:[0,2,4],4:[0,1,3,4],5:[0,1,2,3,4]}; return maps[days]||maps[3]; }
   function weekAnchor(){ const items=weekPlan(); return items[0]?.weekStart||items[0]?.date||TODAY; }
-  function weekAgenda(p){ const anchor=weekAnchor(), items=weekPlan().filter(s=>s.weekStart===anchor||!s.weekStart), byDate=new Map(items.map(s=>[s.date||anchor,s])), length=weekWindowDays(p); return Array.from({length},(_,i)=>{const date=addDaysIso(anchor,i); return {date,session:byDate.get(date)};}); }
+  function weekAgenda(p){ const anchor=weekAnchor(), items=weekPlan().filter(s=>s.weekStart===anchor||!s.weekStart), byDate=new Map(); items.forEach(s=>{ const key=s.date||anchor; if(!byDate.has(key)) byDate.set(key,[]); byDate.get(key).push(s); }); return weekDates(anchor,weekWindowDays(p)).map(date=>({date,sessions:(byDate.get(date)||[]).sort((a,b)=>(a.secondary?1:0)-(b.secondary?1:0))})); }
   function dateDiffDays(a,b){ return Math.round((new Date(`${b}T12:00:00`)-new Date(`${a}T12:00:00`))/86400000); }
-  function remainingWeekDates(anchor,completed,windowDays=5){ const occupied=new Set(completed.map(s=>s.date)); const end=addDaysIso(anchor,windowDays-1), start=TODAY; const span=Math.max(0,dateDiffDays(start,end)); return Array.from({length:span+1},(_,i)=>addDaysIso(start,i)).filter(d=>!occupied.has(d)); }
+  function remainingWeekDates(anchor,completed,windowDays=5){ const occupied=new Set(completed.map(s=>s.date)); return weekDates(anchor,windowDays).filter(d=>d>=TODAY&&!occupied.has(d)); }
+  function isoDatePart(value){ return String(value||"").slice(0,10); }
+  function activityPlanType(a){
+    if(!a) return null;
+    if(["strength","cardio","mobility"].includes(a.type)) return a.type;
+    if(["run","bike"].includes(a.type)) return "cardio";
+    if(a.type==="walk") return "mobility";
+    return null;
+  }
+  function refreshPlanAfterActivity(pid,{short}={}){
+    const p=state.profiles.find(x=>x.id===pid); if(!p) return;
+    const existing=profilePlansFor(pid), activeKey=activeWeekKeyForProfile(pid), currentWeek=existing.filter(s=>(s.weekStart||s.date||TODAY)===activeKey), currentShort=short ?? !!currentWeek[0]?.short;
+    makeWeek(pid,currentShort);
+  }
+  function ensurePlanCurrent(pid){
+    const p=state.profiles.find(x=>x.id===pid); if(!p) return false;
+    const existing=profilePlansFor(pid), activeKey=activeWeekKeyForProfile(pid), currentWeek=existing.filter(s=>(s.weekStart||s.date||TODAY)===activeKey);
+    if(!currentWeek.length) return false;
+    const open=currentWeek.filter(s=>!s.completedAt), currentShort=!!currentWeek[0]?.short, windowDays=weekWindowDays(p), anchor=currentWeek[0]?.weekStart||currentWeek[0]?.date||TODAY;
+    const stale=dateDiffDays(weekEndDate(anchor,windowDays),TODAY)>0;
+    const overdue=open.some(s=>(s.date||TODAY)<TODAY);
+    if(!stale&&!overdue) return false;
+    makeWeek(pid,currentShort);
+    return true;
+  }
+  function recentActivityAnchor(pid,windowDays){
+    const floor=windowDays===7?addDaysIso(TODAY,-6):mondayOfWeek(TODAY);
+    const dates=state.activities.filter(a=>a.profileId===pid).map(a=>isoDatePart(a.startedAt||a.date||a.createdAt)).filter(date=>date&&date>=floor&&date<=TODAY).sort();
+    return dates[0]||TODAY;
+  }
+  function planSessionDates(sets,availableDates){
+    const dates=[...availableDates].sort(), picks=[];
+    if(!dates.length||!sets.length) return picks;
+    const used=new Set();
+    for(let i=0;i<sets.length;i++){
+      let chosen=null;
+      for(let j=0;j<dates.length;j++){
+        const date=dates[j];
+        if(used.has(date)) continue;
+        const previous=picks[picks.length-1], prevPrevious=picks[picks.length-2], futureSlots=dates.length-(j+1), futureNeed=sets.length-(i+1);
+        const consecutive=previous&&dateDiffDays(previous.date,date)===1;
+        const threeInRow=consecutive&&prevPrevious&&dateDiffDays(prevPrevious.date,previous.date)===1;
+        const recoveryAfterPrev=consecutive&&previous&&previous.type!=="mobility";
+        if((threeInRow||recoveryAfterPrev)&&futureSlots>=futureNeed) continue;
+        chosen={date,type:sets[i].type};
+        used.add(date);
+        break;
+      }
+      if(!chosen){
+        const fallback=dates.find(date=>!used.has(date));
+        if(!fallback) break;
+        chosen={date:fallback,type:sets[i].type};
+        used.add(fallback);
+      }
+      picks.push(chosen);
+    }
+    return picks;
+  }
+  function sessionIntensity(exerciseIds,fallback="moderate"){
+    const items=exerciseIds.map(exId=>exercise(exId)).filter(Boolean);
+    if(items.some(x=>x.training?.load==="hard")) return "hard";
+    if(items.every(x=>x.training?.load==="light")) return "light";
+    return fallback;
+  }
+  function defineSession(title,minutes,type,exerciseIds,intensity="moderate",addonType=null){
+    return {title,minutes,type,exerciseIds,intensity:sessionIntensity(exerciseIds,intensity),addonType};
+  }
+  function companionSessionFor(set){
+    if(set.addonType==="mobility") return defineSession("Déverrouillage mobilité",12,"mobility",["hip_flexor","ankle_wall","cooldown_breathing"],"light",null);
+    if(set.addonType==="light_strength") return defineSession("Renfo léger complémentaire",12,"strength",["warmup_flow","bird_dog","incline_pushup","cooldown_breathing"],"light",null);
+    return null;
+  }
+  function canPairSameDay(primary,secondary){
+    if(!primary||!secondary) return false;
+    if(primary.intensity==="hard") return false;
+    if(secondary.intensity!=="light") return false;
+    if(primary.type==="cardio"&&secondary.type==="mobility") return true;
+    if(primary.type==="strength"&&primary.intensity==="light"&&secondary.type==="mobility") return true;
+    if(primary.type==="mobility"&&secondary.type==="strength") return true;
+    return false;
+  }
+  function sessionOutcome(runState){
+    const logs=runState?.logs||[];
+    const hard=logs.some(l=>l.success!=="yes"||l.difficulty==="hard"||(l.pain||0)>=2);
+    const stopped=logs.some(l=>l.success==="stop"||(l.pain||0)>=3);
+    return {hard,stopped};
+  }
   function todayPlannedSession(){ return plan().find(s=>(s.date||TODAY)===TODAY)||null; }
   function nextPlannedSession(){ return plan().find(s=>(s.date||TODAY)>=TODAY)||plan()[0]||null; }
   function frequencySummary(p){ const items=weekPlan(), windowDays=weekWindowDays(p), active=items.filter(s=>s.type!=="recovery"), done=items.filter(s=>s.completedAt).length, counts=active.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},{}), rest=Math.max(0,windowDays-active.length); return [`Fenêtre ${windowDays} jours`,`${active.length} séances planifiées`,`${counts.strength||0} muscu`,`${counts.cardio||0} cardio`,`${counts.mobility||0} mobilité/kiné`,`${rest} repos`,`${done} fait`]; }
   function coachPickToday(p){
     const open=plan(); if(!open.length) return {session:null,rest:true,title:"Semaine terminée",reason:"Toutes les séances prévues sont faites. Repos ou marche douce."};
-    const anchor=weekAnchor(), end=addDaysIso(anchor,weekWindowDays(p)-1), remainingDays=Math.max(1,dateDiffDays(TODAY,end)+1), today=todayPlannedSession(), overdue=open.filter(s=>(s.date||TODAY)<TODAY), pressure=open.length>=remainingDays;
+    const anchor=weekAnchor(), end=weekEndDate(anchor,weekWindowDays(p)), remainingDays=Math.max(1,dateDiffDays(TODAY,end)+1), today=todayPlannedSession(), overdue=open.filter(s=>(s.date||TODAY)<TODAY), pressure=open.length>=remainingDays;
     const pain=Math.max(p.health.backPain||0,p.health.kneePain||0,p.health.tendonPain||0), fatigue=p.health.fatigue||0, protect=protectionMode(p), knee=kneeCare(p);
     if(today&&!protect) return {session:today,rest:false,title:"Séance du jour",reason:"Elle est prévue aujourd'hui dans la semaine."};
     if(!today&&!overdue.length&&!pressure) return {session:null,rest:true,title:"Repos planifié",reason:`Il reste ${remainingDays} jours pour ${open.length} séance(s). Le repos garde la semaine équilibrée.`};
@@ -192,9 +296,10 @@
     const p=state.profiles.find(x=>x.id===pid); if(!p) return; normalizeGoal(p);
     const protect=protectionMode(p), knee=kneeCare(p);
     const cardio=protect?"brisk_walk":(p.levels.running==="R0"||knee?"run_walk":"easy_run");
-    const existing=state.plans.filter(s=>s.profileId===pid), activeKey=activeWeekKey(), currentWeek=existing.filter(s=>(s.weekStart||s.date||TODAY)===activeKey), completed=next?[]:currentWeek.filter(s=>s.completedAt).sort((a,b)=>new Date(`${a.date||TODAY}T12:00:00`)-new Date(`${b.date||TODAY}T12:00:00`));
-    const lastWeek=Math.max(0,...existing.map(s=>Number(s.week)||0)), currentWeekNumber=currentWeek[0]?.week||lastWeek||1, anchor=next?TODAY:(completed[0]?.weekStart||currentWeek[0]?.weekStart||TODAY), weekNumber=next?lastWeek+1:currentWeekNumber;
-    const windowDays=weekWindowDays(p), days=targetSessionCount(p,completed);
+    const existing=profilePlansFor(pid), activeKey=activeWeekKeyForProfile(pid), currentWeek=existing.filter(s=>(s.weekStart||s.date||TODAY)===activeKey), currentAnchor=currentWeek[0]?.weekStart||currentWeek[0]?.date||TODAY, windowDays=weekWindowDays(p), staleWeek=!next&&currentWeek.length&&dateDiffDays(weekEndDate(currentAnchor,windowDays),TODAY)>0, resetAnchor=recentActivityAnchor(pid,windowDays);
+    const completed=next||staleWeek?[]:currentWeek.filter(s=>s.completedAt).sort((a,b)=>new Date(`${a.date||TODAY}T12:00:00`)-new Date(`${b.date||TODAY}T12:00:00`));
+    const lastWeek=Math.max(0,...existing.map(s=>Number(s.week)||0)), currentWeekNumber=currentWeek[0]?.week||lastWeek||1, rawAnchor=next?TODAY:staleWeek?resetAnchor:(completed[0]?.weekStart||currentWeek[0]?.weekStart||TODAY), anchor=normalizeWeekAnchor(rawAnchor,windowDays,next||staleWeek), weekNumber=next||staleWeek?lastWeek+1:currentWeekNumber;
+    const days=targetSessionCount(p,completed);
     const kneeStrength=short?["warmup_flow","quad_set","straight_leg_raise","cooldown_breathing"]:["warmup_flow","quad_set","straight_leg_raise","seated_knee_extension","standing_hamstring_curl","cooldown_breathing"];
     const kneeStability=short?["clamshell","hip_abduction_side","cooldown_breathing"]:["warmup_flow","clamshell","hip_abduction_side","glute_bridge","calf_raise","cooldown_breathing"];
     const A=knee?kneeStrength:(short?["warmup_flow","dead_bug","bird_dog","sit_to_stand","cooldown_breathing"]:["warmup_flow","dead_bug","bird_dog","incline_pushup","band_row","sit_to_stand","glute_bridge","cooldown_breathing"]);
@@ -205,20 +310,31 @@
     const F=short?["hip_flexor","ankle_wall","cooldown_breathing"]:["hip_flexor","thoracic_rotation","ankle_wall","hamstring_floss","cooldown_breathing"];
     const G=short?["warmup_flow","thoracic_rotation","cooldown_breathing"]:["warmup_flow","thoracic_rotation","bird_dog","ankle_wall","cooldown_breathing"];
     const sets=[
-      [knee?"Renfo genou doux":"Force profonde",short?22:42,knee?"mobility":"strength",A],
-      [knee&&!protect?"Marche-course plate":protect?"Cardio protection":"Endurance facile",knee?30:protect?25:35,"cardio",C],
-      [knee?"Stabilité genou / rotule":"Renfo mobilité",short?18:34,"mobility",B],
-      ["Force complète",short?24:40,"strength",D],
-      ["Cardio bas impact",short?22:32,"cardio",E],
-      ["Mobilité récupération",short?16:28,"mobility",F],
-      ["Récupération active",short?14:24,"mobility",G]
+      defineSession(knee?"Renfo genou doux":"Force profonde",short?22:42,knee?"mobility":"strength",A,short?"light":"hard",null),
+      defineSession(knee&&!protect?"Marche-course plate":protect?"Cardio protection":"Endurance facile",knee?30:protect?25:35,"cardio",C,protect||knee?"light":"moderate","mobility"),
+      defineSession(knee?"Stabilité genou / rotule":"Renfo mobilité",short?18:34,"mobility",B,"light",null),
+      defineSession("Force complète",short?24:40,"strength",D,short||knee?"light":"moderate",short?"mobility":null),
+      defineSession("Cardio bas impact",short?22:32,"cardio",E,short?"light":"moderate","mobility"),
+      defineSession("Mobilité récupération",short?16:28,"mobility",F,"light",null),
+      defineSession("Récupération active",short?14:24,"mobility",G,"light",short?null:"light_strength")
     ].slice(0,days);
-    const doneTypes=completed.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},{});
-    const remainingSets=sets.filter(s=>{ if(doneTypes[s[2]]>0){ doneTypes[s[2]]--; return false; } return true; });
-    const dates=remainingWeekDates(anchor,completed,windowDays);
-    const fallbackDates=scheduleOffsets(Math.max(1,remainingSets.length),windowDays).map(offset=>addDaysIso(anchor,offset));
+    const weekEnd=weekEndDate(anchor,windowDays);
+    const extraActivities=next||staleWeek?[]:state.activities.filter(a=>a.profileId===pid&&!a.sessionRunId).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
+    const doneTypes=completed.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},extraActivities.reduce((a,x)=>{ const type=activityPlanType(x); if(type) a[type]=(a[type]||0)+1; return a; },{}));
+    const remainingSets=sets.filter(s=>{ if(doneTypes[s.type]>0){ doneTypes[s.type]--; return false; } return true; });
+    const slotPlan=planSessionDates(remainingSets,remainingWeekDates(anchor,completed,windowDays));
+    const fallbackDates=scheduleOffsets(Math.max(1,remainingSets.length),windowDays).map(offset=>weekDates(anchor,windowDays)[offset]||anchor);
     state.plans=state.plans.filter(s=>!(s.profileId===pid&&!s.completedAt));
-    state.plans.push(...remainingSets.slice(0,Math.max(1,dates.length||remainingSets.length)).map((s,i)=>({id:uid(`session${i}`),profileId:pid,title:s[0],minutes:s[1],type:s[2],phase:1,week:weekNumber,weekStart:anchor,date:dates[i]||fallbackDates[i]||TODAY,dayIndex:completed.length+i+1,exerciseIds:s[3],short,completedAt:null})));
+    const planned=slotPlan.length?slotPlan.map((slot,i)=>({slot,set:remainingSets[i]})):remainingSets.slice(0,1).map((set,i)=>({slot:{date:fallbackDates[i]||TODAY,type:set.type},set}));
+    const sessions=[];
+    planned.forEach(({slot,set},i)=>{
+      sessions.push({id:uid(`session${i}`),profileId:pid,title:set.title,minutes:set.minutes,type:set.type,phase:1,week:weekNumber,weekStart:anchor,date:slot.date,dayIndex:completed.length+i+1,exerciseIds:set.exerciseIds,short:set.intensity==="light",secondary:false,completedAt:null,intensity:set.intensity});
+      const addon=companionSessionFor(set);
+      if(addon&&canPairSameDay(set,addon)){
+        sessions.push({id:uid(`session${i}_addon`),profileId:pid,title:addon.title,minutes:addon.minutes,type:addon.type,phase:1,week:weekNumber,weekStart:anchor,date:slot.date,dayIndex:completed.length+i+1,exerciseIds:addon.exerciseIds,short:true,secondary:true,completedAt:null,intensity:"light"});
+      }
+    });
+    state.plans.push(...sessions);
   }
   function decision(p){
     const planned=state.plans.filter(s=>s.profileId===p.id), done=planned.filter(s=>s.completedAt).length, adh=planned.length?done/planned.length:0;
@@ -228,8 +344,8 @@
     const hasCheck=scores.length>0||p.health.fatigue!=null||p.health.irradiating||p.health.neurological;
     if(!done && !hasCheck) return ["blue","Démarrage","Base installée. Renseigne le check rapide puis lance la première semaine."];
     if(p.health.irradiating||p.health.neurological||pain>=3||fatigue>=5) return ["red","Protection","Douleur ou fatigue élevée : priorité à la sécurité, au repos et à la mobilité."];
-    if(adh<.4||fatigue>=4) return ["orange","Semaine minimale viable","Volume réduit pour garder l'habitude sans surcharger."];
-    if(adh>=.65&&pain<=2&&fatigue<=3) return ["green","Progression","Semaine normale et légère progression possibles si tout reste propre."];
+    if(adh<.4||fatigue>=4) return ["orange","Adaptation","Le coach allège automatiquement le volume et les exercices si la récupération est limite."];
+    if(adh>=.65&&pain<=2&&fatigue<=3) return ["green","Progression","Semaine stable avec progression légère quand la récupération reste bonne."];
     return ["blue","Maintien","Répéter proprement sans chercher la performance."];
   }
   function start(id){ const s=state.plans.find(x=>x.id===id); if(!s) return; state.sessionRuns=state.sessionRuns.filter(x=>x.completedAt||x.abortedAt); state.sessionRuns.push({id:uid("run"),profileId:s.profileId,sessionId:s.id,exerciseIndex:0,setIndex:0,mode:"work",logs:[],safetyAlerts:[],startedAt:new Date().toISOString(),completedAt:null,abortedAt:null}); state.ui.view="session"; speakExerciseGuide(currentEx(),"Prochain exercice."); save("Séance lancée.").then(render); }
@@ -238,7 +354,13 @@
     r.logs.push({exerciseId:x.id,set:r.setIndex+1,success,pain,difficulty,at:new Date().toISOString()});
     if(pain>=3){r.safetyAlerts.push(`${x.name}: douleur ${pain}/5`); speak("Alerte sécurité. Stop ou version plus facile.","safety");}
     const doneEx=pain>=3||success==="stop"||r.setIndex+1>=x.sets;
-    if(doneEx&&r.exerciseIndex+1>=s.exerciseIds.length){r.completedAt=s.completedAt=new Date().toISOString(); r.mode="done"; state.activities.push({id:uid("activity"),profileId:r.profileId,source:"manual",type:s.type,startedAt:r.startedAt,durationSeconds:s.minutes*60,sessionRunId:r.id}); state.ui.view="stats"; speak("Séance terminée. Résumé enregistré.");}
+    if(doneEx&&r.exerciseIndex+1>=s.exerciseIds.length){
+      r.completedAt=s.completedAt=new Date().toISOString(); r.mode="done";
+      state.activities.push({id:uid("activity"),profileId:r.profileId,source:"manual",type:s.type,startedAt:r.startedAt,durationSeconds:s.minutes*60,sessionRunId:r.id});
+      const outcome=sessionOutcome(r);
+      if(outcome.hard||outcome.stopped) refreshPlanAfterActivity(r.profileId,{short:true});
+      state.ui.view="stats"; speak("Séance terminée. Résumé enregistré.");
+    }
     else if(doneEx){r.mode="resting"; r.restNext={exerciseIndex:r.exerciseIndex+1,setIndex:0,label:`Exercice suivant : ${exercise(s.exerciseIds[r.exerciseIndex+1]).name}`}; startRest(x.rest||30);}
     else {r.mode="resting"; r.restNext={exerciseIndex:r.exerciseIndex,setIndex:r.setIndex+1,label:`Série suivante : ${r.setIndex+2} sur ${x.sets}`}; startRest(x.rest||30);}
     save("Résultat enregistré.").then(render);
