@@ -7,8 +7,7 @@
     ["sessionRuns","record"],["assessments","feedback"]
   ];
   const nasEntityKey=(kind,id)=>kind+":"+id;
-  function nasOwnProfileItems(){
-    const owner=state.activeProfileId;
+  function nasOwnProfileItems(owner){
     if(!owner)return [];
     const result=[];
     for(const [field,kind] of nasKinds){
@@ -48,9 +47,9 @@
     if(kind==="profile_settings"&& !state.activeProfileId)state.activeProfileId=obj.id;
     return true;
   }
-  async function nasSyncStage(meta){
+  async function nasSyncStage(conn,meta){
     if(nasApplyingRemote)return meta;
-    const items=nasOwnProfileItems();
+    const items=nasOwnProfileItems(conn.localProfileId||meta.remotePrimaryProfileId||state.activeProfileId);
     const pending=new Map(meta.outbox.map(x=>[nasEntityKey(x.entityType,x.entityId),x]));
     for(const item of items){
       const key=nasEntityKey(item.kind,item.entityId),value=nasLocalFingerprint(item.payload);
@@ -106,6 +105,8 @@
       const batch=await nasRequest(conn.url,"/api/v1/sync/pull?cursor="+meta.cursor+"&limit=100",
         {token:conn.token});
       for(const evt of batch.events||[]){
+        if(!meta.initialized&&evt.kind==="profile_settings"&&evt.payload?.profile?.id)
+          meta.remotePrimaryProfileId=meta.remotePrimaryProfileId||evt.payload.profile.id;
         const key=nasEntityKey(evt.kind,evt.entity_id);
         // Ignore own events already acknowledged; do not overwrite local edits.
         const pending=meta.outbox.some(x=>nasEntityKey(x.entityType,x.entityId)===key);
@@ -147,10 +148,19 @@
       // avoiding a local snapshot overwriting existing NAS history.
       if(!meta.initialized){
         await nasSyncPull(conn,meta);
+        if(meta.remotePrimaryProfileId && !conn.localProfileId){
+          // Existing NAS: bind this terminal to the remote profile, not an
+          // unrelated local default profile. Keep other local profiles intact.
+          conn.localProfileId=meta.remotePrimaryProfileId;
+          state.activeProfileId=meta.remotePrimaryProfileId;
+          await put("nasConnection",conn);
+          await put("app",state);
+          render();
+        }
         meta.initialized=true;
         await put("nasSyncMeta",meta);
       }
-      await nasSyncStage(meta);
+      await nasSyncStage(conn,meta);
       await nasSyncPush(conn,meta);
       await nasSyncPull(conn,meta);
       meta.syncLastAt=new Date().toISOString();meta.error=null;
