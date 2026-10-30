@@ -161,3 +161,47 @@
     }catch(e){bleMachineState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")
       alert("Machine FTMS : "+e.message+" — vérifier la caractéristique et le mode appairage.");}
   }
+
+  function bluefyHelpPanel(){
+    const appUrl=location.href.split("#")[0].split("?")[0];
+    return `<details class="panel" id="bluefyHelp">
+      <summary aria-label="Informations pour connecter les capteurs avec Bluefy">ⓘ Utiliser Bluefy sur iPhone — mode d'emploi</summary>
+      <p><strong>Bluefy est un navigateur BLE</strong> : il faut ouvrir ResurGo directement DANS Bluefy, pas dans la PWA installée depuis Safari. Les deux navigateurs ont leurs propres données locales ; pour retrouver les profils, utiliser la synchronisation NAS ou la sauvegarde chiffrée.</p>
+      <ol>
+        <li>Sur l’iPhone, activer le Bluetooth et allumer la ceinture, la montre en mode diffusion cardio ou la machine FTMS.</li>
+        <li><a href="https://apps.apple.com/fr/app/bluefy-web-ble-browser/id1492822055" target="_blank" rel="noopener noreferrer">Installer / ouvrir Bluefy sur l’App Store</a>.</li>
+        <li>Dans Bluefy, saisir l’adresse HTTPS de ResurGo : <code id="bluefyUrl">${esc(appUrl)}</code>. <button type="button" class="secondary" id="copyBluefyUrl">Copier l’adresse</button></li>
+        <li>Dans ResurGo ouvert dans Bluefy, aller à <strong>Réglages → Capteurs Bluetooth</strong>, choisir le type puis toucher <strong>Connecter</strong>. Autoriser l’appareil dans la fenêtre Bluetooth.</li>
+        <li>Attendre une <strong>mesure réelle</strong> et vérifiable. « Connecté » sans vitesse, distance ou mesure cardio fraîche ne signifie pas « prêt ».</li>
+        <li>Pour la montre Apple Watch, il faut une application de diffusion du cardio compatible BLE si elle ne diffuse pas directement. L'application ResurGo ne crée ni ne signe d'application watchOS.</li>
+      </ol>
+      <p><strong>Limites :</strong> Bluefy doit rester au premier plan pendant l'utilisation ; réception BLE, GPS et son en arrière-plan non garantis sur iPhone. Une machine « Bluetooth » n'est pas forcément FTMS. Une Apple Watch ne diffuse pas automatiquement son GPS ni son altitude au téléphone.</p>
+    </details>
+    <div class="grid two">
+      <label>Source de fréquence cardiaque
+        <select id="bleHrSourceType">
+          <option value="chest_strap">Ceinture cardio (prioritaire)</option>
+          <option value="watch">Montre / diffusion FC BLE</option>
+        </select>
+      </label>
+      <label>Type de machine
+        <select id="bleMachineKind">
+          <option value="treadmill">Tapis de course (FTMS)</option>
+          <option value="elliptical">Elliptique / cross trainer (FTMS)</option>
+          <option value="bike">Vélo intérieur (FTMS)</option>
+        </select>
+      </label>
+    </div>
+    <div class="actions">
+      <button type="button" class="primary" id="bleHrConnect">Connecter le cardio</button>
+      <button type="button" class="secondary" id="bleHrDisconnect">Déconnecter le cardio</button>
+      <button type="button" class="primary" id="bleMachineConnect">Connecter machine FTMS</button>
+      <button type="button" class="secondary" id="bleMachineDisconnect">Déconnecter machine</button>
+    </div>
+    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p>`;
+  }
+  async function bluefyCopyAddress(){
+    const address=location.href.split("#")[0].split("?")[0];
+    try{await navigator.clipboard.writeText(address);alert("Adresse HTTPS de ResurGo copiée. Colle-la dans Bluefy.");}
+    catch{const e=document.getElementById("bluefyUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Bluefy.");}
+  }
