@@ -179,6 +179,9 @@
         ui:{...empty.ui,...snapshot.ui,view:"today",message:""}};
       await put("app",fresh);
       state=fresh;
+      // Ne jamais conserver une ancienne session NAS sur un jeu de données restauré :
+      // elle pourrait ensuite provoquer une synchronisation vers le mauvais profil.
+      await put("nasConnection",null);
       // Tokens d'appareils NE SONT PAS sauvegardés : réinscription via secret de récupération.
       if(payload.nas?.recovery?.keyId&&payload.nas.recovery.secret){
         try{
