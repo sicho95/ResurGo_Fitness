@@ -101,6 +101,24 @@ Given iPhone compact, grand texte, VoiceOver, dark mode ; When naviguer depuis A
 ### TF-26 : confidentialité
 Given aucune permission micro/HealthKit ; When utiliser course extérieure GPS ; Then séance possible dans limites de permissions GPS, pas de demande de micro ; aucune donnée physiologique envoyée dans le cloud. Export/suppression profil individuels vérifiés.
 
+### TF-27 : synchro NAS hors ligne et convergence [FON-080]
+Given deux appareils du même profil ont modifié hors réseau des entités indépendantes ; When le NAS redevient disponible et les PWA sont ouvertes ; Then les modifications sont synchronisées sans perte et les curseurs convergent.
+
+### TF-28 : conflit simultané et rollback [FON-081]
+Given le même plan édité offline sur deux appareils ; When la synchronisation reprend ; Then une révision conflictuelle est détectée et aucune version n'est écrasée silencieusement ; une ancienne exportation valide peut être restaurée.
+
+### TF-29 : authentification et séparation des profils [FON-081]
+Given deux utilisateurs et trois appareils ; When un appareil demande les données d'un profil non autorisé ; Then requête refusée ; révocation d'un appareil valide testée, tokens jamais fournis dans l'interface publique.
+
+### TF-30 : PWA iOS fermée et reconnexion [FON-082]
+Given iPhone PWA fermée, NAS inaccessible ; When des opérations restent en outbox puis la PWA se rouvre ; Then synchro au premier plan et aucune promesse mensongère de background ; coach et historique restent disponibles hors ligne.
+
+### TF-31 : déduplication Garmin/HealthKit [FON-080]
+Given la même sortie importée Garmin et HealthKit puis enregistrée par ResurGo ; When les appareils synchronisent ; Then une seule activité canonique, références des sources conservées, ambiguïtés soumises à validation.
+
+### TF-32 : isolation des services NAS [FON-081]
+Given Docker ResurGo Sync installé séparément ; When on le stoppe, redémarre ou restaure ; Then AlphaTerminal, Forgejo, Home Assistant et autres services existants restent inchangés.
+
 ## 3. Tests du moteur par rejeu
 
 Établir fixtures anonymisées/synthétiques :
