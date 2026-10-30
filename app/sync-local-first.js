@@ -7,27 +7,41 @@
     ["sessionRuns","record"],["assessments","feedback"]
   ];
   const nasEntityKey=(kind,id)=>kind+":"+id;
-  function nasOwnProfileItems(owner){
-    if(!owner)return [];
+  function nasOwnProfileItems(profileIds){
+    const allowed=new Set(profileIds||[]);
+    if(!allowed.size)return [];
     const result=[];
     for(const [field,kind] of nasKinds){
       if(!Array.isArray(state[field]))continue;
       for(const item of state[field]){
         if(!item?.id)continue;
-        if(field==="profiles"?(item.id!==owner):(item.profileId!==owner))continue;
+        if(!allowed.has(field==="profiles"?item.id:item.profileId))continue;
         const payload=kind==="profile_settings"?{profile:clone(item)}:clone(item);
         result.push({kind,entityId:String(item.id),payload,field});
       }
     }
     return result;
   }
+  // One NAS account may contain several local sports profiles. The initial
+  // owner can enroll every local profile. A newly paired device only uploads
+  // profiles already seen on this NAS, not an unrelated local starter profile.
+  function nasSyncEligibleProfileIds(conn,meta){
+    const local=(state.profiles||[]).filter(x=>x?.id).map(x=>x.id);
+    const isOriginalOwner=conn?.accountRole==="owner" || !!conn?.profileName;
+    if(isOriginalOwner)return local;
+    const remote=new Set(meta.remoteProfileIds||[]);
+    return local.filter(id=>remote.has(id));
+  }
   function nasLocalFingerprint(value){return JSON.stringify(value);}
   async function nasSyncLoadMeta(conn){
     const stored=await get("nasSyncMeta");
-    if(stored?.profileId===conn.profileId && stored.deviceId===conn.deviceId)return stored;
+    if(stored?.profileId===conn.profileId && stored.deviceId===conn.deviceId){
+      if(!Array.isArray(stored.remoteProfileIds))stored.remoteProfileIds=[];
+      return stored;
+    }
     const initial={profileId:conn.profileId,deviceId:conn.deviceId,cursor:0,
       revisions:{},hashes:{},outbox:[],conflicts:[],initialized:false,
-      syncLastAt:null,error:null};
+      syncLastAt:null,error:null,remoteProfileIds:[]};
     await put("nasSyncMeta",initial);
     return initial;
   }
@@ -49,7 +63,7 @@
   }
   async function nasSyncStage(conn,meta){
     if(nasApplyingRemote)return meta;
-    const items=nasOwnProfileItems(conn.localProfileId||meta.remotePrimaryProfileId||state.activeProfileId);
+    const items=nasOwnProfileItems(nasSyncEligibleProfileIds(conn,meta));
     const pending=new Map(meta.outbox.map(x=>[nasEntityKey(x.entityType,x.entityId),x]));
     for(const item of items){
       const key=nasEntityKey(item.kind,item.entityId),value=nasLocalFingerprint(item.payload);
@@ -83,6 +97,9 @@
       if(!original)continue;
       const k=nasEntityKey(original.entityType,original.entityId);
       if(row.status==="applied"||row.status==="duplicate"){
+        if(original.entityType==="profile_settings" &&
+           !meta.remoteProfileIds.includes(original.entityId))
+          meta.remoteProfileIds.push(original.entityId);
         meta.revisions[k]=row.revision;
         meta.hashes[k]=original.fingerprint;
         meta.outbox=meta.outbox.filter(x=>x.operationId!==row.operationId);
@@ -106,8 +123,11 @@
       const batch=await nasRequest(conn.url,"/api/v1/sync/pull?cursor="+meta.cursor+"&limit=100",
         {token:conn.token});
       for(const evt of batch.events||[]){
-        if(!meta.initialized&&evt.kind==="profile_settings"&&evt.payload?.profile?.id)
+        if(evt.kind==="profile_settings"&&evt.payload?.profile?.id){
           meta.remotePrimaryProfileId=meta.remotePrimaryProfileId||evt.payload.profile.id;
+          if(evt.deleted)meta.remoteProfileIds=meta.remoteProfileIds.filter(id=>id!==evt.entity_id);
+          else if(!meta.remoteProfileIds.includes(evt.entity_id))meta.remoteProfileIds.push(evt.entity_id);
+        }
         const key=nasEntityKey(evt.kind,evt.entity_id);
         // Ignore own events already acknowledged; do not overwrite local edits.
         const pending=meta.outbox.some(x=>nasEntityKey(x.entityType,x.entityId)===key);
@@ -235,6 +255,8 @@
     if(result)result.textContent=!conn?.token?"Non associé au NAS.":(
       "Dernière synchronisation : "+(meta?.syncLastAt?
         new Date(meta.syncLastAt).toLocaleString("fr-FR"):"aucune")+
+      ". Profils sur NAS détectés : "+(meta?.remoteProfileIds?.length||0)+
+      " / "+(state.profiles?.length||0)+" locaux"+
       ". En attente : "+(meta?.outbox.length||0)+
       ". Conflits : "+(meta?.conflicts.length||0)+
       (meta?.error?". Problème : "+meta.error:"")
