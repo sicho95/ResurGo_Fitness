@@ -1,7 +1,7 @@
-  // ResurGo — bibliothèques de deux voix neurales prégénérées (Piper).
+  // ResurGo — voix neurales Edge françaises (Vivienne / Remy), mêmes identités que Histoire.
   // AUCUN réseau ni LLM nécessaire en course si le pack choisi est en cache.
   let coachVoiceManifest=null,coachVoiceLoading=null,coachVoiceAudio=null;
-  const voicePackBase="./voice/fr-FR/v1/";
+  const voicePackBase="./voice/fr-FR/v2/";
   async function voiceGetManifest(){
     if(coachVoiceManifest)return coachVoiceManifest;
     if(coachVoiceLoading)return coachVoiceLoading;
