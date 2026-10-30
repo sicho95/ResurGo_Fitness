@@ -26,6 +26,7 @@
 6. `06_DECISIONS_QUESTIONS_SOURCES.md` — registre de décisions, points ouverts, sources de référence.
 7. `07_CATALOGUE_VOCAL.md` — grammaire hors ligne, production des voix et 80 formulations candidates à valider.
 8. `08_MOTEURS_ALGORITHMES.md` — pipeline déterministe détaillé, qualité capteurs, terrain, prédictions et arbitrage des conseils.
+9. `09_BIBLIOTHEQUE_PREVENTION_MOBILITE.md` — catalogue générique détaillé des étirements, mobilité, renforcement et séparation d'avec les soins encadrés.
 
 ## C. Périmètre confirmé
 
