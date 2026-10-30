@@ -130,11 +130,29 @@ fi
 
 # Generate no secrets here, never echo them to a terminal.
 docker compose up -d --build
-curl --fail --silent --show-error "http://127.0.0.1:${RS_PUBLIC_HOST_PORT}/health" >/dev/null ||
-  fail "API publique locale non fonctionnelle. Aucun Funnel ajouté."
-curl --fail --silent --show-error -H "Authorization: Bearer ${RS_ADMIN_TOKEN}" \
-  "http://127.0.0.1:${RS_ADMIN_HOST_PORT}/health" >/dev/null ||
-  fail "API admin locale non fonctionnelle. Aucun Funnel ajouté."
+# Container Station may report "Started" before Python/SQLite has initialized.
+# Never publish Funnel before BOTH APIs are genuinely healthy.
+info "Attente de démarrage des deux API, sans toucher aux routes Tailscale."
+healthy=0
+for attempt in $(seq 1 30); do
+  if curl --fail --silent --max-time 3 "http://127.0.0.1:${RS_PUBLIC_HOST_PORT}/health" >/dev/null 2>&1 &&
+     curl --fail --silent --max-time 3 -H "Authorization: Bearer ${RS_ADMIN_TOKEN}" \
+       "http://127.0.0.1:${RS_ADMIN_HOST_PORT}/health" >/dev/null 2>&1; then
+    healthy=1
+    break
+  fi
+  sleep 2
+done
+if [[ "$healthy" != 1 ]]; then
+  info "Diagnostic des conteneurs ResurGo uniquement :"
+  docker ps -a --filter 'name=resurgo-sync' --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' || true
+  info "Dernières lignes du service public :"
+  docker logs --tail 30 resurgo-sync-public 2>&1 || true
+  info "Dernières lignes du service admin :"
+  docker logs --tail 30 resurgo-sync-admin 2>&1 || true
+  fail "API ResurGo non prête après vérification : aucun Funnel ajouté."
+fi
+info "API publique et administration répondent aux tests locaux."
 [[ "$(curl --silent --output /dev/null --write-out '%{http_code}' "http://127.0.0.1:${RS_PUBLIC_HOST_PORT}/admin/profiles")" == "404" ]] ||
   fail "Une route admin apparaît sur l'API publique : REFUS de publier."
 
