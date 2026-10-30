@@ -31,13 +31,14 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 
 - **DEC-021 (CONFIRMÉ)** Synchronisation automatique multi-appareils dès le premier lot, sans bloquer le fonctionnement local-first.
 - **DEC-022 (PROPOSITION de Damien)** Si nécessaire, un **Docker sur le NAS QNAP**, à la manière d'AlphaTerminal, comme serveur de convergence ; à prototyper avant décision finale sur l'hébergement.
+- **DEC-028 (CONFIRMÉ)** Aucun appareil utilisateur dans Tailscale ; **API de synchronisation publique via Funnel HTTPS** ; **page d'administration accessible seulement à Damien depuis iMac/autre appareil dans Tailscale**. Ne jamais exposer l'interface ou l'API d'administration sur Funnel. Services/ports distincts, authentification indépendante et tests d'accès externe obligatoires.
 - **DEC-023 (CONFIRMÉ)** Refonte iOS native-like en préservant l'identité ResurGo.
 - **DEC-024 (CONFIRMÉ)** Voix naturelles **prégénérées par synthèse** avec profils d'identités vocale masculine et féminine persistants ; pas d'enregistrements manuels imposés.
 - **DEC-025 (CONFIRMÉ)** Catalogue général de mobilité avec suivi personnel, sans protocoles thérapeutiques prescrits automatiquement.
 - **DEC-026 (CONFIRMÉ)** Damien souhaite déploiement automatique sur l'application actuelle et une évolution complète ; cela ne constitue pas une preuve de compatibilité matérielle ni une dispense de sécurité et de recette.
 - **DEC-027 (CONFIRMÉ)** Duplication intégrale des spécifications dans SichoBrain KOS autorisée par Damien.
 
-Voir `10_SYNCHRONISATION_NAS.md` et `11_ARBITRAGES_2026-10-30.md` pour détails et matériel déclaré.
+Voir `10_SYNCHRONISATION_NAS.md` et `11_ARBITRAGES_2026-10-30.md` pour détails, choix réseau Funnel/Serve et matériel déclaré.
 
 ## 2. Options proposées mais non approuvées
 
