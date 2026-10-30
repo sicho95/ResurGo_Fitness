@@ -21,6 +21,7 @@ jobs:
       - name: Validate Docker Compose without secrets or deployment
         run: |
           cd server/resurgo-sync
+          cp .env.example .env  # CI uniquement, valeurs factices
           RS_HOST_DATA_DIR=/tmp/resurgo-ci           RS_ADMIN_TOKEN=CI_NOT_PRODUCTION_ADMIN_TOKEN_ONLY_FOR_CONFIG_TEST           RS_PAIR_PEPPER=CI_NOT_PRODUCTION_PEPPER_ONLY_FOR_CONFIG_TEST           docker compose -f docker-compose.yml --env-file .env.example config --quiet
       - name: API tests
         run: |
