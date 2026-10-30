@@ -1,12 +1,12 @@
 # Architecture technique cible et moteur de décision
 
-Statut : **PROPOSITION d'architecture** mettant en œuvre les exigences confirmées `01_SPEC_FONCTIONNELLE.md`. Aucune API Garmin, Apple ni Bluetooth n'est considérée disponible sans test réel.
+Statut : **PROPOSITION d'architecture** mettant en œuvre les exigences confirmées `01_SPEC_FONCTIONNELLE.md`. La décision postérieure **`13_ARBITRAGE_PWA_MONTRES.md`** remplace les blocs d'architecture native/watchOS conservés ci-dessous à titre d'historique. Aucune API Garmin, Apple ni Bluetooth n'est considérée disponible sans test réel.
 
 ## 1. Principes d'architecture
 
 - Conserver `main` comme source d'application ; `WebApp` est uniquement le build généré, jamais modifié directement.
 - Isoler le calcul sportif pur de la présentation (JavaScript testable sans navigateur) ; pas de LLM, ni moteur distant nécessaire.
-- Garder PWA pour profils/plans/analyses, et introduire **compagnon iOS natif** pour capteurs, séance écran verrouillé, HealthKit, connexion BLE et audio. watchOS constitue un composant séparé.
+- **DÉCISION MODIFIÉE LE 30/10/2026 : PWA exclusivement.** Aucun compagnon iOS natif ni watchOS à créer ou signer. La PWA gère toutes les fonctions accessibles par navigateur ; les métriques non accessibles à Safari (Web Bluetooth, HealthKit, audio watchOS, GPS watch natif) sont indiquées comme indisponibles, sans invention de données. Des extensions tierces/App Store pour BLE sont une piste optionnelle à tester en Safari, pas une dépendance obligatoire en course extérieure.
 - Conserver IndexedDB offline-first et les exports multi-profils ; nouveau schéma versionné avec migration non destructive.
 - Unification par événements immuables, horodatés et liés à une `activityId` canonique.
 - Adapter les algorithmes de dépense/charge à la discipline ; « moteur commun » signifie règles de supervision et interface, pas équations physiques universelles.
