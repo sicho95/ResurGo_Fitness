@@ -77,3 +77,72 @@
       <article class="panel"><h2>Historique</h2>
         ${list||"<p>Aucune notification reçue.</p>"}</article></section>`;
   }
+
+  function pushPublicKeyBytes(key){
+    const raw=String(key||"").replace(/-/g,"+").replace(/_/g,"/");
+    const bytes=atob(raw.padEnd(Math.ceil(raw.length/4)*4,"="));
+    return Uint8Array.from(bytes,c=>c.charCodeAt(0));
+  }
+  async function pushEnableFromSettings(){
+    try{
+      if(!("serviceWorker" in navigator)||!("PushManager" in window)||
+         !("Notification" in window))throw Error("Web Push non disponible dans ce navigateur.");
+      if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!isStandalone())
+        throw Error("Sur iPhone, installe d'abord ResurGo sur l'écran d'accueil.");
+      const conn=await nasStoredConnection();
+      if(!conn?.token)throw Error("Associe d'abord cet appareil au compte NAS.");
+      // The permission prompt must occur in direct response to a user gesture.
+      const permission=Notification.permission==="granted"?"granted":
+        await Notification.requestPermission();
+      if(permission!=="granted")throw Error("Permission de notification refusée.");
+      const reg=await navigator.serviceWorker.ready;
+      const key=await nasRequest(conn.url,"/api/v1/push/key",{token:conn.token});
+      if(!key.publicKey)throw Error("Clé Web Push du NAS indisponible.");
+      const existing=await reg.pushManager.getSubscription();
+      const subscription=existing||await reg.pushManager.subscribe({
+        userVisibleOnly:true,applicationServerKey:pushPublicKeyBytes(key.publicKey)
+      });
+      const timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Paris";
+      await nasRequest(conn.url,"/api/v1/push/subscribe",{
+        method:"POST",token:conn.token,
+        payload:{subscription:subscription.toJSON(),timezone,
+          reminderTime:state.settings.notifications.reminderTime||"08:00"}
+      });
+      alert("Web Push enregistré sur ce téléphone. Les rappels arriveront quand le worker NAS sera activé.");
+      await pushStatusInSettings();
+    }catch(err){alert("Activation Web Push : "+(err?.message||"échec"));}
+  }
+  async function pushDisableFromSettings(){
+    try{
+      const conn=await nasStoredConnection();
+      if(!conn?.token)throw Error("Aucun compte NAS associé.");
+      await nasRequest(conn.url,"/api/v1/push/unsubscribe",{method:"POST",token:conn.token});
+      const reg=await navigator.serviceWorker?.ready;
+      const subscription=await reg?.pushManager?.getSubscription();
+      if(subscription)await subscription.unsubscribe();
+      await pushStatusInSettings();
+      alert("Abonnement Web Push de cet appareil désactivé.");
+    }catch(err){alert("Désabonnement : "+(err?.message||"échec"));}
+  }
+  async function pushTestFromSettings(){
+    try{
+      const conn=await nasStoredConnection();
+      if(!conn?.token)throw Error("Appareil NAS non associé.");
+      const result=await nasRequest(conn.url,"/api/v1/push/test",
+        {method:"POST",token:conn.token});
+      if(!result.sent)throw Error("Le NAS n'a pas confirmé l'envoi.");
+      alert("Envoi accepté par le service de Push. Vérifie la notification sur ce téléphone.");
+    }catch(err){alert("Test Web Push : "+(err?.message||"échec"));}
+  }
+  async function pushStatusInSettings(){
+    const target=el("nasPushStatus");
+    if(!target)return;
+    try{
+      const conn=await nasStoredConnection();
+      if(!conn?.token){target.textContent="Associer d'abord ce téléphone au NAS.";return;}
+      const status=await nasRequest(conn.url,"/api/v1/push/status",{token:conn.token});
+      target.textContent=status.subscribed?
+        "Abonnement actif sur NAS · rappel "+status.reminderTime+" ("+status.timezone+")":
+        "Pas d'abonnement Web Push pour cet appareil.";
+    }catch(err){target.textContent="Statut Push indisponible : "+(err?.message||"réseau");}
+  }
