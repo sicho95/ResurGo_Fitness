@@ -32,7 +32,7 @@
 - **Secrets exclus** : jetons de sessions, tokens Worker et tokens spécifiques appareils. Une **clé de récupération NAS** (utilisable pour créer une nouvelle session) est incluse **dans la partie chiffrée** lorsqu'elle existe.
 - Restauration : fichier limité à 25 Mo, vérification des paramètres cryptographiques, authentification du message par AES-GCM, validation du snapshot métier, confirmation avant remplacement. **Aucune écriture** si mot de passe incorrect ou fichier altéré.
 - Nettoyage systématique de l'ancienne session NAS à la restauration : pas de sync vers le mauvais profil ; si clé NAS présente, réenrôlement sécurisé et stockage de la nouvelle session localement.
-- Si NAS indisponible : restauration locale conservée ; l'association à distance reste à refaire.
+- Si NAS indisponible : restauration locale conservée **et clé de récupération temporairement gardée dans le stockage local** sous `nasPendingRecovery`; dans les réglages NAS, le bouton « Reprendre la récupération NAS » permet de créer une nouvelle session plus tard, sans ancien appareil et sans réimport du fichier. Sur succès, cette attente est effacée. Cette capacité locale est sensible et ne doit pas être exposée en clair par export ou journal.
 
 ### Interfaces
 
@@ -80,4 +80,4 @@ La **création du premier profil NAS** utilise encore l'administration privée d
 - `tests/resurgo-backup.test.mjs` : fichier chiffré, restauration locale, mauvais mot de passe, falsification, présence de la clé NAS et absence de jeton.
 - `node scripts/build-static.mjs --out .webapp-build` et `node --check .webapp-build/app.js`.
 
-Les résultats CI du 30/10/2026 : **12 tests API et 6 tests sauvegarde** réussis avec vérification du build JS, sur branche `feature/resurgo-sync-funnel-20261030`.
+Les résultats CI du 30/10/2026 : **12 tests API et 7 tests sauvegarde** réussis avec vérification du build JS, sur branche `feature/resurgo-sync-funnel-20261030`.
