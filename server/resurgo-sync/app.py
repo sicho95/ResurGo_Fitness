@@ -4,6 +4,7 @@ Candidate implementation; not deployed or approved for real health data.
 """
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import hmac
 import json
@@ -35,12 +36,27 @@ def connect() -> sqlite3.Connection:
     c.row_factory = sqlite3.Row
     c.execute("PRAGMA busy_timeout=15000")
     c.execute("PRAGMA foreign_keys=ON")
-    c.execute("PRAGMA journal_mode=WAL")
+    # WAL is configured once under a cross-process startup lock in init_db().
+    # Re-setting journal_mode on every request can lock the other service.
     return c
 
 
 def init_db() -> None:
+    # The public and admin containers may start simultaneously over the same
+    # bind-mounted SQLite file. A process-shared OS file lock serializes schema
+    # creation and WAL activation. Never lock the ordinary API request path.
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with open(DB_PATH.with_name(DB_PATH.name + ".init.lock"), "a+b") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            _init_db_locked()
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
+def _init_db_locked() -> None:
     with closing(connect()) as c:
+        c.execute("PRAGMA journal_mode=WAL")
         c.executescript("""
         CREATE TABLE IF NOT EXISTS profiles (
             id TEXT PRIMARY KEY, label TEXT NOT NULL, created_at INTEGER NOT NULL);
