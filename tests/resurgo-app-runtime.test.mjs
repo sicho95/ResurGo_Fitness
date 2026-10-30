@@ -17,6 +17,7 @@ test("the built webapp exposes all new modules in render() lexical scope",()=>{
     "bluefyHelpPanel","bluefyCopyAddress","voiceSpeakId","voicePreview",
     "voiceInstallOffline","nasSyncStart","nasSyncNow","nasSyncResolveConflicts",
     "nasCreateProfile","nasPairWithCode","exportEncryptedBackup",
+    "pushInboxOpen","pushInboxView","pushEnableFromSettings","pushTestFromSettings",
     "restoreEncryptedBackup","sensorAccept","chooseSensorMetric",
   ];
   const report=names.map(name=>name+':typeof '+name).join(",");
