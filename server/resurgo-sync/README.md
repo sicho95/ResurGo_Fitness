@@ -14,6 +14,7 @@ Ce service est destiné au QNAP NAS-DAMIEN **uniquement après** tests d'intégr
 ## Contenus
 
 - `app.py` : 2 apps FastAPI séparées `public` (port interne 8080) et `admin` (port interne 8081), SQLite avec révisions, opérations idempotentes et appairage.
+- `admin.html` / `admin.js` : interface d'administration **privée uniquement**, avec connexion par jeton, création de profils, codes d'appairage et révocation des appareils. L'API publique n'a aucune route ni aucun asset d'administration.
 - `docker-compose.yml` : 2 conteneurs non-root, fichiers en lecture seule, `/data` persistant, ports uniquement sur loopback NAS.
 - `requirements.txt`, `requirements-test.txt`, `tests/test_api.py`.
 - `.env.example` : valeurs factices seulement, **ne pas** copier dans GitHub avec des secrets.
@@ -64,7 +65,7 @@ Les réponses `applied`, `duplicate`, `conflict`, `invalid_entity_type`, `payloa
 
 ## Important : limites actuelles et sécurité non finalisée
 
-- Ce dépôt ne contient **pas** encore de synchronisation cliente IndexedDB (outbox, merge, révision), ni d'administration graphique, ni de compte utilisateur autonome.
+- Ce dépôt ne contient **pas** encore de synchronisation cliente IndexedDB (outbox, merge, révision), ni de compte utilisateur autonome ; l'administration graphique privée est présente mais doit être vérifiée depuis le poste Tailscale de Damien.
 - Le **protocole API et son schéma sont candidats** ; tests unitaires nécessaires et migration à écrire avant exploitation.
 - Le rate limiting du pairage est un garde-fou global minimal. Une exposition Internet exige une revue anti-abus, tests de charge, analyse d'entêtes proxys, une politique de quotas et une évaluation RGPD. Les codes d'appairage peuvent être récupérés via accès au profil déjà autorisé ; les jetons restent à protéger côté client.
 - Une sauvegarde de SQLite en mode WAL nécessite un mécanisme de sauvegarde SQLite ou une copie à froid ; `cp fichier.sqlite3` en pleine écriture n'est pas suffisant.
