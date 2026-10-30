@@ -83,13 +83,14 @@
       if(!name.trim())throw Error("Donner un nom au profil.");
       const connected=await nasStoredConnection();
       if(connected?.token)throw Error("Appareil déjà associé. Utiliser le jumelage ou la restauration.");
-      if(!confirm("Créer un nouveau profil NAS indépendant, sans administrateur, et préparer sa sauvegarde chiffrée ?"))return;
+      if(!confirm("Créer un nouveau profil NAS indépendant sans administrateur ? Les entraînements, poids, ressenti et informations de récupération de ce profil seront synchronisés via Funnel HTTPS et stockés sur ton NAS. Tu restes libre de continuer seulement en local."))return;
       const data=await nasRequest(url,"/api/v1/profiles/create",{method:"POST",
         payload:{profileName:name,deviceName:label}});
       if(!data.profileId||!data.token||!data.recovery?.secret)
         throw Error("Le NAS n'a pas confirmé la création du profil sécurisé.");
       await put("nasConnection",{url,profileId:data.profileId,deviceId:data.deviceId,
-        token:data.token,recovery:data.recovery,label,profileName:data.profileName});
+        token:data.token,recovery:data.recovery,label,profileName:data.profileName,
+        localProfileId:state.activeProfileId});
       state.settings.nasSyncUrl=url;
       await save("Profil NAS créé sans administrateur. Exporte maintenant une sauvegarde chiffrée.");
       render();
@@ -249,7 +250,7 @@
             throw Error("Réassociation NAS incomplète.");
           await put("nasConnection",{url:base,profileId:recovered.profileId,
             deviceId:recovered.deviceId,token:recovered.token,recovery:recovered.recovery,
-            label:"Appareil restauré"});
+            label:"Appareil restauré",localProfileId:state.activeProfileId});
           await put("nasPendingRecovery",null);
           state.settings.nasSyncUrl=base;
           await put("app",state);
