@@ -16,7 +16,7 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 | DEC-008 | Priorité FC : ceinture thoracique > montre > machine de sport, sauf signal invalide. |
 | DEC-009 | Priorité GPS/vitesse/distance/altitude extérieurs : montre reçue en direct > téléphone, avec jugement de précision, altitude barométrique si disponible et continuité. |
 | DEC-010 | Toutes sources optionnelles se connectent, enrichissent mesures et se remplacent automatiquement en cas de coupure/erreur ; aucune donnée absente inventée. |
-| DEC-011 | Apple Watch : app ResurGo connectée à l'iPhone dans les deux sens, montre pouvant jouer la voix localement si compatible. |
+| DEC-011 | **REMPLACÉ par DEC-030 le 30/10/2026** : ancienne proposition de compagnon watchOS natif et communication bidirectionnelle, devenue hors périmètre. |
 | DEC-012 | Garmin reste maître de son activité native, sans intervention/installation obligatoire sur la montre si solution standard disponible ; expérimenter l'émulation d'équipement. |
 | DEC-013 | HRM-Pro Plus Garmin utilisable comme source cardio supplémentaire en BLE, tout en restant associée Garmin par ANT+ si pris en charge. |
 | DEC-014 | Musique externe indépendante ; **deux identités vocales naturelles masculine/féminine, SYNTHÉTISÉES en amont (prégénérées), conservées et versionnées pour régénérer les futurs messages à identité constante** ; diffusion de fichiers audio offline, tonalités variées ; clarification explicite de Damien le 2026-10-30. |
@@ -43,6 +43,8 @@ Voir `10_SYNCHRONISATION_NAS.md` et `11_ARBITRAGES_2026-10-30.md` pour détails,
 - **DEC-029 (CONFIRMÉ)** Export de la configuration et des données de ResurGo dans un **JSON complet chiffré par mot de passe**, restauration locale sans admin, clé NAS de récupération chiffrée dans le fichier et nouveau jeton à la restauration, possibilité de code de jumelage créé sur l'ancien appareil par son utilisateur sans admin. Le premier profil NAS reste administré dans le prototype, contrairement à l'inscription autonome existant dans AlphaTerminal.
 
 Voir `12_SAUVEGARDE_RESTAURATION.md` pour contrats, tests et limites.
+
+- **DEC-030 (CONFIRMÉ, PLUS RÉCENT)** ResurGo demeure **100 % PWA sur iPhone**, avec look iOS native-like ; aucun binaire iOS ni watchOS propre à ResurGo, aucune signature/développeur Apple à prévoir. Apple Watch et Garmin uniquement comme capteurs facultatifs si flux réellement accessible. Claire part avec son iPhone et sa Series 11. L'Apple Watch seule n'est pas une PWA ResurGo autonome. Safari iOS n'a pas Web Bluetooth natif ; diffusion FC Apple Watch possible uniquement avec solution tierce, et lecture par navigateur/extension compatible à vérifier. Ne jamais affirmer récupérer GPS, FC ou altitude de la montre sans flux réel. **Référence normative : `13_ARBITRAGE_PWA_MONTRES.md`.**
 
 ## 2. Options proposées mais non approuvées
 
