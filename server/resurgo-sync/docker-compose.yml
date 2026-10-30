@@ -1,0 +1,40 @@
+# CANDIDAT : à déployer seulement après audit du NAS et recette de sécurité.
+# Ne jamais exposer le port privé 18880 via Tailscale Funnel.
+services:
+  resurgo-sync-public:
+    build: .
+    container_name: resurgo-sync-public
+    command: ["uvicorn", "app:public", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      RS_DB_PATH: /data/resurgo.sqlite3
+    ports:
+      - "127.0.0.1:${RS_PUBLIC_HOST_PORT:-18879}:8080"
+    volumes:
+      - ${RS_HOST_DATA_DIR:?Configurer un volume absolu NAS distinct de AlphaTerminal}:/data
+    read_only: true
+    tmpfs: ["/tmp:size=16m"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 192m
+    pids_limit: 64
+
+  resurgo-sync-admin:
+    build: .
+    container_name: resurgo-sync-admin
+    command: ["uvicorn", "app:admin", "--host", "0.0.0.0", "--port", "8081", "--no-access-log"]
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      RS_DB_PATH: /data/resurgo.sqlite3
+    ports:
+      - "127.0.0.1:${RS_ADMIN_HOST_PORT:-18880}:8081"
+    volumes:
+      - ${RS_HOST_DATA_DIR:?Configurer un volume absolu NAS distinct de AlphaTerminal}:/data
+    read_only: true
+    tmpfs: ["/tmp:size=16m"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 192m
+    pids_limit: 64
