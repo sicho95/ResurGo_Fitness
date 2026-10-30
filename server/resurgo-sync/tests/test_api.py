@@ -153,3 +153,57 @@ def test_payload_limits_and_unknown_types(clients):
     bad["entityType"] = "anything"
     res = api.post("/api/v1/sync/push", json={"operations": [bad]}, headers=auth)
     assert res.json()["results"][0]["status"] == "invalid_entity_type"
+
+def test_recovery_from_encrypted_backup_secret_without_admin(clients):
+    adm, api = clients
+    original = enrolled(clients)
+    assert original["recovery"]["keyId"] and len(original["recovery"]["secret"]) >= 40
+    # Losing the original phone: revoke its session; encrypted backup retains a separate secret.
+    assert api.post("/api/v1/devices/" + original["deviceId"] + "/revoke",
+                    headers=headers(original)).status_code == 200
+    assert api.get("/api/v1/devices", headers=headers(original)).status_code == 401
+    data = {
+        "profileId": original["profileId"],
+        "keyId": original["recovery"]["keyId"],
+        "secret": original["recovery"]["secret"],
+        "label": "Nouvel iPhone"
+    }
+    result = api.post("/api/v1/recovery/redeem", json=data)
+    assert result.status_code == 200, result.text
+    recovered = result.json()
+    assert recovered["profileId"] == original["profileId"]
+    assert recovered["deviceId"] != original["deviceId"]
+    assert recovered["token"] != original["token"]
+    assert recovered["recovery"]["secret"] != original["recovery"]["secret"]
+    assert api.get("/api/v1/devices", headers=headers(recovered)).status_code == 200
+
+
+def test_recovery_rejects_wrong_secret_other_profile_and_revoked_key(clients):
+    adm, api = clients
+    first = enrolled(clients, "A")
+    second = enrolled(clients, "B")
+    body = {"profileId": first["profileId"], "keyId": first["recovery"]["keyId"],
+            "secret": second["recovery"]["secret"], "label": "Intrus"}
+    assert api.post("/api/v1/recovery/redeem", json=body).status_code == 401
+    body["secret"] = first["recovery"]["secret"]
+    body["profileId"] = second["profileId"]
+    assert api.post("/api/v1/recovery/redeem", json=body).status_code == 401
+    keys = api.get("/api/v1/recovery/keys", headers=headers(first))
+    assert keys.status_code == 200 and len(keys.json()["keys"]) == 1
+    assert "secret" not in str(keys.json())
+    body["profileId"] = first["profileId"]
+    assert api.post("/api/v1/recovery/keys/" + first["recovery"]["keyId"] + "/revoke",
+                    headers=headers(first)).status_code == 200
+    assert api.post("/api/v1/recovery/redeem", json=body).status_code == 401
+
+
+def test_recovery_requires_valid_secret_and_auth_on_management(clients):
+    adm, api = clients
+    first = enrolled(clients)
+    assert api.get("/api/v1/recovery/keys").status_code == 401
+    assert api.post("/api/v1/recovery/keys/" + first["recovery"]["keyId"] + "/revoke").status_code == 401
+    assert api.post("/api/v1/recovery/redeem", json={
+        "profileId": first["profileId"], "keyId": first["recovery"]["keyId"],
+        "secret": "wrong" * 15, "label": "Attacker"
+    }).status_code == 401
+
