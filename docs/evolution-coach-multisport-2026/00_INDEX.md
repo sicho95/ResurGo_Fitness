@@ -3,7 +3,7 @@
 **Statut :** spécification de référence de travail, sans développement ni déploiement.
 **Établi le :** 2026-10-30.
 **Produit actuel audité :** ResurGo Fitness PWA, version déclarée 1.3.4, branche `main`.
-**Version du dossier :** SPEC-MULTISPORT 0.2.0 (ajout des arbitrages et de la synchronisation NAS proposée).
+**Version du dossier :** SPEC-MULTISPORT 0.3.0 (ajout des arbitrages et de la synchronisation NAS proposée).
 **Propriétaire des arbitrages :** Damien. **Source de vérité produit :** dépôt `sicho95/ResurGo_Fitness` ; SichoBrain KOS est la mémoire personnelle officielle, mais n'a pas été modifié par ce dossier.
 
 ## A. Mode d'emploi et valeur normative
@@ -29,6 +29,7 @@
 9. `09_BIBLIOTHEQUE_PREVENTION_MOBILITE.md` — catalogue générique détaillé des étirements, mobilité, renforcement et séparation d'avec les soins encadrés.
 10. `10_SYNCHRONISATION_NAS.md` — architecture proposée de synchronisation locale multi-appareils via Docker dédié QNAP, inspirée d'AlphaTerminal.
 11. `11_ARBITRAGES_2026-10-30.md` — décisions confirmées par Damien, matériel déclaré, objectif de livraison et questions restantes.
+12. `12_SAUVEGARDE_RESTAURATION.md` — export JSON sécurisé, code d'association sans administrateur et récupération NAS depuis sauvegarde chiffrée.
 
 ## C. Périmètre confirmé
 
