@@ -149,6 +149,14 @@ Le fichier existant `workers/resurgo-sync/worker.js` stocke actuellement un **sn
 
 La proposition NAS est cohérente avec l'objectif de Damien. Elle est **retenue comme piste prioritaire pour prototypage**, pas déclarée « déployée » ni « testée ».
 
+## 9 bis. Sauvegardes utilisateur et récupération sans admin (développement candidat)
+
+**CONFIRMÉ** : export JSON de toutes les données et de la configuration fonctionnelle ResurGo, protégé par mot de passe, association d'un appareil supplémentaire par code créé sur un appareil déjà associé sans admin, restauration hors ligne avec mot de passe et éventuelle récupération de compte NAS même si tous les appareils précédents sont perdus. Le mot de passe ne va jamais au serveur ; la clé NAS de récupération est protégée dans l'enveloppe AES-GCM.
+
+**IMPLÉMENTÉ SUR BRANCHE CANDIDATE** `feature/resurgo-sync-funnel-20261030` : `app/backup-secure.js`, écrans dans Réglages, endpoints de récupération et tests ; pas encore dans `main` et pas déployé. Voir `12_SAUVEGARDE_RESTAURATION.md`.
+
+**ATTENTION** : synchronisation automatisée des contenus entre appareils encore non intégrée dans la PWA ; le serveur et la sauvegarde ne suffisent pas à garantir la convergence des plans et des activités. Premier profil NAS toujours créé dans la console admin dans ce prototype ; appareils suivants autonomes.
+
 ## 10. Recette technique NAS (avant activation)
 
 1. Vérifier capacité NAS, sauvegardes et ressources disponibles sans toucher aux autres conteneurs.
