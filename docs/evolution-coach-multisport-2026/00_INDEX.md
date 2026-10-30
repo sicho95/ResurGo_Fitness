@@ -3,7 +3,7 @@
 **Statut :** spécification de référence de travail, sans développement ni déploiement.
 **Établi le :** 2026-10-30.
 **Produit actuel audité :** ResurGo Fitness PWA, version déclarée 1.3.4, branche `main`.
-**Version du dossier :** SPEC-MULTISPORT 0.1.1.
+**Version du dossier :** SPEC-MULTISPORT 0.2.0 (ajout des arbitrages et de la synchronisation NAS proposée).
 **Propriétaire des arbitrages :** Damien. **Source de vérité produit :** dépôt `sicho95/ResurGo_Fitness` ; SichoBrain KOS est la mémoire personnelle officielle, mais n'a pas été modifié par ce dossier.
 
 ## A. Mode d'emploi et valeur normative
@@ -27,6 +27,8 @@
 7. `07_CATALOGUE_VOCAL.md` — grammaire hors ligne, production des voix et 80 formulations candidates à valider.
 8. `08_MOTEURS_ALGORITHMES.md` — pipeline déterministe détaillé, qualité capteurs, terrain, prédictions et arbitrage des conseils.
 9. `09_BIBLIOTHEQUE_PREVENTION_MOBILITE.md` — catalogue générique détaillé des étirements, mobilité, renforcement et séparation d'avec les soins encadrés.
+10. `10_SYNCHRONISATION_NAS.md` — architecture proposée de synchronisation locale multi-appareils via Docker dédié QNAP, inspirée d'AlphaTerminal.
+11. `11_ARBITRAGES_2026-10-30.md` — décisions confirmées par Damien, matériel déclaré, objectif de livraison et questions restantes.
 
 ## C. Périmètre confirmé
 
@@ -74,7 +76,7 @@ Les fichiers vérifiés dans `main` : `README.md`, `docs/architecture.md`, `docs
 
 ## E. Exigences transversales
 
-- Fonctionnement offline-first ; secret de compte jamais intégré dans le bundle.
+- Fonctionnement offline-first ; secret de compte jamais intégré dans le bundle. **Décision confirmée : synchronisation automatique multi-appareils**, et **proposition à prototyper : Docker NAS indépendant, comme AlphaTerminal**, sans accès réseau requis pour le coach ; voir `10_SYNCHRONISATION_NAS.md`.
 - Les données de santé et les dossiers individuels restent privés ; ne pas inscrire de diagnostic personnel dans le dépôt public.
 - Toutes les données affichées doivent disposer d'une source et d'une ancienneté vérifiables ; absence de capteur ≠ valeur zéro.
 - Pas de double comptabilisation d'une même activité par Garmin, Apple Santé, téléphone et application.
