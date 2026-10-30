@@ -25,8 +25,8 @@ SOURCE="https://raw.githubusercontent.com/sicho95/ResurGo_Fitness/main/server/re
 command -v curl >/dev/null || die "curl manquant."
 command -v docker >/dev/null || die "docker manquant."
 docker compose version >/dev/null 2>&1 || die "docker compose V2 manquant."
-# Le NAS QNAP n'a pas besoin de Python : diagnostic de ports dans un
-# conteneur Python éphémère sans montage /, réseau hôte pour tester les sockets.
+# Le NAS QNAP n'a pas besoin de Python : le script de précontrôle
+# détermine les ports libres avec netstat et le JSON Tailscale en Bash.
 docker info >/dev/null 2>&1 || die "Docker inaccessible dans cette session SSH."
 command -v openssl >/dev/null || die "openssl manquant (génération des secrets)."
 [[ "$(id -u)" == "0" ]] || die "Lancer en SSH avec un compte administrateur UID 0, nécessaire pour chown du volume."
