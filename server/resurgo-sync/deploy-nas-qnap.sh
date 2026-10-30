@@ -18,6 +18,20 @@ command -v docker >/dev/null || fail "Docker est introuvable sur le NAS."
 docker compose version >/dev/null || fail "Docker Compose V2 indisponible."
 command -v curl >/dev/null || fail "curl requis."
 command -v python3 >/dev/null || fail "Python 3 requis pour valider les secrets/config."
+# Le CLI QNAP Tailscale n'est pas toujours dans le PATH des connexions SSH.
+if ! command -v tailscale >/dev/null 2>&1; then
+  for candidate in \
+    /share/CE_CACHEDEV1_DATA/.qpkg/Tailscale/tailscale \
+    /share/CE_CACHEDEV1_DATA/.qpkg/Tailscale/bin/tailscale \
+    /share/CACHEDEV1_DATA/.qpkg/Tailscale/tailscale \
+    /share/CACHEDEV1_DATA/.qpkg/Tailscale/bin/tailscale
+  do
+    if [[ -x "$candidate" ]]; then
+      export PATH="$(dirname "$candidate"):$PATH"
+      break
+    fi
+  done
+fi
 command -v tailscale >/dev/null || fail "CLI tailscale introuvable sur ce NAS : ne pas modifier les tunnels."
 
 set -a
