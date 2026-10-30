@@ -89,12 +89,13 @@
          !("Notification" in window))throw Error("Web Push non disponible dans ce navigateur.");
       if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!isStandalone())
         throw Error("Sur iPhone, installe d'abord ResurGo sur l'écran d'accueil.");
-      const conn=await nasStoredConnection();
-      if(!conn?.token)throw Error("Associe d'abord cet appareil au compte NAS.");
-      // The permission prompt must occur in direct response to a user gesture.
+      // Safari iOS needs the permission request BEFORE any unrelated await,
+      // otherwise user activation may be lost and the prompt is blocked.
       const permission=Notification.permission==="granted"?"granted":
         await Notification.requestPermission();
       if(permission!=="granted")throw Error("Permission de notification refusée.");
+      const conn=await nasStoredConnection();
+      if(!conn?.token)throw Error("Associe d'abord cet appareil au compte NAS.");
       const reg=await navigator.serviceWorker.ready;
       const key=await nasRequest(conn.url,"/api/v1/push/key",{token:conn.token});
       if(!key.publicKey)throw Error("Clé Web Push du NAS indisponible.");
