@@ -1,0 +1,28 @@
+name: ResurGo 2.0.0 — validation API et configuration NAS
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/resurgo-sync/**"
+      - ".github/workflows/verify-resurgo-nas.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-config-and-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check deployment shell syntax
+        run: bash -n server/resurgo-sync/deploy-nas-qnap.sh
+      - name: Validate Docker Compose without secrets or deployment
+        run: |
+          cd server/resurgo-sync
+          RS_HOST_DATA_DIR=/tmp/resurgo-ci           RS_ADMIN_TOKEN=CI_NOT_PRODUCTION_ADMIN_TOKEN_ONLY_FOR_CONFIG_TEST           RS_PAIR_PEPPER=CI_NOT_PRODUCTION_PEPPER_ONLY_FOR_CONFIG_TEST           docker compose -f docker-compose.yml --env-file .env.example config --quiet
+      - name: API tests
+        run: |
+          python -m pip install -r server/resurgo-sync/requirements-test.txt
+          python -m pytest -q server/resurgo-sync/tests
