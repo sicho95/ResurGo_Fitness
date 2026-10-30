@@ -17,6 +17,18 @@ info(){ printf '[ResurGo] %s\n' "$*"; }
 command -v docker >/dev/null || fail "Docker est introuvable sur le NAS."
 docker compose version >/dev/null || fail "Docker Compose V2 indisponible."
 command -v curl >/dev/null || fail "curl requis."
+if ! command -v python3 >/dev/null 2>&1; then
+  for candidate in \
+    /share/CE_CACHEDEV1_DATA/.qpkg/Python3/bin/python3 \
+    /share/CE_CACHEDEV1_DATA/.qpkg/Python312/bin/python3 \
+    /share/CACHEDEV1_DATA/.qpkg/Python3/bin/python3
+  do
+    if [[ -x "$candidate" ]]; then
+      export PATH="$(dirname "$candidate"):$PATH"
+      break
+    fi
+  done
+fi
 command -v python3 >/dev/null || fail "Python 3 requis pour valider les secrets/config."
 # Le CLI QNAP Tailscale n'est pas toujours dans le PATH des connexions SSH.
 if ! command -v tailscale >/dev/null 2>&1; then
@@ -126,8 +138,11 @@ if [[ "${2:-}" != "--enable-routes" ]]; then
 fi
 
 info "Étape 4 : configuration explicite, sans reset et sur ports distincts."
-tailscale funnel --bg --https="$RS_FUNNEL_HTTPS_PORT" "http://127.0.0.1:$RS_PUBLIC_HOST_PORT"
-tailscale serve --bg --https="$RS_SERVE_ADMIN_HTTPS_PORT" "http://127.0.0.1:$RS_ADMIN_HOST_PORT"
+# Configurer l'administration privée en premier ; ne publier Funnel qu'ensuite.
+tailscale serve --bg --https="$RS_SERVE_ADMIN_HTTPS_PORT" "http://127.0.0.1:$RS_ADMIN_HOST_PORT" ||
+  fail "Serve privé refusé : aucun Funnel ajouté."
+tailscale funnel --bg --https="$RS_FUNNEL_HTTPS_PORT" "http://127.0.0.1:$RS_PUBLIC_HOST_PORT" ||
+  fail "Funnel refusé : vérifier les routes ; Serve privé éventuellement déjà ajouté."
 info "Contrôler maintenant les URL réellement affichées (ne pas en déduire de FQDN)."
 tailscale funnel status
 tailscale serve status
