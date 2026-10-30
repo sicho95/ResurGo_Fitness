@@ -59,7 +59,9 @@ const initial=()=>{
 };
 function makeDevice(server,deviceId,seed=null,profileId="nas-P"){
   const data=seed?clone(seed):initial(),store=new Map();
-  store.set("nasConnection",{url:"https://nas.example",profileId,deviceId,token:"test",localProfileId:seed?.activeProfileId||null});
+  store.set("nasConnection",{url:"https://nas.example",profileId,deviceId,token:"test",
+    accountRole:deviceId==="A"?"owner":"paired",
+    localProfileId:seed?.activeProfileId||null});
   const context=vm.createContext({
     state:data,crypto:webcrypto,clone,Date,console,document:{visibilityState:"visible"},
     window:{addEventListener(){}},clearTimeout(){},setTimeout(){return 1;},setInterval(){return 1;},
@@ -137,4 +139,42 @@ test("remote changes to independent entities converge both ways",async()=>{
   await A.api.nasSyncNow();await B.api.nasSyncNow();await A.api.nasSyncNow();
   assert.ok(A.context.state.metrics.some(x=>x.id==="Metric-2"));
   assert.ok(B.context.state.activities.some(x=>x.id==="Activity-2"));
+});
+
+test("first iPhone syncs both profiles with their own dependent records",async()=>{
+  const server=makeServer(),seed=initial();
+  const second={id:"P-2",name:"Cycliste",health:{fatigue:0}};
+  seed.profiles.push(second);
+  seed.plans.push({id:"Plan-2",profileId:"P-2",title:"Vélo facile"});
+  seed.activities.push({id:"Activity-2",profileId:"P-2",type:"bike",distanceKm:14});
+  seed.metrics.push({id:"Metric-2",profileId:"P-2",weightKg:70});
+  const A=makeDevice(server,"A",seed);
+  await A.api.nasSyncNow();
+  assert.equal(server.heads.get("profile_settings:P-1").payload.profile.name,"Coureur");
+  assert.equal(server.heads.get("profile_settings:P-2").payload.profile.name,"Cycliste");
+  assert.equal(server.heads.get("activity:Activity-2").payload.profileId,"P-2");
+  assert.equal(A.store.get("nasSyncMeta").remoteProfileIds.length,2);
+  const B=makeDevice(server,"B");
+  B.store.get("nasConnection").localProfileId=null;
+  await B.api.nasSyncNow();
+  assert.equal(B.context.state.profiles.length,2);
+  assert.equal(B.context.state.profiles.find(x=>x.id==="P-2").name,"Cycliste");
+  assert.equal(B.context.state.activities.find(x=>x.id==="Activity-2").distanceKm,14);
+  assert.equal(B.store.get("nasSyncMeta").conflicts.length,0);
+});
+
+test("paired Mac does not silently upload its unrelated local temporary profile",async()=>{
+  const server=makeServer(),A=makeDevice(server,"A");
+  await A.api.nasSyncNow();
+  const seed=initial();
+  seed.activeProfileId="TEMP";
+  seed.profiles=[{id:"TEMP",name:"Profil provisoire",health:{}}];
+  seed.plans=[];seed.activities=[];seed.metrics=[];
+  const B=makeDevice(server,"B",seed);
+  B.store.get("nasConnection").localProfileId=null;
+  await B.api.nasSyncNow();
+  assert.equal(server.heads.has("profile_settings:TEMP"),false);
+  assert.equal(server.heads.has("profile_settings:P-1"),true);
+  assert.equal(B.context.state.profiles.some(p=>p.id==="TEMP"),true);
+  assert.equal(B.context.state.profiles.some(p=>p.id==="P-1"),true);
 });
