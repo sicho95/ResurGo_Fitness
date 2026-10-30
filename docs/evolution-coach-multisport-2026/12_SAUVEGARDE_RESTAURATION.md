@@ -80,4 +80,4 @@ La **création du premier profil NAS** utilise encore l'administration privée d
 - `tests/resurgo-backup.test.mjs` : fichier chiffré, restauration locale, mauvais mot de passe, falsification, présence de la clé NAS et absence de jeton.
 - `node scripts/build-static.mjs --out .webapp-build` et `node --check .webapp-build/app.js`.
 
-Les résultats CI du 30/10/2026 : **12 tests API et 5 tests sauvegarde** réussis avec vérification du build JS, sur branche `feature/resurgo-sync-funnel-20261030`.
+Les résultats CI du 30/10/2026 : **12 tests API et 6 tests sauvegarde** réussis avec vérification du build JS, sur branche `feature/resurgo-sync-funnel-20261030`.
