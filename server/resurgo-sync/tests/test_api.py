@@ -38,7 +38,7 @@ def headers(device):
     return {"Authorization": "Bearer " + device["token"]}
 
 
-def operation(op_id="op-0001", rev=0, entity="activity-1", payload=None):
+def operation(op_id="op-000001", rev=0, entity="activity-1", payload=None):
     return {"operationId": op_id, "entityType": "activity", "entityId": entity,
             "expectedRevision": rev, "payload": payload or {"distanceM": 5100}, "deleted": False}
 
@@ -72,9 +72,9 @@ def test_push_pull_idempotence_and_conflict(clients):
     assert one.json()["results"][0]["status"] == "applied"
     duplicate = api.post("/api/v1/sync/push", json={"operations": [operation()]}, headers=auth)
     assert duplicate.json()["results"][0]["status"] == "duplicate"
-    conflict = api.post("/api/v1/sync/push", json={"operations": [operation("op-0002")]}, headers=auth)
+    conflict = api.post("/api/v1/sync/push", json={"operations": [operation("op-000002")]}, headers=auth)
     assert conflict.json()["results"][0] == {
-        "operationId": "op-0002", "status": "conflict", "currentRevision": 1}
+        "operationId": "op-000002", "status": "conflict", "currentRevision": 1}
     data = api.get("/api/v1/sync/pull?cursor=0", headers=auth).json()
     assert len(data["events"]) == 1
     assert data["events"][0]["payload"] == {"distanceM": 5100}
