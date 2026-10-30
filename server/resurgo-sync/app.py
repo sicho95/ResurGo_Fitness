@@ -515,12 +515,13 @@ def push_unsubscribe(user: dict = Depends(current_device)):
 
 @public.post("/api/v1/push/test")
 def push_test(user: dict = Depends(current_device)):
-    with transaction() as c:
-        throttle(c, "push_test_"+user["id"], 2)
+    with closing(connect()) as c:
         row = c.execute("SELECT subscription_json FROM push_subscriptions "
                         "WHERE device_id=?", (user["id"],)).fetchone()
     if not row:
         raise HTTPException(status_code=409, detail="push_not_subscribed")
+    with transaction() as c:
+        throttle(c, "push_test_"+user["id"], 2)
     payload = {"id":"test-"+str(uuid.uuid4()),"title":"ResurGo — test",
                "body":"La notification de test est arrivée dans ResurGo."}
     try:
