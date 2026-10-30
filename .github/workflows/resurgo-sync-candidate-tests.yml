@@ -1,7 +1,7 @@
 name: ResurGo NAS sync candidate tests
 on:
   push:
-    branches: [feature/resurgo-sync-funnel-20261030]
+    branches: [main, feature/resurgo-sync-funnel-20261030]
     paths:
       - "server/resurgo-sync/**"
       - "app/**"
