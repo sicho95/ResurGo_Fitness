@@ -27,6 +27,7 @@ const appBuildOrder = [
   "backup-secure.js",
   "sync-local-first.js",
   "voice-pack.js",
+  "coach-live.js",
   "app-init.js"
 ];
 
