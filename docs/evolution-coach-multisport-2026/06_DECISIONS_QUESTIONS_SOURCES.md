@@ -40,6 +40,10 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 
 Voir `10_SYNCHRONISATION_NAS.md` et `11_ARBITRAGES_2026-10-30.md` pour détails, choix réseau Funnel/Serve et matériel déclaré.
 
+- **DEC-029 (CONFIRMÉ)** Export de la configuration et des données de ResurGo dans un **JSON complet chiffré par mot de passe**, restauration locale sans admin, clé NAS de récupération chiffrée dans le fichier et nouveau jeton à la restauration, possibilité de code de jumelage créé sur l'ancien appareil par son utilisateur sans admin. Le premier profil NAS reste administré dans le prototype, contrairement à l'inscription autonome existant dans AlphaTerminal.
+
+Voir `12_SAUVEGARDE_RESTAURATION.md` pour contrats, tests et limites.
+
 ## 2. Options proposées mais non approuvées
 
 - `PROP-001` Navigation bas à cinq onglets (Aujourd'hui, Programme, Démarrer, Progrès, Profil) ; alternative quatre onglets à tester.
