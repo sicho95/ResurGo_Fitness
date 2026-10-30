@@ -174,6 +174,7 @@
         throw Error("Cet appareil est lié à un autre profil NAS. Dissocier ce profil avant restauration.");
       const fresh={...clone(empty),...snapshot,
         settings:{...empty.settings,...snapshot.settings,
+          workerToken:"",nasToken:"",deviceToken:"",recoverySecret:"",
           notifications:{...empty.settings.notifications,...(snapshot.settings.notifications||{})},
           tts:{...empty.settings.tts,...(snapshot.settings.tts||{})}},
         ui:{...empty.ui,...snapshot.ui,view:"today",message:""}};
