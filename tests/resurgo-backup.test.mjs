@@ -129,3 +129,33 @@ test("la sauvegarde chiffrée peut porter une clé de récupération sans le jet
   assert.equal(plaintext.includes("SESSION-TOKEN-SUPER-SECRET"),false);
   assert.equal(plaintext.includes("old-device"),false);
 });
+
+test("restauration NAS : nouveau jeton, jamais le mot de passe ou l'ancien token envoyé",async()=>{
+  const r=runner();
+  r.store.set("nasConnection",{
+    url:"https://nas.example.invalid",profileId:"profil-nas",deviceId:"ancien",
+    token:"OLD_TOKEN",recovery:{keyId:"key-001",secret:"SECURE_RECOVERY_48_BYTES_RANDOM_SECRET"},
+    label:"Ancien iPhone"
+  });
+  await r.api.exportEncryptedBackup();
+  const encrypted=await r.captured.blob.text();
+  let request=null;
+  r.ctx.fetch=async (url,options)=>{
+    request={url,options};
+    return {ok:true,status:200,json:async()=>({
+      profileId:"profil-nas",deviceId:"nouveau",
+      token:"NEW_TOKEN",
+      recovery:{keyId:"key-002",secret:"NEW_SECURE_RECOVERY_SECRET"}
+    })};
+  };
+  r.ctx.state.profiles=[];
+  await r.api.restoreEncryptedBackup(new Blob([encrypted]));
+  assert.equal(r.ctx.state.profiles[0].id,"profil-001");
+  assert.equal(r.store.get("nasConnection").token,"NEW_TOKEN");
+  assert.equal(r.store.get("nasConnection").deviceId,"nouveau");
+  assert.equal(r.store.get("nasConnection").recovery.keyId,"key-002");
+  assert.equal(request.url,"https://nas.example.invalid/api/v1/recovery/redeem");
+  assert.equal(JSON.stringify(request.options).includes("OLD_TOKEN"),false);
+  assert.equal(JSON.stringify(request.options).includes("une phrase de passe tres longue"),false);
+  assert.equal(JSON.parse(request.options.body).secret,"SECURE_RECOVERY_48_BYTES_RANDOM_SECRET");
+});
