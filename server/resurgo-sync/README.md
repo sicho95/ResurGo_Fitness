@@ -40,8 +40,10 @@ Ce service est destiné au QNAP NAS-DAMIEN **uniquement après** tests d'intégr
 
 ### API publique authentifiée par appareil
 - `GET /health` sans données personnelles.
-- `POST /api/v1/pair/redeem` : échange un code temporaire contre un jeton d'appareil.
+- `POST /api/v1/pair/redeem` : échange un code temporaire contre un jeton d'appareil **et une clé de secours à usage de récupération**, indépendante du jeton.
 - `POST /api/v1/pair/start` : appareil autorisé génère un nouveau code temporaire pour appairer un autre appareil.
+- `POST /api/v1/recovery/redeem` : une sauvegarde chiffrée déverrouillée localement fournit `profileId`, `keyId` et le secret de récupération (aléatoire haute entropie), afin d'émettre **un nouveau jeton d'appareil** et **une nouvelle clé de secours**, sans administrateur ni ancien téléphone. Le mot de passe de sauvegarde **n'est jamais transmis**.
+- `GET /api/v1/recovery/keys` et `POST /api/v1/recovery/keys/{keyId}/revoke` : gestion des identifiants de secours du seul profil autorisé. Révoquer une clé invalide les anciennes sauvegardes qui l'utilisent pour se connecter au NAS (la restauration locale reste possible).
 - `GET /api/v1/devices`, `POST /api/v1/devices/{id}/revoke`.
 - `POST /api/v1/sync/push` : lots d'opérations idempotentes et révisions attendues.
 - `GET /api/v1/sync/pull?cursor=N&limit=M` : journal incrémental du seul profil autorisé.
@@ -62,6 +64,23 @@ Ce service est destiné au QNAP NAS-DAMIEN **uniquement après** tests d'intégr
 ```
 
 Les réponses `applied`, `duplicate`, `conflict`, `invalid_entity_type`, `payload_too_large` sont distinctes. En cas de conflit, un client ne doit **jamais** écraser la valeur locale : demander une résolution cohérente avec la version courante.
+
+## Sauvegarde chiffrée et restauration sans administrateur — branche candidate
+
+La PWA sur cette branche possède désormais un module `app/backup-secure.js` et les réglages correspondants :
+
+1. Dans **Réglages → Synchronisation NAS**, associer le premier appareil avec un code initial délivré lors de la création administrative du premier profil. **Ensuite**, tout appareil déjà associé peut générer lui-même un code temporaire de 10 min via `/api/v1/pair/start` : **plus besoin de l'administrateur** pour ajouter un téléphone.
+2. Dans **Réglages → Sauvegarde chiffrée / restauration**, définir une **phrase de passe d'au moins 12 caractères**, la confirmer, puis **Exporter JSON chiffré**. Le fichier contient l'état complet du navigateur (`profiles`, `plans`, `activities`, `sessionRuns`, `metrics`, exercices personnalisés, réglages non secrets) avec chiffrement Web Crypto **AES-256-GCM + PBKDF2-HMAC-SHA256 (310 000 itérations, sel et IV aléatoires)**. Les jetons actifs de périphériques et tokens Worker ne sont pas dans le JSON. La clé de secours NAS peut y figurer mais **uniquement dans le contenu chiffré**.
+3. Sur un nouvel appareil : ouvrir ResurGo, choisir **Restaurer JSON chiffré**, saisir le mot de passe du fichier. Déchiffrement et validation **sur le téléphone**, sans envoyer le mot de passe au NAS. Les données locales sont restaurées même hors ligne.
+4. Si une clé de secours NAS figure dans le fichier et que le NAS est joignable, ResurGo appelle `/api/v1/recovery/redeem`, récupère un **nouveau jeton** et une **nouvelle clé de secours**. Générer ensuite une **nouvelle sauvegarde chiffrée** sur cet appareil. Si le NAS est indisponible, garder le jeu de données restauré localement et associer plus tard depuis un appareil autorisé.
+5. Une restauration remplace explicitement le snapshot local après confirmation, **efface l'ancienne association NAS du terminal** et n'écrase pas silencieusement un profil NAS tiers. Prévoir un export de sauvegarde avant tout remplacement.
+
+**Restrictions réelles :** les tests automatisés simulent le navigateur et l'API ; aucune recette Safari iOS réelle n'a encore été faite. Cette version candidate ne synchronise pas encore automatiquement les activités : l'interface d'association et la récupération NAS ne sont pas un moteur de fusion IndexedDB. Le mot de passe de fichier n'est pas un mot de passe de connexion NAS, et une sauvegarde sans secret NAS **ne réassocie pas automatiquement** le compte. La première création de profil NAS utilise encore la page d'administration privée : l'autocréation publique de profil (AlphaTerminal) reste à décider sous contrôle anti-abus.
+
+### Vérification candidate
+- `python -m pytest -q server/resurgo-sync/tests/` : tests d'API et récupération, y compris perte de l'ancien appareil, mauvaise clé, profils isolés.
+- `node --test tests/resurgo-backup.test.mjs` : chiffrement/déchiffrement, mauvaise phrase de passe, fichier altéré, conservation de la clé de secours sans jeton de session.
+- `node scripts/build-static.mjs --out .webapp-build && node --check .webapp-build/app.js` : intégrité syntaxique du bundle PWA.
 
 ## Important : limites actuelles et sécurité non finalisée
 
