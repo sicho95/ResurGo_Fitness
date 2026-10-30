@@ -18,7 +18,7 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
 
 VERSION = "0.1.0-candidate"
@@ -213,6 +213,23 @@ def health():
     return {"ok": True, "service": "resurgo-sync-public", "version": VERSION}
 
 
+@admin.get("/", response_class=HTMLResponse)
+def private_admin_page():
+    # Login view only: no data and no embedded secrets. All admin API calls require bearer auth.
+    response = HTMLResponse(Path(__file__).with_name("admin.html").read_text(encoding="utf-8"))
+    response.headers["Content-Security-Policy"] = ("default-src 'none'; style-src 'unsafe-inline'; "
+        "script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'")
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@admin.get("/admin.js")
+def private_admin_script():
+    response = FileResponse(Path(__file__).with_name("admin.js"), media_type="text/javascript")
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 @admin.get("/health")
 def admin_health(_: None = Depends(require_admin)):
     return {"ok": True, "service": "resurgo-sync-admin", "version": VERSION}
@@ -235,6 +252,17 @@ def list_profiles(_: None = Depends(require_admin)):
             "SELECT p.id,p.label,p.created_at,COUNT(d.id) AS devices "
             "FROM profiles p LEFT JOIN devices d ON d.profile_id=p.id "
             "AND d.revoked_at IS NULL GROUP BY p.id ORDER BY p.created_at DESC")]}
+
+
+@admin.get("/admin/profiles/{profile_id}/devices")
+def admin_list_profile_devices(profile_id: str, _: None = Depends(require_admin)):
+    with closing(connect()) as c:
+        found = c.execute("SELECT id FROM profiles WHERE id=?", (profile_id,)).fetchone()
+        if not found:
+            raise HTTPException(status_code=404, detail="profile_not_found")
+        rows = c.execute("SELECT id,label,created_at,revoked_at FROM devices "
+                         "WHERE profile_id=? ORDER BY created_at", (profile_id,)).fetchall()
+    return {"devices": [dict(r) for r in rows]}
 
 
 @admin.post("/admin/devices/{device_id}/revoke")
