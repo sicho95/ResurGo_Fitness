@@ -81,7 +81,7 @@ test("restauration par mot de passe après perte locale, sans réseau NAS",async
   assert.equal(r.ctx.state.activities[0].distanceM,3000);
   assert.equal(r.ctx.state.settings.workerToken,"");
   assert.equal(r.store.get("app").profiles[0].id,"profil-001");
-  assert.equal(r.store.get("nasConnection"),undefined); // sinon non créé.
+  assert.equal(r.store.get("nasConnection"),null); // session NAS précédente effacée.
   assert.match(r.messages.join(" "),/restaurée/);
 });
 
