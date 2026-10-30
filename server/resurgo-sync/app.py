@@ -78,6 +78,12 @@ def init_db() -> None:
             ON events(profile_id, sequence);
         CREATE TABLE IF NOT EXISTS rate_buckets (
             bucket TEXT PRIMARY KEY, window_start INTEGER NOT NULL, hits INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS profile_signups (
+            profile_id TEXT PRIMARY KEY REFERENCES profiles(id),
+            origin_hash TEXT NOT NULL, created_at INTEGER NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_signups_created ON profile_signups(created_at);
+        CREATE INDEX IF NOT EXISTS idx_signups_origin ON profile_signups(origin_hash,created_at);
         """)
 
 
@@ -178,6 +184,11 @@ class RedeemRequest(DeviceRequest):
 
 class CreateProfileRequest(BaseModel):
     label: str = Field(min_length=1, max_length=80)
+
+
+class PublicCreateProfile(BaseModel):
+    profileName: str = Field(min_length=1, max_length=80)
+    deviceName: str = Field(min_length=1, max_length=80)
 
 
 class RecoverRequest(DeviceRequest):
@@ -303,6 +314,43 @@ def revoke_device(device_id: str, _: None = Depends(require_admin)):
     if not n:
         raise HTTPException(status_code=404, detail="device_not_found")
     return {"ok": True}
+
+
+@public.post("/api/v1/profiles/create")
+def create_public_profile(req: PublicCreateProfile, request: Request):
+    """First device registers without an administrator, as in AlphaTerminal.
+
+    Apply hard global caps even when Funnel masks client IP; do not trust
+    X-Forwarded-For as an arbitrary user-supplied header.
+    """
+    now = int(time.time())
+    ip = request.client.host if request.client else "unknown"
+    origin_hash = digest(ip + os.environ["RS_PAIR_PEPPER"])
+    max_profiles = max(1, int(os.getenv("RS_MAX_PROFILES", "60")))
+    daily_limit = max(1, int(os.getenv("RS_MAX_SIGNUPS_DAY", "20")))
+    origin_daily = max(1, int(os.getenv("RS_MAX_SIGNUPS_ORIGIN_DAY", "5")))
+    with transaction() as c:
+        throttle(c, "profiles_create_global", 3)
+        total = c.execute("SELECT COUNT(*) FROM profiles").fetchone()[0]
+        global_today = c.execute("SELECT COUNT(*) FROM profile_signups "
+                                 "WHERE created_at >= ?", (now-86400,)).fetchone()[0]
+        from_origin = c.execute("SELECT COUNT(*) FROM profile_signups "
+                                "WHERE created_at>=? AND origin_hash=?",
+                                (now-86400, origin_hash)).fetchone()[0]
+        if total >= max_profiles or global_today >= daily_limit or from_origin >= origin_daily:
+            raise HTTPException(status_code=429, detail="signup_capacity_reached")
+        profile_id, device_id = str(uuid.uuid4()), str(uuid.uuid4())
+        token = secrets.token_urlsafe(32)
+        c.execute("INSERT INTO profiles(id,label,created_at) VALUES(?,?,?)",
+                  (profile_id, req.profileName.strip(), now))
+        c.execute("INSERT INTO devices(id,profile_id,label,token_hash,created_at) "
+                  "VALUES(?,?,?,?,?)",
+                  (device_id, profile_id, req.deviceName.strip(), digest(token), now))
+        recovery = create_recovery_key(c, profile_id, device_id)
+        c.execute("INSERT INTO profile_signups(profile_id,origin_hash,created_at) VALUES(?,?,?)",
+                  (profile_id, origin_hash, now))
+    return {"profileId": profile_id, "profileName": req.profileName.strip(),
+            "deviceId": device_id, "token": token, "recovery": recovery}
 
 
 @public.post("/api/v1/pair/redeem")
