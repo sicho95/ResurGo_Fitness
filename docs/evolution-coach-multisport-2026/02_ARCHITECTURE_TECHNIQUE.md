@@ -188,3 +188,12 @@ Comportements :
 - Éviter stockage de données brutes micro sauf consentement explicite spécifique, limité dans le temps ; module respiratoire inactif par défaut.
 - Télémétrie de fonctionnement anonymisée uniquement si acceptée ; secrets et tokens jamais en source publique.
 - Export/effacement des données du profil sans toucher à celles des autres profils.
+
+## 13. Architecture de synchronisation multi-appareils (actualisation)
+
+- **CONFIRMÉ** : synchronisation automatique multi-appareils demandée dès le premier lot ; offline-first demeure non négociable.
+- **PROPOSITION privilégiée** : backend Docker sur NAS QNAP, indépendant d'AlphaTerminal, inspiré de son pattern Python/FastAPI + SQLite WAL, authentification par appareil, appairage, journal de mutations, révisions par entité, conflits non destructifs.
+- **CONTRAINTE PWA iOS** : synchronisation sur ouverture/retour premier plan/activité ; ne pas promettre un cron d'arrière-plan PWA fermée. App native et watchOS peuvent s'appuyer sur mécanismes OS séparés à tester.
+- **BLOCAGE de sécurité** : le Worker Cloudflare actuel ne réalise que push/pull de snapshots sans gestion de conflits et accepte les requêtes si token partagé absent ; ne pas le considérer comme serveur de sync automatique prêt pour données réelles.
+- Les détails de contrats, procédures de pairing, politiques de convergence, sauvegardes, Tailscale Serve vs Funnel et recette sont définis dans `10_SYNCHRONISATION_NAS.md`.
+- **Audit réel NAS** toujours nécessaire avant installation : aucune modification de conteneurs existants n'est couverte par cette documentation.
