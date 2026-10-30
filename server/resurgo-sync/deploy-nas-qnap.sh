@@ -102,8 +102,8 @@ chown 10001:10001 "$RS_HOST_DATA_DIR" ||
   fail "Droit manquant : donner le dossier ResurGo à UID/GID 10001 avant Docker."
 python3 - <<'PY'
 import os,socket
-for key in ("RS_PUBLIC_HOST_PORT","RS_ADMIN_HOST_PORT"):
-    port=int(os.environ.get(key,18879 if key=="RS_PUBLIC_HOST_PORT" else 18880))
+for key in ("RS_PUBLIC_HOST_PORT","RS_ADMIN_HOST_PORT","RS_FUNNEL_HTTPS_PORT","RS_SERVE_ADMIN_HTTPS_PORT"):
+    port=int(os.environ[key])
     if not 1024<=port<=65535:raise SystemExit(f"Port hôte interdit : {port}")
     s=socket.socket()
     try:
