@@ -13,7 +13,11 @@ const staticDir = path.join(root, "static");
 const assetsDir = path.join(root, "assets");
 const docsDir = path.join(root, "docs");
 const workersDir = path.join(root, "workers");
-const appBuildOrder = [
+// Historical modules are text fragments: some open/close functions across
+// file boundaries. They MUST be stitched together before adding standalone
+// new modules. Otherwise declarations get trapped inside an unrelated function,
+// which produces a black screen (ReferenceError: liveCoachView).
+const legacyFragments = [
   "bootstrap.js",
   "exercise-library.js",
   "planning-state.js",
@@ -23,15 +27,17 @@ const appBuildOrder = [
   "exercise-rendering.js",
   "diagrams.js",
   "visualization-stats.js",
-  "motion-animations.js",
+  "motion-animations.js"
+];
+const newModules = [
   "backup-secure.js",
   "sync-local-first.js",
   "voice-pack.js",
   "sensor-fusion.js",
   "ble-bluefy.js",
-  "coach-live.js",
-  "app-init.js"
+  "coach-live.js"
 ];
+const initInsertionPoint = "  function render(){";
 
 function argValue(flag, fallback) {
   const index = process.argv.indexOf(flag);
@@ -87,11 +93,20 @@ async function copyDir(from, to, meta = null) {
 }
 
 async function writeBundle(outDir, meta) {
-  const chunks = [];
-  for (const part of appBuildOrder) {
-    chunks.push(await fs.readFile(path.join(appDir, part), "utf8"));
+  const legacy = await Promise.all(
+    legacyFragments.map(part => fs.readFile(path.join(appDir, part), "utf8")));
+  const modules = await Promise.all(
+    newModules.map(part => fs.readFile(path.join(appDir, part), "utf8")));
+  const init = await fs.readFile(path.join(appDir, "app-init.js"), "utf8");
+  if (init.split(initInsertionPoint).length !== 2) {
+    throw new Error("Point d'insertion des modules ResurGo introuvable ou ambigu.");
   }
-  const bundle = replaceTokens(chunks.join("\n").trimEnd(), meta);
+  // The function which spans the original module fragments is closed in the
+  // first part of app-init.js, BEFORE render(). New modules have to be
+  // injected here, in the main application closure, not before app-init.js.
+  const initFixed = init.replace(initInsertionPoint,
+    modules.join("\n") + "\n" + initInsertionPoint);
+  const bundle = replaceTokens([...legacy, initFixed].join("\n").trimEnd(), meta);
   await fs.writeFile(path.join(outDir, "app.js"), `${bundle}\n`, "utf8");
 }
 
