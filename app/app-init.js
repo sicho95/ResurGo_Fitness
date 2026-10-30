@@ -108,6 +108,10 @@
     on("liveBack",()=>{state.ui.view="today";save().then(render);});
     on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
     on("liveEncourage",()=>liveSpeech("positive"));
+    on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",bleHrDisconnect);
+    on("bleMachineConnect",bleMachineConnect); on("bleMachineDisconnect",bleMachineDisconnect);
+    on("copyBluefyUrl",bluefyCopyAddress);
+    on("liveStartIndoor",liveStartIndoor);
     $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
     on("createProfile",createProfile); on("startToday",()=>{const p=profile(), s=p?coachPickToday(p).session:null; if(s) start(s.id);}); on("goPlan",()=>{state.ui.view="plan"; save().then(render);}); on("nextWeek",()=>{const p=profile(); if(p){makeWeek(p.id,false,true); save("Semaine suivante générée.").then(render);}}); on("regenPlan",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan recalculé.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); refreshPlanAfterActivity(p.id); save("Repos actif enregistré et plan recalculé.").then(render);}});
     on("installPwa",installPwa); on("dismissPwa",()=>{state.settings.hideInstallPrompt=true; save().then(render);});
