@@ -112,6 +112,14 @@ if [[ "${1:-}" == "--apply" ]]; then
     fail "UID/GID 10001 requis pour le volume ResurGo."
 fi
 
+info "Contrôle du réseau Docker existant — sans création de Virtual Switch."
+BRIDGE_DRIVER="$(docker network inspect bridge --format '{{.Driver}}' 2>/dev/null)" ||
+  fail "Réseau Docker bridge introuvable : ne pas créer de nouveau réseau QNAP."
+[[ "$BRIDGE_DRIVER" == "bridge" ]] ||
+  fail "Le réseau Docker bridge existant n'utilise pas le driver attendu."
+# Utiliser exclusivement les deux ports 127.0.0.1 du Compose ResurGo,
+# ne pas faire docker network create / prune ni réinitialiser QNAP.
+info "Réseau Docker bridge existant détecté."
 info "Étape 3 : validation Docker."
 docker compose config --quiet
 if [[ "${1:-}" != "--apply" ]]; then
