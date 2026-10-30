@@ -1,0 +1,23 @@
+name: ResurGo NAS sync candidate tests
+on:
+  push:
+    branches: [feature/resurgo-sync-funnel-20261030]
+    paths:
+      - "server/resurgo-sync/**"
+      - ".github/workflows/resurgo-sync-candidate-tests.yml"
+  pull_request:
+    paths:
+      - "server/resurgo-sync/**"
+      - ".github/workflows/resurgo-sync-candidate-tests.yml"
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r server/resurgo-sync/requirements-test.txt
+      - run: python -m pytest -q server/resurgo-sync/tests
