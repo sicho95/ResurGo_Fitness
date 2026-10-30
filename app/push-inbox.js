@@ -147,3 +147,17 @@
         "Pas d'abonnement Web Push pour cet appareil.";
     }catch(err){target.textContent="Statut Push indisponible : "+(err?.message||"réseau");}
   }
+
+  async function pushUpdateReminderSetting(){
+    const conn=await nasStoredConnection();
+    if(!conn?.token||!("serviceWorker" in navigator))return;
+    const reg=await navigator.serviceWorker.ready;
+    const subscription=await reg.pushManager?.getSubscription();
+    if(!subscription)return; // No opt-in: never subscribe automatically.
+    const timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||"Europe/Paris";
+    await nasRequest(conn.url,"/api/v1/push/subscribe",{
+      method:"POST",token:conn.token,
+      payload:{subscription:subscription.toJSON(),timezone,
+        reminderTime:state.settings.notifications.reminderTime||"08:00"}
+    });
+  }
