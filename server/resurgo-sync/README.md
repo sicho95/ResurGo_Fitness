@@ -3,6 +3,36 @@
 **Statut : prototype non homologué pour données réelles de santé.**
 Ce service est destiné au QNAP NAS-DAMIEN **uniquement après** tests d'intégration, de sécurité et de charge. Il ne remplace pas encore le Worker Cloudflare existant et n'est pas intégré à la PWA 1.3.4.
 
+## Déploiement QNAP / Tailscale : procédure à exécuter sur le NAS (30 octobre 2026)
+
+**Publication frontend confirmée :** la PWA 2.0.0 est déployée par la branche `WebApp` de GitHub Pages. **Backend NON déployé sur NAS dans cette opération GitHub** : le dépôt GitHub n'est pas une session SSH et ne possède pas les secrets, ni le contrôle des ports réels du QNAP.
+
+La configuration Docker est déjà versionnée ici ; le script `deploy-nas-qnap.sh` prépare un déploiement non destructif. **Il ne s'exécute pas automatiquement depuis GitHub.**
+
+Préparation sur le NAS (ou depuis l'iMac en SSH vers le NAS) :
+
+```bash
+cd /chemin/local/ResurGo_Fitness/server/resurgo-sync
+cp .env.example .env
+# Adapter RS_HOST_DATA_DIR au VRAI dossier durable du NAS ;
+# générer DEUX secrets indépendants dans .env, hors dépôt et sans les coller dans un chat :
+python3 -c 'import secrets; print(secrets.token_urlsafe(48)); print(secrets.token_urlsafe(48))'
+# Modifier .env dans un éditeur local et vérifier les ports sans publier.
+bash deploy-nas-qnap.sh
+# Quand les services/volumes sont prêts :
+bash deploy-nas-qnap.sh --apply
+# Après recette sécurité, si les ports Tailscale sont EFFECTIVEMENT libres :
+bash deploy-nas-qnap.sh --apply --enable-routes
+```
+
+Le script exige `RS_FUNNEL_HTTPS_PORT` = **443, 8443 ou 10000** (exemple proposé : 10000, **à vérifier libre**) et `RS_SERVE_ADMIN_HTTPS_PORT` = 9443 (exemple privé, **à vérifier libre**) ; ces ports HTTPS sont distincts des ports hôte Docker 18879 (API publique locale) et 18880 (API admin locale). Dans le dépôt AlphaTerminal, des routes **publiques 443** sont déjà recensées : Home Assistant, Forgejo, SichoAgent, SichoBooks, Portainer ; **ne jamais faire `tailscale serve reset` ou `tailscale funnel reset`**.
+
+L'activation utilise uniquement `tailscale funnel --bg --https=PORT_PUBLIC http://127.0.0.1:18879` et `tailscale serve --bg --https=PORT_ADMIN http://127.0.0.1:18880`, après précontrôle JSON des ports. Si `tailscale` est dans un conteneur et non sur l'hôte QNAP, **ne pas exécuter ces commandes telles quelles** : le localhost du conteneur n'est pas celui du NAS ; vérifier la topologie.
+
+Vérifications **externes obligatoires** : `/health` sur Funnel en HTTPS ; `/admin/profiles` sur le même Funnel doit retourner **404** ; administration uniquement en Tailscale privé avec jeton ; essayer deux profils fictifs, appairage puis sauvegarde/restauration, coupures NAS, et restauration du volume. Dans Réglages de ResurGo, renseigner l'adresse **réellement affichée** par `tailscale funnel status` (ne pas inventer un nom DNS).
+
+**Déploiement GitHub de la PWA ≠ activation du NAS/Funnel.** Aucun conteneur ou tunnel n'est considéré en production tant que les résultats de cette recette ne sont pas disponibles.
+
 ## Architecture validée par Damien
 
 - Les utilisateurs finaux **n'ont pas Tailscale**. La synchronisation de leur PWA utilise un **HTTPS public par Tailscale Funnel** ; chaque requête de profil est authentifiée par jeton d'appareil.
