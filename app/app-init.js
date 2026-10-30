@@ -71,7 +71,7 @@
       menu.style.top=`${Math.min(box.bottom+6, window.innerHeight-menu.offsetHeight-12)}px`;
     }
   }
-  function render(){ applyTheme(); document.body.classList.toggle("modalOpen",!!state.ui.modal); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
+  function render(){ applyTheme(); document.body.classList.toggle("modalOpen",!!state.ui.modal); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings,coachLive:liveCoachView}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
   function on(id,fn){ const x=el(id); if(x) x.onclick=fn; }
   function setSegmentedActive(btn){
     btn.parentElement?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));
@@ -103,6 +103,11 @@
     });
   }
   function bind(){
+    on("openLiveCoach",()=>{state.ui.view="coachLive";save().then(render);});
+    on("liveRun",()=>liveStart("run")); on("liveBike",()=>liveStart("bike"));
+    on("liveBack",()=>{state.ui.view="today";save().then(render);});
+    on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
+    on("liveEncourage",()=>liveSpeech("positive"));
     $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
     on("createProfile",createProfile); on("startToday",()=>{const p=profile(), s=p?coachPickToday(p).session:null; if(s) start(s.id);}); on("goPlan",()=>{state.ui.view="plan"; save().then(render);}); on("nextWeek",()=>{const p=profile(); if(p){makeWeek(p.id,false,true); save("Semaine suivante générée.").then(render);}}); on("regenPlan",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan recalculé.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); refreshPlanAfterActivity(p.id); save("Repos actif enregistré et plan recalculé.").then(render);}});
     on("installPwa",installPwa); on("dismissPwa",()=>{state.settings.hideInstallPrompt=true; save().then(render);});
@@ -137,6 +142,6 @@
     const imp=el("restoreEncryptedJson"); if(imp) imp.onchange=e=>e.target.files[0]&&restoreEncryptedBackup(e.target.files[0]); const sf=el("exerciseSearchForm"); if(sf) sf.onsubmit=e=>{e.preventDefault(); state.ui.search=text("searchDraft"); state.ui.searchDraft=state.ui.search; save().then(render);}; const sd=el("searchDraft"); if(sd) sd.oninput=e=>{state.ui.searchDraft=e.target.value; if(!e.target.value){state.ui.search=""; save().then(render);}}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; save().then(render);};
   }
   async function loadBodyMaps(){ await Promise.all(Object.keys(bodyMapAssets).map(async k=>{ try{ bodyMapSvg[k]=await fetch(bodyMapAssets[k],{cache:"force-cache"}).then(r=>r.ok?r.text():""); }catch{} })); }
-  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); render(); nasSyncStart(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
+  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); render(); nasSyncStart(); liveRecoverAfterReload(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
   init();
 })();
