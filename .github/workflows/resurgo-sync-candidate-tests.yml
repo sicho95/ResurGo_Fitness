@@ -8,6 +8,7 @@ on:
       - "scripts/build-static.mjs"
       - "tests/resurgo-backup.test.mjs"
       - "tests/resurgo-sync.test.mjs"
+      - "tests/resurgo-bluefy.test.mjs"
       - ".github/workflows/resurgo-sync-candidate-tests.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "scripts/build-static.mjs"
       - "tests/resurgo-backup.test.mjs"
       - "tests/resurgo-sync.test.mjs"
+      - "tests/resurgo-bluefy.test.mjs"
       - ".github/workflows/resurgo-sync-candidate-tests.yml"
 jobs:
   test-api:
@@ -38,6 +40,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/resurgo-backup.test.mjs tests/resurgo-sync.test.mjs
+      - run: node --test tests/resurgo-backup.test.mjs tests/resurgo-sync.test.mjs tests/resurgo-bluefy.test.mjs
       - run: node scripts/build-static.mjs --out .webapp-build
       - run: node --check .webapp-build/app.js
