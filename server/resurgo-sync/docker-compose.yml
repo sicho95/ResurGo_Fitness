@@ -1,8 +1,11 @@
 # CANDIDAT : à déployer seulement après audit du NAS et recette de sécurité.
 # Ne jamais exposer le port privé 18880 via Tailscale Funnel.
+# QNAP Container Station : utiliser le réseau Docker 'bridge' existant.
+# Ne PAS créer de réseau Compose server_default (qnetwork-tool / Virtual Switch échoue).
 services:
   resurgo-sync-public:
     build: .
+    network_mode: bridge  # réseau Docker existant, pas de création de Virtual Switch QNAP
     container_name: resurgo-sync-public
     command: ["uvicorn", "app:public", "--host", "0.0.0.0", "--port", "8080", "--no-access-log"]
     restart: unless-stopped
@@ -22,6 +25,7 @@ services:
 
   resurgo-sync-admin:
     build: .
+    network_mode: bridge  # réseau Docker existant, pas de création de Virtual Switch QNAP
     container_name: resurgo-sync-admin
     command: ["uvicorn", "app:admin", "--host", "0.0.0.0", "--port", "8081", "--no-access-log"]
     restart: unless-stopped
