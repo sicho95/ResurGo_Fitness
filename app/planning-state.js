@@ -15,6 +15,7 @@
       }, 3000);
     }
     await put("app",state);
+    nasSyncSchedule();
   }
   const profile=()=>state.profiles.find(p=>p.id===state.activeProfileId);
   function sessionSortValue(s){ return `${s.date||TODAY}-${s.secondary?"1":"0"}`; }
