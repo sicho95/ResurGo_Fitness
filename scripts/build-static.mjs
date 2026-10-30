@@ -24,6 +24,12 @@ const appBuildOrder = [
   "diagrams.js",
   "visualization-stats.js",
   "motion-animations.js",
+  "backup-secure.js",
+  "sync-local-first.js",
+  "voice-pack.js",
+  "sensor-fusion.js",
+  "ble-bluefy.js",
+  "coach-live.js",
   "app-init.js"
 ];
 
@@ -92,7 +98,9 @@ async function writeBundle(outDir, meta) {
 async function copyStatic(outDir, meta) {
   const files = await fs.readdir(staticDir);
   for (const file of files) {
-    await copyFile(path.join(staticDir, file), path.join(outDir, file), meta);
+    const src=path.join(staticDir, file), dest=path.join(outDir,file);
+    if ((await fs.stat(src)).isDirectory()) await copyDir(src,dest);
+    else await copyFile(src,dest,meta);
   }
 }
 
