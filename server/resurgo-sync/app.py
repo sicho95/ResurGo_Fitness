@@ -21,6 +21,8 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
 from pydantic import BaseModel, Field
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+import push_service
 
 VERSION = "0.1.0-candidate"
 DB_PATH = Path(os.environ.get("RS_DB_PATH", "/data/resurgo.sqlite3"))
@@ -101,6 +103,7 @@ def _init_db_locked() -> None:
         CREATE INDEX IF NOT EXISTS idx_signups_created ON profile_signups(created_at);
         CREATE INDEX IF NOT EXISTS idx_signups_origin ON profile_signups(origin_hash,created_at);
         """)
+        push_service.ensure_schema(c)
 
 
 @contextmanager
@@ -220,6 +223,12 @@ class Operation(BaseModel):
     expectedRevision: int = Field(ge=0)
     payload: dict[str, Any] = Field(default_factory=dict)
     deleted: bool = False
+
+
+class WebPushSubscriptionRequest(BaseModel):
+    subscription: dict[str, Any]
+    timezone: str = Field(min_length=3, max_length=64)
+    reminderTime: str = Field(pattern=r"^(?:[01]\\d|2[0-3]):[0-5]\\d$")
 
 
 class PushRequest(BaseModel):
@@ -461,6 +470,65 @@ def revoke_my_device(device_id: str, user: dict = Depends(current_device)):
     if not n:
         raise HTTPException(status_code=404, detail="device_not_found")
     return {"ok": True}
+
+
+@public.get("/api/v1/push/key")
+def push_key(user: dict = Depends(current_device)):
+    return {"publicKey": push_service.public_key(DB_PATH)}
+
+
+@public.get("/api/v1/push/status")
+def push_status(user: dict = Depends(current_device)):
+    with closing(connect()) as c:
+        row = c.execute("SELECT timezone,reminder_time,updated_at FROM push_subscriptions "
+                        "WHERE device_id=?", (user["id"],)).fetchone()
+    return {"subscribed": bool(row), "timezone":row["timezone"] if row else None,
+            "reminderTime":row["reminder_time"] if row else None,
+            "updatedAt":row["updated_at"] if row else None}
+
+
+@public.post("/api/v1/push/subscribe")
+def push_subscribe(req: WebPushSubscriptionRequest, user: dict = Depends(current_device)):
+    try:
+        subscription = push_service.validate_subscription(req.subscription)
+        ZoneInfo(req.timezone)
+    except (ValueError, ZoneInfoNotFoundError):
+        raise HTTPException(status_code=422, detail="invalid_webpush_subscription") from None
+    now = int(time.time())
+    with transaction() as c:
+        c.execute("INSERT INTO push_subscriptions "
+                  "(device_id,subscription_json,timezone,reminder_time,created_at,updated_at) "
+                  "VALUES(?,?,?,?,?,?) ON CONFLICT(device_id) DO UPDATE SET "
+                  "subscription_json=excluded.subscription_json, timezone=excluded.timezone,"
+                  "reminder_time=excluded.reminder_time,updated_at=excluded.updated_at",
+                  (user["id"], json.dumps(subscription, separators=(",",":")),
+                   req.timezone, req.reminderTime, now, now))
+    return {"subscribed":True}
+
+
+@public.post("/api/v1/push/unsubscribe")
+def push_unsubscribe(user: dict = Depends(current_device)):
+    with transaction() as c:
+        c.execute("DELETE FROM push_subscriptions WHERE device_id=?", (user["id"],))
+    return {"subscribed":False}
+
+
+@public.post("/api/v1/push/test")
+def push_test(user: dict = Depends(current_device)):
+    with transaction() as c:
+        throttle(c, "push_test_"+user["id"], 2)
+        row = c.execute("SELECT subscription_json FROM push_subscriptions "
+                        "WHERE device_id=?", (user["id"],)).fetchone()
+    if not row:
+        raise HTTPException(status_code=409, detail="push_not_subscribed")
+    payload = {"id":"test-"+str(uuid.uuid4()),"title":"ResurGo — test",
+               "body":"La notification de test est arrivée dans ResurGo."}
+    try:
+        push_service.send(DB_PATH, json.loads(row["subscription_json"]), payload)
+    except Exception:
+        # Don't leak browser push endpoint or library errors over public Funnel.
+        raise HTTPException(status_code=503, detail="push_delivery_unavailable") from None
+    return {"sent":True}
 
 
 @public.post("/api/v1/sync/push")
