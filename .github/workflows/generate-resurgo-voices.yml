@@ -43,5 +43,7 @@ jobs:
           git add static/voice/fr-FR/v1/
           if ! git diff --cached --quiet; then
             git commit -m "assets(voices): voix naturelles francaises prégénérées, manifest et licences"
-            git push
+            git fetch origin "$GITHUB_REF_NAME"
+            git rebase "origin/$GITHUB_REF_NAME"
+            git push origin "HEAD:$GITHUB_REF_NAME"
           fi
