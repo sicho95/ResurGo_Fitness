@@ -1,11 +1,11 @@
 # Catalogue vocal et grammaire de coaching — cahier de production audio
 
-**Statut :** personnalité chaleureuse, encourageante, voix homme/femme préenregistrées et offline = **CONFIRMÉ**. Phrases exactes, nombre de variantes, délais et intonations = **PROPOSITIONS** soumises à validation artistique.
+**Statut :** personnalité chaleureuse et encourageante, **deux voix naturelles PRÉGÉNÉRÉES par synthèse vocale**, fichiers audio locaux offline et identités masculine/féminine pérennes = **CONFIRMÉ par Damien le 2026-10-30**. Textes, choix de fournisseur, modèle et paramètres exacts = **À VALIDER**.
 
 ## 1. Principes
 
 - Pas de LLM dans ResurGo et pas de génération de phrase ou de voix via un service pendant l'activité.
-- Les clips sont préparés **une seule fois** par version du catalogue, dans une identité masculine et une identité féminine, chacune stable.
+- Les clips sont **synthétisés à l'avance** par un moteur vocal naturel, en lots de production, **non enregistrés manuellement**. La génération des nouveaux clips doit réutiliser **exactement la même identité de voix masculine ou féminine** et la même recette de génération lorsque c'est techniquement possible. Les clips sont produits une fois par version, puis distribués pour exécution locale.
 - Sélection du timbre indépendante du profil/sexe ; voix naturelles, chaleureuses, sincères, jamais culpabilisantes ni monotones.
 - Déclencheur sportif explicite et vérifiable, priorité sécurité et anti-répétition ; les encouragements ne doivent pas se multiplier simplement parce qu'un temps s'écoule.
 - Chaque fin de séance possède au moins une phrase positive adaptée au résultat réel.
@@ -163,7 +163,11 @@ Ils ne sont **pas** des encouragements et ne doivent jamais être choisis unique
 
 ## 5. Production et stockage
 
-- Générer 2 jeux de clips, chacun avec une même identité sonore et plusieurs tonalités autorisées.
+- Générer **par synthèse naturelle** 2 jeux de clips, chacun avec une même identité sonore et plusieurs tonalités autorisées ; ne pas confondre génération initiale et lecture locale.
+- Enregistrer un **VoiceIdentityManifest** immuable par voix : `voiceId`, `genderPresentation`, `locale`, `ttsProvider`, `ttsModel`, `modelVersion`, `providerVoiceId`, `speakerReferenceId` ou `speakerEmbeddingRef` si utilisable et légal, `stylePreset`, `prosodyParams`, `pronunciationLexiconVersion`, `generationPromptVersion`, `sampleRate`, `codec`, `license`, `createdAt`, `revision`, `goldenSampleChecksums` et versions de recettes.
+- Les paramètres déterministes tels que `seed`/`speakerId` sont sauvegardés **seulement si le modèle les expose**. Une simple graine ne garantit pas une voix identique si le fournisseur change de modèle ou supprime le preset ; conserver les rendus masters et références autorisées. Aucun clonage de personne réelle sans consentement et droits adaptés.
+- Toute nouvelle phrase est générée en réutilisant le manifeste d'identité et le rendu de référence, puis comparée à des échantillons de contrôle pour cohérence de timbre, articulation, accent et intensité émotionnelle.
+- Conserver les **masters audio**, les fichiers compressés prêts à distribuer, le manifeste et le catalogue des textes avec checksums, licences et politique de versionnage. Ne pas exposer des embeddings ou secrets de fournisseur dans le bundle public.
 - Les phrases complètes sont préférées pour les conseils courants ; bibliothèque numérique (mètres, kilomètres, chrono, battements, watts) à construire avec enchaînements naturels.
 - Convention de version `voicePack/fr-FR/feminine-v1`, `voicePack/fr-FR/masculine-v1` ; checksum et taille ; droits/licences explicites.
 - Catalogue offline téléchargé ou intégré, cache avec intégrité, préchargement des messages de sécurité et de fin ; si téléchargement échoue et pas de voix disponible, affichage/haptique et signal d'indisponibilité honnête.
@@ -186,6 +190,7 @@ Les valeurs de cooldown, intensité de parole et proportion de motivation resten
 ## 7. Points à faire valider
 
 - Les 80 formulations ci-dessus sont des **exemples candidats**, non une approbation de leur texte exact.
+- La demande explicite « voix naturelles prégénérées par l'assistant, identité vocale masculine et féminine conservée pour les prochaines générations » ne signifie **pas** que les fichiers audio existent déjà : leur génération réelle et un contrôle qualité doivent précéder la livraison de cette fonctionnalité.
 - Choix des 2 voix réelles, tonalités, débit, accent, saturation et équilibre avec la musique.
 - Ajout ultérieur de catalogues par discipline (vélo, elliptique, marche-course) avec mêmes intentions et langage adapté.
 - Une bibliothèque d'environ 150–200 formules distinctes est suggérée, pas une contrainte décidée quant au nombre.
