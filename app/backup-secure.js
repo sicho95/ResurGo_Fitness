@@ -90,7 +90,7 @@
         throw Error("Le NAS n'a pas confirmé la création du profil sécurisé.");
       await put("nasConnection",{url,profileId:data.profileId,deviceId:data.deviceId,
         token:data.token,recovery:data.recovery,label,profileName:data.profileName,
-        localProfileId:state.activeProfileId});
+        accountRole:"owner",localProfileId:state.activeProfileId});
       state.settings.nasSyncUrl=url;
       await save("Profil NAS créé sans administrateur. Exporte maintenant une sauvegarde chiffrée.");
       render();
@@ -108,7 +108,7 @@
       if(!data.token||!data.recovery?.keyId||!data.recovery?.secret)
         throw Error("Le serveur ne fournit pas de clé de secours ; association non enregistrée.");
       await put("nasConnection",{url,profileId:data.profileId,deviceId:data.deviceId,
-        token:data.token,recovery:data.recovery,label});
+        token:data.token,recovery:data.recovery,label,accountRole:"paired"});
       await put("nasPendingRecovery",null);
       state.settings.nasSyncUrl=url;
       await save("NAS associé à cet appareil. Crée une sauvegarde chiffrée avec ta clé de secours.");
@@ -155,8 +155,11 @@
       const conn=await nasStoredConnection();
       if(!conn?.token)throw Error("Pas d'appareil NAS associé.");
       const data=await nasRequest(conn.url,"/api/v1/devices",{token:conn.token});
-      alert("NAS connecté. Appareils autorisés : "+(data.devices||[]).length+
-        ". La synchronisation automatique des activités sera activée après sa recette.");
+      const meta=await nasSyncLoadMeta(conn);
+      alert("Connexion NAS vérifiée. "+(data.devices||[]).length+
+        " appareil(s) associé(s). Profils détectés sur NAS : "+
+        (meta.remoteProfileIds?.length||0)+". Synchronisation local-first disponible ; "+
+        "consulter le statut ci-dessous pour les erreurs ou opérations en attente.");
     }catch(err){alert(err.message||"NAS inaccessible.");}
   }
   async function exportEncryptedBackup(){
