@@ -228,7 +228,7 @@ class Operation(BaseModel):
 class WebPushSubscriptionRequest(BaseModel):
     subscription: dict[str, Any]
     timezone: str = Field(min_length=3, max_length=64)
-    reminderTime: str = Field(pattern=r"^(?:[01]\\d|2[0-3]):[0-5]\\d$")
+    reminderTime: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 
 
 class PushRequest(BaseModel):
