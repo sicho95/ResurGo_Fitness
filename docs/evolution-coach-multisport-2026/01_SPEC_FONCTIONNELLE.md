@@ -1,6 +1,6 @@
 # Spécification fonctionnelle — ResurGo Endurance & Coach
 
-Statut : **CONFIRMÉ** sauf mentions contraires. Référence : `00_INDEX.md`.
+Statut : **CONFIRMÉ** sauf mentions contraires. Référence : `00_INDEX.md`. **La décision la plus récente `13_ARBITRAGE_PWA_MONTRES.md` prime sur les propositions antérieures de compagnons natifs.**
 
 ## 1. Profils, démarrage et historique
 
@@ -80,7 +80,7 @@ Statut : **CONFIRMÉ** sauf mentions contraires. Référence : `00_INDEX.md`.
 
 **FON-053** Changement de source quand ajout, coupure, détérioration du signal ; valeur manquante ≠ zéro ; distance et altitude raccordées sans discontinuités ; même source physique relayée par deux appareils ≠ deux témoignages indépendants.
 
-**FON-054** Apple Watch : application ResurGo watchOS + iOS, mesures et commandes bidirectionnelles ; possibilité de lecture locale de consignes sur haut-parleur compatible, sinon écouteurs/téléphone. Garmin : enregistrement maître sur l'activité native ; recherche prioritaire de protocoles standards ou périphérique émulé sans installation ; champ de données Connect IQ seulement si nécessaire et faisable.
+**FON-054 (RECTIFIÉ LE 30/10/2026)** **Aucune application ResurGo iOS native ou watchOS ne sera développée**. ResurGo reste une **PWA sur l'iPhone**. L'Apple Watch (Series 11 de Claire) accompagne le téléphone et peut uniquement servir de **source facultative de mesures effectivement accessibles**, par exemple FC diffusée en BLE Heart Rate Service à travers une application tierce App Store si l'utilisateur l'accepte ; cela nécessite aussi un navigateur prenant réellement en charge Web Bluetooth. L'Apple Watch n'est **pas** autonome sous ResurGo et ne reçoit pas de commandes ni de messages audio ResurGo. **Ne pas promettre de connexion automatique Apple Watch native**. Garmin conserve l'enregistrement maître de son activité native et peut diffuser la FC sur Bluetooth selon les modèles, mais l'accès direct à son GPS ou altitude n'est pas démontré. Sur Safari iOS sans extension, Web Bluetooth n'est pas disponible ; l'application continue donc en GPS téléphone seul. Les autres anciennes exigences watchOS sont remplacées par `13_ARBITRAGE_PWA_MONTRES.md`.
 
 ## 7. Voix, musique, personnalité
 
