@@ -3,7 +3,7 @@
 **Statut :** spécification de référence de travail, sans développement ni déploiement.
 **Établi le :** 2026-10-30.
 **Produit actuel audité :** ResurGo Fitness PWA, version déclarée 1.3.4, branche `main`.
-**Version du dossier :** SPEC-MULTISPORT 0.1.0.
+**Version du dossier :** SPEC-MULTISPORT 0.1.1.
 **Propriétaire des arbitrages :** Damien. **Source de vérité produit :** dépôt `sicho95/ResurGo_Fitness` ; SichoBrain KOS est la mémoire personnelle officielle, mais n'a pas été modifié par ce dossier.
 
 ## A. Mode d'emploi et valeur normative
@@ -24,6 +24,8 @@
 4. `04_UX_IOS.md` — refonte graphique native-like, parcours, écran de séance, accessibilité et continuité avec la PWA actuelle.
 5. `05_RECETTE_MIGRATION.md` — phasage, exigences de qualité, essais appareil réel, migrations, non-régression, critères d'acceptation.
 6. `06_DECISIONS_QUESTIONS_SOURCES.md` — registre de décisions, points ouverts, sources de référence.
+7. `07_CATALOGUE_VOCAL.md` — grammaire hors ligne, production des voix et 80 formulations candidates à valider.
+8. `08_MOTEURS_ALGORITHMES.md` — pipeline déterministe détaillé, qualité capteurs, terrain, prédictions et arbitrage des conseils.
 
 ## C. Périmètre confirmé
 
