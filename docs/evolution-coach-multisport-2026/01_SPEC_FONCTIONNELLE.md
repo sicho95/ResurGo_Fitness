@@ -100,6 +100,16 @@ Statut : **CONFIRMÉ** sauf mentions contraires. Référence : `00_INDEX.md`.
 
 **FON-072** Tendinopathie rotulienne et douleur plantaire/aponévrose : exemples de restrictions à gérer, sans en déduire une cause par manque d'étirements ni donner un traitement médical personnalisé. Des exercices de mise en charge progressive et des adaptations nécessitent une validation clinique selon le cas.
 
+## 8 bis. Synchronisation multi-appareils
+
+**FON-080 (CONFIRMÉ)** Synchronisation automatique entre les appareils d'un même profil, en préservant les données locales et le fonctionnement offline, avec transfert des modifications au retour de connexion. Les autres profils restent isolés.
+
+**FON-081 (PROPOSITION)** Backend Docker léger et indépendant sur NAS QNAP, analogue à AlphaTerminal ; stockage SQLite, authentification par appareil, opérations idempotentes, protection contre écrasements et doublons, résolution des conflits, sauvegardes. Définition complète : `10_SYNCHRONISATION_NAS.md`.
+
+**FON-082 (À TESTER)** PWA iOS synchronise lorsqu'elle est ouverte, au retour au premier plan et à la reprise du réseau ; une synchronisation périodique iOS PWA totalement fermée n'est pas garantie. La future couche native pourra améliorer ce comportement sans garantir un horaire strict.
+
+**FON-083 (CONFIRMÉ)** Synchroniser les données sans obliger le serveur à être disponible pendant la séance ; données de santé seulement avec consentement, sans partage par défaut.
+
 ## 9. Hors périmètre à ce stade
 
 - Coaching intérieur sans données machine en direct ; un cardio seul ne suffit pas.
