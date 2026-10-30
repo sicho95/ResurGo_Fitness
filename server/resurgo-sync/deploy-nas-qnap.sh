@@ -67,9 +67,13 @@ print("Ports Tailscale choisis non référencés dans la configuration actuelle.
 PY
 
 info "Étape 2 : vérifier le volume isolé et les ports Docker."
+# Volume dédié : la base SQLite est écrite par UID/GID 10001 dans les conteneurs.
+# Ne jamais modifier les permissions des dossiers AlphaTerminal ou d'autres services.
 mkdir -p "$RS_HOST_DATA_DIR"
-# QNAP peut nécessiter l'ajustement manuel de l'UID du volume 10001.
 [[ -d "$RS_HOST_DATA_DIR" ]] || fail "Volume NAS introuvable."
+chmod 700 "$RS_HOST_DATA_DIR" || fail "Impossible de protéger le répertoire ResurGo."
+chown 10001:10001 "$RS_HOST_DATA_DIR" ||
+  fail "Droit manquant : donner le dossier ResurGo à UID/GID 10001 avant Docker."
 python3 - <<'PY'
 import os,socket
 for key in ("RS_PUBLIC_HOST_PORT","RS_ADMIN_HOST_PORT"):
