@@ -17,7 +17,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Check deployment shell syntax
-        run: bash -n server/resurgo-sync/deploy-nas-qnap.sh
+        run: |
+          bash -n server/resurgo-sync/deploy-nas-qnap.sh
+          bash -n server/resurgo-sync/bootstrap-qnap.sh
       - name: Validate Docker Compose without secrets or deployment
         run: |
           cd server/resurgo-sync
