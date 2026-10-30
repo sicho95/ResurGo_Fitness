@@ -33,6 +33,7 @@
     const s=state.liveSession;
     if(!s)return `<section class="grid"><h1>Coach en direct</h1><article class="panel">
       <h2>Nouvelle séance</h2><p>Le GPS de l'iPhone suffit dehors. Capteurs optionnels.</p>
+      <div class="actions"><button class="secondary" id="openBluefyHelp">ⓘ Comment connecter un capteur dans Bluefy</button></div>
       <div class="actions"><button class="primary" id="liveRun">Course extérieure</button>
       <button class="secondary" id="liveBike">Vélo extérieur</button></div>
       <p><strong>Intérieur FTMS (Bluefy)</strong> : connecter d’abord la machine dans Réglages → Capteurs Bluetooth ⓘ, puis démarrer si ResurGo reçoit réellement vitesse ou distance.</p>
@@ -52,6 +53,7 @@
       <p id="liveTerrain">Terrain : ${esc(s.terrain)}</p>
       <p id="liveSignal" class="muted">${s.machineKind?"Machine FTMS":"GPS téléphone"} : ${esc(s.signal)}</p>
       <p id="liveHeartRate" class="muted">Cardio : mesure indisponible</p>
+      <button class="secondary" id="openBluefyHelp">ⓘ Informations sur Bluefy / Bluetooth</button>
       ${s.machineKind?'<p id="liveMachineStatus" class="muted">Machine : surveillance du signal Bluetooth.</p>':""}
       ${s.machineKind?"<p class=\"muted\">Distance calculée à partir des mesures FTMS réellement transmises ; peut être estimée si vitesse seule.</p>":""}
       <div class="actions">${s.pausedAt?'<button class="primary" id="liveResume">Reprendre</button>':'<button class="secondary" id="livePause">Pause</button>'}
