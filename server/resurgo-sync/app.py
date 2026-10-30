@@ -12,7 +12,7 @@ import secrets
 import sqlite3
 import time
 import uuid
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from pathlib import Path
 from typing import Any
 
@@ -40,7 +40,7 @@ def connect() -> sqlite3.Connection:
 
 
 def init_db() -> None:
-    with connect() as c:
+    with closing(connect()) as c:
         c.executescript("""
         CREATE TABLE IF NOT EXISTS profiles (
             id TEXT PRIMARY KEY, label TEXT NOT NULL, created_at INTEGER NOT NULL);
@@ -128,7 +128,7 @@ def current_device(authorization: str | None = Header(default=None)) -> dict:
     raw = authorization.removeprefix("Bearer ").strip()
     if len(raw) < 32 or len(raw) > 256:
         raise HTTPException(status_code=401, detail="invalid_token")
-    with connect() as c:
+    with closing(connect()) as c:
         row = c.execute("SELECT id, profile_id, label FROM devices "
                         "WHERE token_hash=? AND revoked_at IS NULL",
                         (digest(raw),)).fetchone()
@@ -230,7 +230,7 @@ def create_profile(req: CreateProfileRequest, _: None = Depends(require_admin)):
 
 @admin.get("/admin/profiles")
 def list_profiles(_: None = Depends(require_admin)):
-    with connect() as c:
+    with closing(connect()) as c:
         return {"profiles": [dict(r) for r in c.execute(
             "SELECT p.id,p.label,p.created_at,COUNT(d.id) AS devices "
             "FROM profiles p LEFT JOIN devices d ON d.profile_id=p.id "
@@ -276,7 +276,7 @@ def start_pair(req: DeviceRequest, user: dict = Depends(current_device)):
 
 @public.get("/api/v1/devices")
 def list_my_devices(user: dict = Depends(current_device)):
-    with connect() as c:
+    with closing(connect()) as c:
         rows = c.execute("SELECT id,label,created_at,revoked_at FROM devices "
                          "WHERE profile_id=? ORDER BY created_at", (user["profile_id"],))
         return {"devices": [dict(r) for r in rows], "currentDeviceId": user["id"]}
@@ -342,7 +342,7 @@ def push(req: PushRequest, user: dict = Depends(current_device)):
 def pull(cursor: int = Query(default=0, ge=0),
          limit: int = Query(default=100, ge=1, le=200),
          user: dict = Depends(current_device)):
-    with connect() as c:
+    with closing(connect()) as c:
         rows = c.execute("SELECT sequence,operation_id,kind,entity_id,revision,"
                          "deleted,payload,device_id,created_at FROM events "
                          "WHERE profile_id=? AND sequence>? ORDER BY sequence LIMIT ?",
