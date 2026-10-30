@@ -79,7 +79,7 @@ test("restauration par mot de passe après perte locale, sans réseau NAS",async
   await r.api.restoreEncryptedBackup(new Blob([json],{type:"application/json"}));
   assert.equal(r.ctx.state.profiles[0].name,"Profil fictif TEST");
   assert.equal(r.ctx.state.activities[0].distanceM,3000);
-  assert.equal(r.ctx.state.settings.workerToken,undefined);
+  assert.equal(r.ctx.state.settings.workerToken,"");
   assert.equal(r.store.get("app").profiles[0].id,"profil-001");
   assert.equal(r.store.get("nasConnection"),undefined); // sinon non créé.
   assert.match(r.messages.join(" "),/restaurée/);
