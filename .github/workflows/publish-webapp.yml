@@ -33,6 +33,12 @@ jobs:
       - name: Build WebApp branch content
         run: node scripts/build-static.mjs --out .webapp-build
 
+      - name: Verify bundle syntax and bootstrap scope (prevents black screen)
+        run: |
+          node --check .webapp-build/app.js
+          node --test tests/resurgo-app-runtime.test.mjs
+          node --test tests/resurgo-backup.test.mjs tests/resurgo-sync.test.mjs tests/resurgo-bluefy.test.mjs
+
       - name: Publish to WebApp branch
         env:
           GITHUB_TOKEN: ${{ github.token }}
