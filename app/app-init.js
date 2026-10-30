@@ -107,6 +107,10 @@
   }
   function bind(){
     on("pushInboxButton",()=>pushInboxOpen());
+    on("enableNasPush",pushEnableFromSettings);
+    on("disableNasPush",pushDisableFromSettings);
+    on("testNasPush",pushTestFromSettings);
+    on("checkNasPush",pushStatusInSettings);
     $("[data-open-push]").forEach(b=>b.onclick=()=>pushInboxOpen(b.dataset.openPush));
     $("[data-push-session]").forEach(b=>b.onclick=()=>{
       const session=state.plans.find(x=>x.id===b.dataset.pushSession);
