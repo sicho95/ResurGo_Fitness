@@ -6,7 +6,10 @@
   function registerPwaEvents(){
     window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferredInstallPrompt=e; render(); });
     window.addEventListener("appinstalled",async()=>{ deferredInstallPrompt=null; state.settings.hideInstallPrompt=true; await save("App installée."); render(); if(state.settings.notifications.enabled&&notificationPermission()==="default"&&!state.settings.notifications.askedOnInstall) await requestSessionNotifications({test:false,silent:true}); });
-    navigator.serviceWorker?.addEventListener("message", e=>{ if(e.data?.type==="OPEN_VIEW"){ state.ui.view=e.data.view||"today"; save().then(render); } });
+    navigator.serviceWorker?.addEventListener("message", e=>{
+      if(e.data?.type==="OPEN_VIEW"){ state.ui.view=e.data.view||"today"; save().then(render); }
+      if(e.data?.type==="RESURGO_PUSH")pushInboxLoad().catch(()=>{});
+    });
     let refreshing=false;
     navigator.serviceWorker?.addEventListener("controllerchange",()=>{ if(refreshing) return; refreshing=true; window.location.reload(); });
   }
@@ -71,7 +74,7 @@
       menu.style.top=`${Math.min(box.bottom+6, window.innerHeight-menu.offsetHeight-12)}px`;
     }
   }
-  function render(){ applyTheme(); document.body.classList.toggle("modalOpen",!!state.ui.modal); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings,coachLive:liveCoachView}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
+  function render(){ applyTheme(); document.body.classList.toggle("modalOpen",!!state.ui.modal); const views={today,plan:planView,session:sessionView,exercises:exercisesView,stats,settings,coachLive:liveCoachView,pushInbox:pushInboxView}; $("#app").innerHTML=shell((views[state.ui.view]||today)()); bind(); }
   function on(id,fn){ const x=el(id); if(x) x.onclick=fn; }
   function setSegmentedActive(btn){
     btn.parentElement?.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));
@@ -103,6 +106,15 @@
     });
   }
   function bind(){
+    on("pushInboxButton",()=>pushInboxOpen());
+    $("[data-open-push]").forEach(b=>b.onclick=()=>pushInboxOpen(b.dataset.openPush));
+    $("[data-push-session]").forEach(b=>b.onclick=()=>{
+      const session=state.plans.find(x=>x.id===b.dataset.pushSession);
+      if(!session)return;
+      if(state.profiles.some(x=>x.id===session.profileId))state.activeProfileId=session.profileId;
+      state.ui.view="plan";
+      save().then(render);
+    });
     on("openLiveCoach",()=>{state.ui.view="coachLive";save().then(render);});
     on("liveRun",()=>liveStart("run")); on("liveBike",()=>liveStart("bike"));
     on("liveBack",()=>{state.ui.view="today";save().then(render);});
@@ -150,6 +162,6 @@
     const imp=el("restoreEncryptedJson"); if(imp) imp.onchange=e=>e.target.files[0]&&restoreEncryptedBackup(e.target.files[0]); const sf=el("exerciseSearchForm"); if(sf) sf.onsubmit=e=>{e.preventDefault(); state.ui.search=text("searchDraft"); state.ui.searchDraft=state.ui.search; save().then(render);}; const sd=el("searchDraft"); if(sd) sd.oninput=e=>{state.ui.searchDraft=e.target.value; if(!e.target.value){state.ui.search=""; save().then(render);}}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; save().then(render);};
   }
   async function loadBodyMaps(){ await Promise.all(Object.keys(bodyMapAssets).map(async k=>{ try{ bodyMapSvg[k]=await fetch(bodyMapAssets[k],{cache:"force-cache"}).then(r=>r.ok?r.text():""); }catch{} })); }
-  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); render(); nasSyncStart(); liveRecoverAfterReload(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
+  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); const pushId=new URLSearchParams(location.search).get("notification"); if(pushId&&/^[a-zA-Z0-9_-]{1,128}$/.test(pushId)){state.ui.view="pushInbox";state.ui.selectedPushId=pushId;} render(); if(state.ui.view==="pushInbox")pushInboxOpen(pushId||"").catch(()=>{}); else pushInboxLoad().catch(()=>{}); nasSyncStart(); liveRecoverAfterReload(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
   init();
 })();
