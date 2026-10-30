@@ -50,7 +50,7 @@ function runner() {
     setTimeout:()=>0,clearTimeout:()=>{},
     fetch:()=>{throw Error("Pas d'accès réseau dans ce test.");}
   });
-  vm.runInContext(source+"\n globalThis.__api={exportEncryptedBackup,restoreEncryptedBackup,backupDerive};",ctx);
+  vm.runInContext(source+"\n globalThis.__api={exportEncryptedBackup,restoreEncryptedBackup,backupDerive,nasRetryRecovery};",ctx);
   return {ctx,inputs,store,messages,captured,initial,api:ctx.__api};
 }
 
@@ -158,4 +158,29 @@ test("restauration NAS : nouveau jeton, jamais le mot de passe ou l'ancien token
   assert.equal(JSON.stringify(request.options).includes("OLD_TOKEN"),false);
   assert.equal(JSON.stringify(request.options).includes("une phrase de passe tres longue"),false);
   assert.equal(JSON.parse(request.options.body).secret,"SECURE_RECOVERY_48_BYTES_RANDOM_SECRET");
+});
+
+test("sauvegarde restaurée hors ligne : récupération NAS différée sans ancien appareil",async()=>{
+  const r=runner();
+  r.store.set("nasConnection",{
+    url:"https://nas.example.invalid",profileId:"profil-nas",deviceId:"ancien",
+    token:"OLD_TOKEN",recovery:{keyId:"key-001",secret:"RECOVERY_SECRET_FOR_SAFEGUARD"},
+    label:"Ancien iPhone"
+  });
+  await r.api.exportEncryptedBackup();
+  const envelope=await r.captured.blob.text();
+  r.ctx.fetch=async()=>{throw Error("NAS indisponible");};
+  r.ctx.state.profiles=[];
+  await r.api.restoreEncryptedBackup(new Blob([envelope]));
+  assert.equal(r.ctx.state.profiles.length,1);
+  assert.equal(r.store.get("nasConnection"),null);
+  assert.equal(r.store.get("nasPendingRecovery").recovery.secret,"RECOVERY_SECRET_FOR_SAFEGUARD");
+  assert.match(r.messages.join(" "),/différée/);
+  r.ctx.fetch=async()=>({ok:true,json:async()=>({
+    profileId:"profil-nas",deviceId:"new",token:"NEW_SESSION",
+    recovery:{keyId:"key-002",secret:"NEW_RECOVERY_SECRET"}
+  })});
+  await r.api.nasRetryRecovery();
+  assert.equal(r.store.get("nasConnection").token,"NEW_SESSION");
+  assert.equal(r.store.get("nasPendingRecovery"),null);
 });
