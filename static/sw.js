@@ -13,31 +13,60 @@ self.addEventListener("message", event => {
   if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
-self.addEventListener("notificationclick", event => {
-  event.notification.close();
-  const target = new URL("./#today", self.location.href).href;
-  event.waitUntil(clients.matchAll({ type:"window", includeUncontrolled:true }).then(list => {
-    const opened = list.find(client => client.url.startsWith(self.location.origin));
-    if (opened) {
-      opened.postMessage({ type:"OPEN_VIEW", view:"today" });
-      return opened.focus();
-    }
-    return clients.openWindow(target);
-  }));
+// Persist push messages even when ResurGo is closed (iOS Home Screen PWA).
+function openPushInbox(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open("ResurGoPushInboxV1",1);
+    req.onupgradeneeded=()=>req.result.createObjectStore("inbox",{keyPath:"id"});
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function storePush(item){
+  const db=await openPushInbox();
+  try{
+    await new Promise((resolve,reject)=>{
+      const tx=db.transaction("inbox","readwrite");
+      tx.objectStore("inbox").put(item);
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+    });
+  }finally{db.close();}
+}
+self.addEventListener("push",event=>{
+  event.waitUntil((async()=>{
+    let payload={};
+    try{payload=event.data?.json()||{};}catch{}
+    const id=String(payload.id||"push-"+Date.now()).slice(0,128);
+    const item={
+      id,title:String(payload.title||"Rappel ResurGo").slice(0,120),
+      body:String(payload.body||"Une séance est prévue.").slice(0,250),
+      sessionId:String(payload.sessionId||"").slice(0,128),
+      profileId:String(payload.profileId||"").slice(0,128),
+      receivedAt:new Date().toISOString(),read:false
+    };
+    try{await storePush(item);}catch(e){console.warn("Push inbox inaccessible",e);}
+    const open=await self.clients.matchAll({type:"window",includeUncontrolled:true});
+    for(const client of open)client.postMessage({type:"RESURGO_PUSH",id});
+    await self.registration.showNotification(item.title,{
+      body:item.body,icon:"./icon.svg",badge:"./icon.svg",
+      tag:item.id,data:{notificationId:id}
+    });
+  })());
 });
-
-self.addEventListener("push", event => {
-  let data = {};
-  try { data = event.data ? event.data.json() : {}; } catch {}
-  const title = data.title || "Séance du jour";
-  const options = {
-    body: data.body || "Ouvre ResurGo Fitness pour voir la séance conseillée.",
-    tag: data.tag || "resurgo-session",
-    icon: "./icon.svg",
-    badge: "./icon.svg",
-    data: data.data || { view:"today" }
-  };
-  event.waitUntil(self.registration.showNotification(title, options));
+self.addEventListener("notificationclick",event=>{
+  event.notification.close();
+  const id=String(event.notification.data?.notificationId||"");
+  const target=new URL("./",self.registration.scope);
+  if(id)target.searchParams.set("notification",id);
+  event.waitUntil((async()=>{
+    const windows=await self.clients.matchAll({type:"window",includeUncontrolled:true});
+    for(const win of windows){
+      if(win.url.startsWith(self.registration.scope)){
+        try{await win.navigate(target.href);await win.focus();return;}catch{}
+      }
+    }
+    await self.clients.openWindow(target.href);
+  })());
 });
 
 self.addEventListener("fetch", event => {
