@@ -19,7 +19,7 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 | DEC-011 | Apple Watch : app ResurGo connectée à l'iPhone dans les deux sens, montre pouvant jouer la voix localement si compatible. |
 | DEC-012 | Garmin reste maître de son activité native, sans intervention/installation obligatoire sur la montre si solution standard disponible ; expérimenter l'émulation d'équipement. |
 | DEC-013 | HRM-Pro Plus Garmin utilisable comme source cardio supplémentaire en BLE, tout en restant associée Garmin par ANT+ si pris en charge. |
-| DEC-014 | Musique externe indépendante ; coach vocal chaleureux, préenregistré, deux voix cohérentes homme/femme, tonalités variées et offline. |
+| DEC-014 | Musique externe indépendante ; **deux identités vocales naturelles masculine/féminine, SYNTHÉTISÉES en amont (prégénérées), conservées et versionnées pour régénérer les futurs messages à identité constante** ; diffusion de fichiers audio offline, tonalités variées ; clarification explicite de Damien le 2026-10-30. |
 | DEC-015 | Positive attitude et encouragements toujours ; félicitations systématiques adaptées à la situation réelle même si temps non atteint ou séance interrompue. |
 | DEC-016 | Terrain : montée en effort adapté, regard quelques mètres devant/une foulée après l'autre ; au sommet/descente récupération avant relance, éviter « rattraper le chrono » immédiat. |
 | DEC-017 | Ravitaillements du jour J saisis par position/infos, conseil contextuel sans arrêt imposé, hydratation/alimentation proportionnée à durée et contexte. |
@@ -32,7 +32,7 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 - `PROP-001` Navigation bas à cinq onglets (Aujourd'hui, Programme, Démarrer, Progrès, Profil) ; alternative quatre onglets à tester.
 - `PROP-002` architecture JS métier partagé + compagnon iOS natif et watchOS ; choix SwiftUI complet vs Capacitor bridge non arrêté.
 - `PROP-003` simulation des profils d'effort par fenêtres courtes/moyennes/longues et étapes `TerrainStateMachine` ; détails seuils non approuvés.
-- `PROP-004` modes voix discret/équilibré/intensif et catalogue minimum d'environ 150–200 formulations ; nombre exact, fréquence et tonalités à valider.
+- `PROP-004` modes voix discret/équilibré/intensif et catalogue minimum d'environ 150–200 formulations ; nombre exact, fréquence et tonalités à valider. La prégénération naturelle et la conservation du manifeste d'identité sont, elles, confirmées.
 - `PROP-005` parcours GPX importable et trois stratégies chrono ; modalités concrètes non arrêtées.
 - `PROP-006` score de confiance et priorité avec hystérésis ; plages de délai et poids statistique à calibrer sur traces réelles.
 - `PROP-007` formulaire facultatif de récupération au lendemain, suivi local des zones douloureuses ; politique de conservation à valider.
@@ -60,7 +60,7 @@ Version du registre : 2026-10-30 ; statut : **travail préparatoire**.
 1. **Matériel intérieur exact** : marque, référence et firmware du tapis, elliptique ou vélo utilisé ; comment l'Enduro 2 y est couplée actuellement ?
 2. **Apple Watch** : modèle et version watchOS de la montre de Claire ; souhaite-t-elle utiliser une application ResurGo watchOS dédiée plutôt que l'app Exercice native (nécessaire pour certaines fonctions) ?
 3. **Enduro 2** : confirmer configuration actuelle des modes Bluetooth/ANT+, équipement « écran étendu » et le modèle du téléphone utilisé pendant les courses.
-4. **Sorties audio** : priorité si téléphone, casque et haut-parleur de montre sont disponibles simultanément ; audio multilingue souhaité ou français d'abord ?
+4. **Sorties audio** : priorité si téléphone, casque et haut-parleur de montre sont disponibles simultanément ; audio multilingue souhaité ou français d'abord ? Le principe de voix naturelles prégénérées et persistantes est confirmé, mais pas le fournisseur ni les timbres exacts.
 5. **Voix** : écouter et sélectionner les identités homme/femme à timbre unique ; ton précis, variantes et nombre de phrases avant validation d'enregistrements.
 6. **UI** : choisir 4 ou 5 onglets après prototype ; identité de couleurs et niveau de rupture graphique par rapport à l'application 1.3.4.
 7. **Intérieur** : minimum acceptable de métriques par machine (exemple elliptique seulement cadence + résistance vs distance réellement nécessaire). Une machine « connectée » ne doit pas passer sans contrôle de ses données.
