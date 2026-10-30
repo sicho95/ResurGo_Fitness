@@ -25,6 +25,7 @@ const appBuildOrder = [
   "visualization-stats.js",
   "motion-animations.js",
   "backup-secure.js",
+  "sync-local-first.js",
   "app-init.js"
 ];
 
