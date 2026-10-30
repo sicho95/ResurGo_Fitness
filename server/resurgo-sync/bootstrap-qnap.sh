@@ -25,19 +25,9 @@ SOURCE="https://raw.githubusercontent.com/sicho95/ResurGo_Fitness/main/server/re
 command -v curl >/dev/null || die "curl manquant."
 command -v docker >/dev/null || die "docker manquant."
 docker compose version >/dev/null 2>&1 || die "docker compose V2 manquant."
-if ! command -v python3 >/dev/null 2>&1; then
-  for candidate in \
-    /share/CE_CACHEDEV1_DATA/.qpkg/Python3/bin/python3 \
-    /share/CE_CACHEDEV1_DATA/.qpkg/Python312/bin/python3 \
-    /share/CACHEDEV1_DATA/.qpkg/Python3/bin/python3
-  do
-    if [[ -x "$candidate" ]]; then
-      export PATH="$(dirname "$candidate"):$PATH"
-      break
-    fi
-  done
-fi
-command -v python3 >/dev/null || die "python3 manquant. Le test des ports/règles JSON Tailscale doit être fiable."
+# Le NAS QNAP n'a pas besoin de Python : diagnostic de ports dans un
+# conteneur Python éphémère sans montage /, réseau hôte pour tester les sockets.
+docker info >/dev/null 2>&1 || die "Docker inaccessible dans cette session SSH."
 command -v openssl >/dev/null || die "openssl manquant (génération des secrets)."
 [[ "$(id -u)" == "0" ]] || die "Lancer en SSH avec un compte administrateur UID 0, nécessaire pour chown du volume."
 
