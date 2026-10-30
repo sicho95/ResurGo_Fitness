@@ -79,11 +79,15 @@
       const url=nasUrlFromInput(),code=el("nasPairCodeInput")?.value?.trim().toUpperCase();
       const label=el("nasDeviceName")?.value?.trim()||"Appareil ResurGo";
       if(!url||!code)throw Error("Renseigner l'URL HTTPS NAS et le code d'association.");
+      const previous=await nasStoredConnection();
+      if(previous?.token&&!confirm("Cet appareil est déjà associé à un profil NAS. Remplacer sa connexion ?"))
+        return;
       const data=await nasRequest(url,"/api/v1/pair/redeem",{method:"POST",payload:{code,label}});
       if(!data.token||!data.recovery?.keyId||!data.recovery?.secret)
         throw Error("Le serveur ne fournit pas de clé de secours ; association non enregistrée.");
       await put("nasConnection",{url,profileId:data.profileId,deviceId:data.deviceId,
         token:data.token,recovery:data.recovery,label});
+      await put("nasPendingRecovery",null);
       state.settings.nasSyncUrl=url;
       await save("NAS associé à cet appareil. Crée une sauvegarde chiffrée avec ta clé de secours.");
       render();
@@ -99,6 +103,30 @@
       const target=el("nasPairOutput");if(target)target.textContent=
         "Code à usage unique : "+data.code+" (expire dans 10 minutes).";
     }catch(err){alert(err.message||"Impossible de générer le code.");}
+  }
+  async function nasRetryRecovery(){
+    try{
+      const pending=await get("nasPendingRecovery");
+      if(!pending?.recovery?.keyId||!pending.recovery.secret)
+        throw Error("Aucune restauration NAS en attente.");
+      const url=new URL(pending.url);
+      if(url.protocol!=="https:"||url.username||url.password||url.search||url.hash)
+        throw Error("URL NAS non valide.");
+      const base=url.href.replace(/\\/$/,"");
+      const label=el("nasDeviceName")?.value?.trim()||"Appareil ResurGo restauré";
+      const recovered=await nasRequest(base,"/api/v1/recovery/redeem",{
+        method:"POST",payload:{profileId:pending.profileId,
+          keyId:pending.recovery.keyId,secret:pending.recovery.secret,label}
+      });
+      if(!recovered?.token||!recovered?.recovery?.secret)
+        throw Error("Réassociation NAS incomplète.");
+      await put("nasConnection",{url:base,profileId:recovered.profileId,
+        deviceId:recovered.deviceId,token:recovered.token,recovery:recovered.recovery,label});
+      await put("nasPendingRecovery",null);
+      state.settings.nasSyncUrl=base;
+      await save("Réassociation NAS réussie. Effectuer une nouvelle sauvegarde chiffrée.");
+      render();
+    }catch(err){alert(err.message||"Récupération NAS impossible pour le moment.");}
   }
   async function nasTestConnection(){
     try{
@@ -183,6 +211,7 @@
       // Ne jamais conserver une ancienne session NAS sur un jeu de données restauré :
       // elle pourrait ensuite provoquer une synchronisation vers le mauvais profil.
       await put("nasConnection",null);
+      await put("nasPendingRecovery",null);
       // Tokens d'appareils NE SONT PAS sauvegardés : réinscription via secret de récupération.
       if(payload.nas?.recovery?.keyId&&payload.nas.recovery.secret){
         try{
@@ -200,14 +229,19 @@
           await put("nasConnection",{url:base,profileId:recovered.profileId,
             deviceId:recovered.deviceId,token:recovered.token,recovery:recovered.recovery,
             label:"Appareil restauré"});
+          await put("nasPendingRecovery",null);
           state.settings.nasSyncUrl=base;
           await put("app",state);
           alert("Sauvegarde restaurée et nouvel appareil associé au NAS. "+
             "Crée une nouvelle sauvegarde chiffrée pour protéger sa nouvelle clé de secours.");
         }catch(err){
           // Restauration locale terminée même si le réseau ou NAS échoue.
-          alert("Sauvegarde locale restaurée. Réassociation NAS non effectuée : "+
-            (err.message||"réseau indisponible")+". Réessaie par un code depuis un appareil associé.");
+          // Conserver séparément la capacité de récupération, afin de pouvoir
+          // reprendre la réassociation même si TOUS les anciens appareils ont disparu.
+          await put("nasPendingRecovery",payload.nas);
+          alert("Sauvegarde locale restaurée. Réassociation NAS différée : "+
+            (err.message||"réseau indisponible")+
+            ". Tu pourras utiliser « Reprendre la récupération NAS » sans administrateur.");
         }
       }else{
         alert("Sauvegarde locale restaurée. Aucun secret NAS contenu dans ce fichier.");
