@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>ResurGo Sync — Administration privée</title>
+<style>
+:root{font:16px system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light dark;--accent:#208d62}
+*{box-sizing:border-box}body{margin:0;background:Canvas;color:CanvasText}main{width:min(780px,100%);margin:auto;padding:24px 16px 64px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+h1{font-size:25px;margin:0}h2{font-size:18px;margin-top:0}p{line-height:1.45}
+small,.muted{opacity:.7}section{border:1px solid color-mix(in srgb,CanvasText 18%,transparent);border-radius:18px;padding:20px;margin:16px 0;background:color-mix(in srgb,Canvas 95%,CanvasText 5%)}
+label{display:block;font-weight:600;margin:0 0 8px}input{width:100%;min-height:45px;border-radius:10px;border:1px solid color-mix(in srgb,CanvasText 24%,transparent);padding:10px 12px;background:Canvas;color:CanvasText;font:inherit}
+button{min-height:43px;border:0;border-radius:11px;background:var(--accent);color:white;font:inherit;font-weight:600;padding:10px 16px;margin:9px 6px 2px 0;cursor:pointer}
+button.secondary{background:color-mix(in srgb,CanvasText 12%,Canvas);color:CanvasText}button.danger{background:#b5303a}
+button:focus-visible,input:focus-visible{outline:3px solid #6bb8ff;outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.item{padding:13px 0;border-top:1px solid color-mix(in srgb,CanvasText 12%,transparent)}
+.code{font-family:ui-monospace,monospace;font-size:19px;letter-spacing:.07em;overflow-wrap:anywhere}
+#status{min-height:1.4em}#profiles[hidden],#panel[hidden]{display:none}
+@media (prefers-color-scheme:dark){:root{--accent:#287d68}}
+</style></head><body><main>
+<header><div><h1>ResurGo Sync</h1><small>Administration privée — accès tailnet uniquement</small></div><span aria-hidden="true">●</span></header>
+<section><h2>Authentification</h2>
+<p class="muted">Cette console doit être publiée seulement via Tailscale Serve privé, jamais via Funnel. Le jeton reste en mémoire de cette page.</p>
+<label for="adminToken">Jeton administrateur du NAS</label>
+<input id="adminToken" type="password" autocomplete="off" spellcheck="false">
+<button id="connect">Se connecter</button><button class="secondary" id="disconnect">Effacer</button>
+<p role="status" id="status" aria-live="polite"></p></section>
+<div id="panel" hidden>
+<section><h2>Créer un profil</h2><label for="label">Libellé du profil</label><input id="label" maxlength="80" placeholder="Profil familial"><button id="create">Créer et générer un code d'appairage</button>
+<p id="pairing" aria-live="polite"></p></section>
+<section><div class="row"><h2>Profils et appareils</h2><button id="refresh" class="secondary">Actualiser</button></div>
+<div id="profiles"></div></section></div>
+<footer><small>Les données sont privées. Ne partage pas les codes d'inscription ni les jetons.</small></footer></main>
+<script src="/admin.js" defer></script></body></html>
