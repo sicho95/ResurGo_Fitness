@@ -31,8 +31,13 @@ set +a
 [[ "$RS_SERVE_ADMIN_HTTPS_PORT" =~ ^[0-9]+$ ]] || fail "Serve : port HTTPS privé invalide."
 [[ "$RS_FUNNEL_HTTPS_PORT" != "$RS_SERVE_ADMIN_HTTPS_PORT" ]] || fail "Serve et Funnel ne peuvent pas partager le port HTTPS."
 [[ "${RS_HOST_DATA_DIR:-}" == /* && "$RS_HOST_DATA_DIR" != "/" ]] || fail "RS_HOST_DATA_DIR doit être un chemin absolu NAS."
-[[ "${#RS_ADMIN_TOKEN}" -ge 32 && "${#RS_PAIR_PEPPER}" -ge 32 ]] || fail "RS_ADMIN_TOKEN et RS_PAIR_PEPPER doivent contenir au moins 32 caractères."
+[[ "${#RS_ADMIN_TOKEN}" -ge 48 && "${#RS_PAIR_PEPPER}" -ge 48 ]] || fail "RS_ADMIN_TOKEN et RS_PAIR_PEPPER doivent contenir au moins 48 caractères aléatoires."
 [[ "$RS_ADMIN_TOKEN" != "$RS_PAIR_PEPPER" ]] || fail "Les deux secrets doivent être différents."
+for secret in "$RS_ADMIN_TOKEN" "$RS_PAIR_PEPPER"; do
+  if [[ "$secret" =~ (REMPLACER|CHANGE_ME|EXAMPLE|EXEMPLE|DUMMY|FAUX|PASSWORD|SECRET_LONG) ]]; then
+    fail "Valeur de démonstration détectée : générer les vrais secrets hors GitHub."
+  fi
+done
 
 info "Étape 1 : inventaire non destructif des routes et conteneurs."
 tailscale version
