@@ -35,12 +35,14 @@
       <h2>Nouvelle séance</h2><p>Le GPS de l'iPhone suffit dehors. Capteurs optionnels.</p>
       <div class="actions"><button class="primary" id="liveRun">Course extérieure</button>
       <button class="secondary" id="liveBike">Vélo extérieur</button></div>
-      <p class="muted">L'intérieur n'est autorisé qu'avec un équipement transmettant des mesures Bluetooth exploitables. Cette connexion n'est pas encore disponible dans la PWA iOS.</p>
+      <p><strong>Intérieur FTMS (Bluefy)</strong> : connecter d’abord la machine dans Réglages → Capteurs Bluetooth ⓘ, puis démarrer si ResurGo reçoit réellement vitesse ou distance.</p>
+      <div class="actions"><button class="secondary" id="liveStartIndoor">Démarrer avec machine connectée</button></div>
+      <p class="muted">Un cardio seul ne suffit pas pour le guidage intérieur. En cas de coupure de la machine, les conseils de progression sont suspendus. Connexion Bluetooth non garantie sur Safari standard.</p>
       <p class="muted">Pendant une séance, garder la PWA au premier plan : le suivi GPS n'est pas garanti si l'iPhone est verrouillé.</p>
       <button class="secondary" id="liveBack">Retour</button></article></section>`;
-    return `<section class="grid"><h1>${s.sport==="run"?"Course":"Vélo"} — GPS</h1>
+    return `<section class="grid"><h1>${s.machineKind?(s.machineKind==="elliptical"?"Elliptique":s.machineKind==="bike"?"Vélo intérieur":"Tapis de course"):(s.sport==="run"?"Course":"Vélo")+" — GPS"}</h1>
       <article class="panel coach">
-      <p class="eyebrow">${s.pausedAt?"En pause":"En cours"} · téléphone uniquement</p>
+      <p class="eyebrow">${s.pausedAt?"En pause":"En cours"} · ${s.machineKind?"mesures FTMS":"GPS téléphone"}</p>
       <div class="grid two">
       <div><p class="muted">Temps</p><h2 id="liveTime">${liveClock(liveSeconds(s))}</h2></div>
       <div><p class="muted">Distance</p><h2 id="liveDistance">${(s.distanceM/1000).toFixed(2)} km</h2></div>
@@ -48,7 +50,10 @@
       <div><p class="muted">Dénivelé filtré</p><h2 id="liveGain">${Math.round(s.gainM)} m</h2></div>
       </div>
       <p id="liveTerrain">Terrain : ${esc(s.terrain)}</p>
-      <p id="liveSignal" class="muted">GPS : ${esc(s.signal)} · cardio absent, non estimé.</p>
+      <p id="liveSignal" class="muted">${s.machineKind?"Machine FTMS":"GPS téléphone"} : ${esc(s.signal)}</p>
+      <p id="liveHeartRate" class="muted">Cardio : mesure indisponible</p>
+      ${s.machineKind?'<p id="liveMachineStatus" class="muted">Machine : surveillance du signal Bluetooth.</p>':""}
+      ${s.machineKind?"<p class=\"muted\">Distance calculée à partir des mesures FTMS réellement transmises ; peut être estimée si vitesse seule.</p>":""}
       <div class="actions">${s.pausedAt?'<button class="primary" id="liveResume">Reprendre</button>':'<button class="secondary" id="livePause">Pause</button>'}
       <button class="secondary" id="liveEncourage">Encouragement</button>
       <button class="danger" id="liveFinish">Terminer et sauvegarder</button></div>
@@ -59,8 +64,9 @@
     const o={liveTime:liveClock(liveSeconds(s)),liveDistance:(s.distanceM/1000).toFixed(2)+" km",
       liveSpeed:s.sport==="run"?livePace(s.speedMps):(s.speedMps*3.6).toFixed(1)+" km/h",
       liveGain:Math.round(s.gainM)+" m",liveTerrain:"Terrain : "+s.terrain,
-      liveSignal:"GPS : "+s.signal+" · cardio absent, non estimé."};
+      liveSignal:(s.machineKind?"Machine FTMS : ":"GPS : ")+s.signal};
     for(const [id,value] of Object.entries(o)){const elmt=el(id);if(elmt)elmt.textContent=value;}
+    bleStatusRefresh();
   }
   function liveTrackStop(){
     if(liveGpsWatch!==null){navigator.geolocation.clearWatch(liveGpsWatch);liveGpsWatch=null;}
@@ -137,6 +143,49 @@
       signal:"en attente du premier point GPS",sampleCount:0};
     state.ui.view="coachLive";await save();render();await liveTrackStart();liveSpeech("start");
   }
+  function liveIndoorTick(){
+    const s=state.liveSession;
+    if(!s?.machineKind||s.pausedAt)return;
+    const m=bleMachineSnapshot();
+    if(!m.available||m.kind!==s.machineKind){
+      s.signal="machine déconnectée ou mesure périmée : coaching suspendu";
+      s.speedMps=0;liveUpdate();return;
+    }
+    if(!bleMachineReading||s.lastMachineTimestamp===bleMachineReading.timestamp){
+      s.signal="machine FTMS connectée";return;
+    }
+    const at=bleMachineReading.timestamp;
+    if(s.lastMachineTimestamp&&at>s.lastMachineTimestamp&&at-s.lastMachineTimestamp<9000){
+      if(Number.isFinite(m.distanceM)&&Number.isFinite(s.rawDistanceM)){
+        const advance=m.distanceM-s.rawDistanceM;
+        if(advance>=0&&advance<150)s.distanceM+=advance;
+      }else if(Number.isFinite(m.speedKmh)){
+        s.distanceM+=m.speedKmh/3.6*((at-s.lastMachineTimestamp)/1000);
+        s.estimatedDistance=true;
+      }
+    }
+    s.lastMachineTimestamp=at;
+    if(Number.isFinite(m.distanceM))s.rawDistanceM=m.distanceM;
+    s.speedMps=Number.isFinite(m.speedKmh)?m.speedKmh/3.6:0;
+    s.signal="données FTMS reçues"+(s.estimatedDistance?" (distance estimée)":"");
+    if(++s.sampleCount%5===0)put("app",state).catch(()=>{});
+    liveUpdate();
+  }
+  async function liveStartIndoor(){
+    if(!profile())return alert("Créer un profil avant la séance.");
+    if(state.liveSession)return alert("Une séance est déjà active.");
+    const m=bleMachineSnapshot();
+    if(!m.available)return alert("Impossible de démarrer : connecter une machine FTMS qui transmet une vitesse ou une distance fraîche. Le cardio seul ne suffit pas.");
+    state.liveSession={id:uid("activity"),profileId:profile().id,sport:m.kind==="bike"?"bike":"run",
+      machineKind:m.kind,startedAt:new Date().toISOString(),pausedAt:null,pausedMs:0,
+      distanceM:0,gainM:0,speedMps:0,rawDistanceM:Number.isFinite(m.distanceM)?m.distanceM:null,
+      lastMachineTimestamp:bleMachineReading?.timestamp||null,estimatedDistance:false,
+      terrain:"Intérieur",signal:"machine FTMS connectée",sampleCount:0,
+      lastSpeech:Date.now()};
+    state.ui.view="coachLive";await save();render();
+    if(!liveInterval)liveInterval=setInterval(()=>{liveIndoorTick();liveUpdate();},1000);
+    liveSpeech("start");
+  }
   async function livePause(){
     const s=state.liveSession;if(!s||s.pausedAt)return;
     s.pausedAt=new Date().toISOString();liveTrackStop();await save();render();
@@ -144,7 +193,14 @@
   async function liveResume(){
     const s=state.liveSession;if(!s||!s.pausedAt)return;
     s.pausedMs+=Date.now()-Date.parse(s.pausedAt);
-    s.pausedAt=null;s.previous=null;await save();render();liveTrackStart();
+    s.pausedAt=null;s.previous=null;
+    if(s.machineKind){
+      const m=bleMachineSnapshot();
+      if(!m.available||m.kind!==s.machineKind){s.pausedAt=new Date().toISOString();return alert("Reconnecter la machine FTMS avant reprise.");}
+      s.rawDistanceM=Number.isFinite(m.distanceM)?m.distanceM:null;
+      s.lastMachineTimestamp=bleMachineReading?.timestamp||null;
+      await save();render();if(!liveInterval)liveInterval=setInterval(()=>{liveIndoorTick();liveUpdate();},1000);
+    }else{await save();render();liveTrackStart();}
   }
   async function liveFinish(){
     const s=state.liveSession;if(!s)return;
@@ -152,17 +208,21 @@
     const durationSeconds=liveSeconds(s),distanceKm=Math.round(s.distanceM)/1000;
     liveTrackStop();
     state.activities.push({id:s.id,profileId:s.profileId,type:s.sport,
-      source:"resurgo_gps_phone",startedAt:s.startedAt,
+      source:s.machineKind?"resurgo_ftms_ble":"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
       completedAt:new Date().toISOString(),durationSeconds,distanceKm,
       elevationGainM:Math.round(s.gainM),
       status:distanceKm>.05&&durationSeconds>30?"completed":"stopped_early",
-      notes:"GPS téléphone seul, cardio non mesuré; PWA non garantie en arrière-plan"});
+      notes:s.machineKind?"Progression mesurée via FTMS BLE (distance estimée si vitesse seule). Relecture automatique hors ligne non garantie.":"GPS téléphone ; cardio optionnel BLE selon navigateur ; PWA non garantie en arrière-plan"});
     state.liveSession=null;state.ui.view="today";await save();render();
     liveSpeech(distanceKm>.05?"finish":"stop");
   }
   function liveRecoverAfterReload(){
     if(!state.liveSession||state.liveSession.pausedAt)return;
     state.liveSession.previous=null;
-    state.liveSession.signal="reprise après interruption : distance non mesurée durant l'arrêt";
-    liveTrackStart();
+    state.liveSession.signal="reprise après interruption : mesures non enregistrées durant l'arrêt";
+    if(state.liveSession.machineKind){
+      state.liveSession.pausedAt=new Date().toISOString();
+      state.liveSession.signal="machine à reconnecter puis reprendre manuellement";
+      put("app",state).catch(()=>{});
+    }else liveTrackStart();
   }
