@@ -123,6 +123,10 @@ Ajouter à la bibliothèque actuelle :
 - Position tolérée et gestes d'arrêt, une description accessible pour malvoyants.
 - Séances adaptées par sport ; tenir compte d'une aggravation des douleurs au cours ou au lendemain.
 
+## 6 bis. Référence de bibliothèque détaillée
+
+La liste minimale d'exercices généraux à concevoir, les catégories, précautions, alternatives et le schéma de fiche figurent dans [`09_BIBLIOTHEQUE_PREVENTION_MOBILITE.md`](./09_BIBLIOTHEQUE_PREVENTION_MOBILITE.md). Cette annexe est volontairement générique et ne contient aucune prescription ni donnée de santé nominative. Elle distingue étirements et mobilité, renforcement préventif, progression sportive et actes de rééducation réservés à l'encadrement professionnel.
+
 ## 7. Tendon rotulien / douleur plantaire : règles spécifiques de sécurité
 
 La tendinopathie rotulienne est une pathologie de charge ; les recommandations cliniques récentes mettent au premier plan **la progression individualisée du chargement** plutôt que de compter sur les étirements seuls. Pour la douleur plantaire compatible avec fasciopathie, les recommandations 2023 soutiennent les étirements du fascia et des mollets et le renforcement pied/cheville comme composantes possibles d'une approche multimodale. Une consultation permet de confirmer la cause et d'adapter l'effort.
