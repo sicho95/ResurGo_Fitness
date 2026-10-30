@@ -3,7 +3,7 @@
 **Statut :** spécification de référence de travail ; développement candidat en branche distincte, non publié.
 **Établi le :** 2026-10-30.
 **Produit actuel audité :** ResurGo Fitness PWA, version déclarée 1.3.4, branche `main`.
-**Version du dossier :** SPEC-MULTISPORT 0.4.0 (décision PWA exclusivement, abandon du compagnon watchOS natif).
+**Version du dossier :** SPEC-MULTISPORT 0.5.0 (décision PWA exclusivement, abandon du compagnon watchOS natif).
 **Propriétaire des arbitrages :** Damien. **Source de vérité produit :** dépôt `sicho95/ResurGo_Fitness` ; SichoBrain KOS est la mémoire personnelle officielle, mais n'a pas été modifié par ce dossier.
 
 **ARBITRAGE PRIORITAIRE DU 30/10/2026** : ResurGo est exclusivement une **PWA**, pas d'application iOS ni watchOS native à produire ou signer. Apple Watch et Garmin sont des **capteurs facultatifs uniquement si leurs mesures sont accessibles** ; le GPS du téléphone suffit à la course/vélo extérieur. Safari iOS ne supporte pas Web Bluetooth nativement. Voir **`13_ARBITRAGE_PWA_MONTRES.md`**, qui remplace les anciennes propositions natives incompatibles.
@@ -33,6 +33,7 @@
 11. `11_ARBITRAGES_2026-10-30.md` — décisions confirmées par Damien, matériel déclaré, objectif de livraison et questions restantes.
 12. `12_SAUVEGARDE_RESTAURATION.md` — export JSON sécurisé, code d'association sans administrateur et récupération NAS depuis sauvegarde chiffrée.
 13. `13_ARBITRAGE_PWA_MONTRES.md` — décision définitive PWA seulement, Apple Watch et Garmin facultatives, compatibilités BLE prouvées et limites Safari.
+14. `14_BLUEFY_FTMS_CARDIO.md` — guide ⓘ intégré, Bluetooth Bluefy, mesures FTMS et cardio, tests simulés et limites des appareils.
 
 ## C. Périmètre confirmé
 
