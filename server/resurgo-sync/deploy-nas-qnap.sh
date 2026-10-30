@@ -17,10 +17,9 @@ info(){ printf '[ResurGo] %s\n' "$*"; }
 command -v docker >/dev/null || fail "Docker est introuvable sur le NAS."
 docker compose version >/dev/null || fail "Docker Compose V2 indisponible."
 command -v curl >/dev/null || fail "curl requis."
-# Pas de Python requis sur l'hôte QNAP : le diagnostic JSON et le test
-# d'écoute sont réalisés dans un conteneur Python jetable, SANS montage du / NAS.
-# Pour tester les vrais ports hôtes : --network host.
-docker info >/dev/null 2>&1 || fail "Docker doit être accessible depuis ce SSH."
+# Précontrôle 100 % Bash et utilitaires QNAP. Ne jamais démarrer un
+# conteneur de diagnostic Python et ne pas demander de Python à l'hôte.
+docker info >/dev/null 2>&1 || fail "Docker non accessible via ce SSH."
 # Le CLI QNAP Tailscale n'est pas toujours dans le PATH des connexions SSH.
 if ! command -v tailscale >/dev/null 2>&1; then
   for candidate in \
@@ -47,6 +46,12 @@ set +a
 [[ "$RS_FUNNEL_HTTPS_PORT" =~ ^(443|8443|10000)$ ]] || fail "Funnel : port HTTPS autorisé = 443, 8443 ou 10000."
 [[ "$RS_SERVE_ADMIN_HTTPS_PORT" =~ ^[0-9]+$ ]] || fail "Serve : port HTTPS privé invalide."
 [[ "$RS_FUNNEL_HTTPS_PORT" != "$RS_SERVE_ADMIN_HTTPS_PORT" ]] || fail "Serve et Funnel ne peuvent pas partager le port HTTPS."
+for port in "$RS_PUBLIC_HOST_PORT" "$RS_ADMIN_HOST_PORT" "$RS_FUNNEL_HTTPS_PORT" "$RS_SERVE_ADMIN_HTTPS_PORT"; do
+  [[ "$port" =~ ^[0-9]+$ ]] || fail "Port non numérique : ${port}"
+done
+[[ "$RS_PUBLIC_HOST_PORT" != "$RS_ADMIN_HOST_PORT" && "$RS_PUBLIC_HOST_PORT" != "$RS_FUNNEL_HTTPS_PORT" && "$RS_PUBLIC_HOST_PORT" != "$RS_SERVE_ADMIN_HTTPS_PORT" &&
+   "$RS_ADMIN_HOST_PORT" != "$RS_FUNNEL_HTTPS_PORT" && "$RS_ADMIN_HOST_PORT" != "$RS_SERVE_ADMIN_HTTPS_PORT" ]] ||
+  fail "Les quatre ports doivent être différents."
 [[ "${RS_HOST_DATA_DIR:-}" == /* && "$RS_HOST_DATA_DIR" != "/" ]] || fail "RS_HOST_DATA_DIR doit être un chemin absolu NAS."
 [[ "${#RS_ADMIN_TOKEN}" -ge 48 && "${#RS_PAIR_PEPPER}" -ge 48 ]] || fail "RS_ADMIN_TOKEN et RS_PAIR_PEPPER doivent contenir au moins 48 caractères aléatoires."
 [[ "$RS_ADMIN_TOKEN" != "$RS_PAIR_PEPPER" ]] || fail "Les deux secrets doivent être différents."
@@ -62,41 +67,50 @@ tailscale funnel status || true
 tailscale serve status || true
 docker ps --format 'table {{.Names}}\t{{.Ports}}' || fail "Impossible de lire les conteneurs."
 
-# Refuse to change an existing listener, even if it looks like ResurGo.
-# Parse official JSON status; never wipe the whole tailnet with reset.
-info "Contrôle des ports HTTPS Tailscale."
-export RS_FUNNEL_HTTPS_PORT RS_SERVE_ADMIN_HTTPS_PORT
+# Vérification non destructive des routes existantes.
+# QNAP utilise Tailscale 1.40.0 : le JSON status est disponible même si le
+# binaire n'est pas dans le PATH de la session interactive.
+info "Contrôle des ports Tailscale (aucune route modifiée)."
 TS_FUNNEL_JSON="$(tailscale funnel status --json)" ||
-  fail "Impossible de lire Funnel en JSON ; aucun port modifié."
+  fail "Impossible de lire le statut Funnel JSON. Aucun déploiement."
 TS_SERVE_JSON="$(tailscale serve status --json)" ||
-  fail "Impossible de lire Serve en JSON ; aucun port modifié."
-export TS_FUNNEL_JSON TS_SERVE_JSON RS_PUBLIC_HOST_PORT RS_ADMIN_HOST_PORT
-docker run --rm --network host -i \
-  -e RS_FUNNEL_HTTPS_PORT -e RS_SERVE_ADMIN_HTTPS_PORT \
-  -e RS_PUBLIC_HOST_PORT -e RS_ADMIN_HOST_PORT \
-  -e TS_FUNNEL_JSON -e TS_SERVE_JSON \
-  python:3.12-alpine 
+  fail "Impossible de lire le statut Serve JSON. Aucun déploiement."
+[[ "$TS_FUNNEL_JSON" == *"{"* && "$TS_SERVE_JSON" == *"{"* ]] ||
+  fail "Statut Tailscale non reconnu comme objet JSON."
+for port in "$RS_FUNNEL_HTTPS_PORT" "$RS_SERVE_ADMIN_HTTPS_PORT"; do
+  # Le diagnostic est volontairement conservateur : une occurrence du nombre
+  # dans les deux statuts fait arrêter l'installation, même en cas de faux positif.
+  if printf '%s\n%s\n' "$TS_FUNNEL_JSON" "$TS_SERVE_JSON" |
+      grep -Eq "(^|[^0-9])${port}([^0-9]|$)"; then
+    fail "Port HTTPS Tailscale ${port} mentionné dans une route existante : aucun écrasement."
+  fi
+done
+info "Les ports HTTPS ResurGo n'apparaissent pas dans les configurations Funnel/Serve."
 
-info "Étape 2 : vérifier le volume isolé et les ports Docker."
-# Volume dédié : la base SQLite est écrite par UID/GID 10001 dans les conteneurs.
-# Ne jamais modifier les permissions des dossiers AlphaTerminal ou d'autres services.
-mkdir -p "$RS_HOST_DATA_DIR"
-[[ -d "$RS_HOST_DATA_DIR" ]] || fail "Volume NAS introuvable."
-chmod 700 "$RS_HOST_DATA_DIR" || fail "Impossible de protéger le répertoire ResurGo."
-chown 10001:10001 "$RS_HOST_DATA_DIR" ||
-  fail "Droit manquant : donner le dossier ResurGo à UID/GID 10001 avant Docker."
-python3 - <<'PY'
-import os,socket
-for key in ("RS_PUBLIC_HOST_PORT","RS_ADMIN_HOST_PORT","RS_FUNNEL_HTTPS_PORT","RS_SERVE_ADMIN_HTTPS_PORT"):
-    port=int(os.environ[key])
-    if not 1024<=port<=65535:raise SystemExit(f"Port hôte interdit : {port}")
-    s=socket.socket()
-    try:
-        s.bind(("127.0.0.1",port))
-    except OSError as e:
-        raise SystemExit(f"Port hôte {port} déjà utilisé. Vérifier docker ps avant toute opération : {e}")
-    finally:s.close()
-PY
+info "Étape 2 : vérification non destructive des ports NAS."
+command -v netstat >/dev/null ||
+  fail "netstat introuvable : impossible de garantir les ports libres."
+LISTEN="$(netstat -tln 2>/dev/null)" ||
+  fail "Impossible de lire les sockets TCP ouvertes du NAS."
+for port in "$RS_PUBLIC_HOST_PORT" "$RS_ADMIN_HOST_PORT"             "$RS_FUNNEL_HTTPS_PORT" "$RS_SERVE_ADMIN_HTTPS_PORT"; do
+  [[ "$port" =~ ^[0-9]+$ && "$port" -ge 1024 && "$port" -le 65535 ]] ||
+    fail "Port interdit: ${port}"
+  if printf '%s\n' "$LISTEN" | grep -Eq ":[[:space:]]*${port}[[:space:]]"; then
+    fail "Port TCP ${port} déjà écouté par le NAS : aucun écrasement."
+  fi
+done
+info "Les quatre ports n'apparaissent pas dans les sockets à l'écoute."
+
+# Préserve les volumes des autres projets ; crée uniquement le volume ResurGo
+# au moment du déploiement, jamais lors du diagnostic.
+if [[ "${1:-}" == "--apply" ]]; then
+  mkdir -p "$RS_HOST_DATA_DIR" ||
+    fail "Impossible de créer le volume spécifique ResurGo."
+  chmod 700 "$RS_HOST_DATA_DIR" ||
+    fail "Impossible de protéger le volume spécifique ResurGo."
+  chown 10001:10001 "$RS_HOST_DATA_DIR" ||
+    fail "UID/GID 10001 requis pour le volume ResurGo."
+fi
 
 info "Étape 3 : validation Docker."
 docker compose config --quiet
@@ -121,6 +135,15 @@ if [[ "${2:-}" != "--enable-routes" ]]; then
   info "Pour activer les deux entrées HTTPS : relancer --apply --enable-routes APRÈS recette et audit."
   exit 0
 fi
+
+# Le NAS utilise Tailscale 1.40.0 : les options --bg --https
+# sont propres aux versions récentes. Ne jamais tenter de les appliquer à 1.40
+# en risquant de modifier le port 443 historique.
+TS_VERSION="$(tailscale version | head -n 1)"
+case "$TS_VERSION" in
+  1.3[0-9].*|1.4[0-9].*|1.50.*|1.51.*)
+    fail "Tailscale ${TS_VERSION} : conteneurs locaux installés. Routes inchangées. Configurer la syntaxe ancienne séparément après diagnostic." ;;
+esac
 
 info "Étape 4 : configuration explicite, sans reset et sur ports distincts."
 # Configurer l'administration privée en premier ; ne publier Funnel qu'ensuite.
