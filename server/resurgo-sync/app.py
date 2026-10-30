@@ -51,6 +51,15 @@ def init_db() -> None:
         CREATE TABLE IF NOT EXISTS pair_codes (
             hash TEXT PRIMARY KEY, profile_id TEXT NOT NULL REFERENCES profiles(id),
             expires_at INTEGER NOT NULL, used_at INTEGER, attempts INTEGER NOT NULL DEFAULT 0);
+        CREATE TABLE IF NOT EXISTS recovery_keys (
+            key_id TEXT PRIMARY KEY,
+            profile_id TEXT NOT NULL REFERENCES profiles(id),
+            device_id TEXT NOT NULL REFERENCES devices(id),
+            secret_hash TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            revoked_at INTEGER
+        );
+        CREATE INDEX IF NOT EXISTS recovery_by_profile ON recovery_keys(profile_id);
         CREATE TABLE IF NOT EXISTS entity_heads (
             profile_id TEXT NOT NULL REFERENCES profiles(id), kind TEXT NOT NULL,
             entity_id TEXT NOT NULL, revision INTEGER NOT NULL,
@@ -99,6 +108,21 @@ def pairing_digest(code: str) -> str:
 
 def random_code() -> str:
     return "".join(secrets.choice(ALPHABET) for _ in range(12))
+
+
+def create_recovery_key(c: sqlite3.Connection, profile_id: str, device_id: str) -> dict:
+    """One independent 384-bit recovery capability per enrollment.
+    Only the hashed capability is retained server-side; the client must encrypt
+    the original in its password-protected JSON backup.
+    """
+    key_id = str(uuid.uuid4())
+    secret = secrets.token_urlsafe(48)
+    c.execute(
+        "INSERT INTO recovery_keys(key_id,profile_id,device_id,secret_hash,created_at) "
+        "VALUES(?,?,?,?,?)",
+        (key_id, profile_id, device_id, digest(secret), int(time.time()))
+    )
+    return {"keyId": key_id, "secret": secret}
 
 
 def pair_code(c: sqlite3.Connection, profile_id: str) -> tuple[str, int]:
@@ -154,6 +178,12 @@ class RedeemRequest(DeviceRequest):
 
 class CreateProfileRequest(BaseModel):
     label: str = Field(min_length=1, max_length=80)
+
+
+class RecoverRequest(DeviceRequest):
+    profileId: str = Field(min_length=8, max_length=100)
+    keyId: str = Field(min_length=8, max_length=100)
+    secret: str = Field(min_length=40, max_length=256)
 
 
 class Operation(BaseModel):
@@ -291,7 +321,55 @@ def redeem(req: RedeemRequest):
                   "VALUES(?,?,?,?,?)",
                   (device_id, row["profile_id"], req.label.strip(), digest(secret), now))
         c.execute("UPDATE pair_codes SET used_at=? WHERE hash=?", (now, row["hash"]))
-    return {"profileId": row["profile_id"], "deviceId": device_id, "token": secret}
+        recovery = create_recovery_key(c, row["profile_id"], device_id)
+    return {"profileId": row["profile_id"], "deviceId": device_id, "token": secret,
+            "recovery": recovery}
+
+
+@public.post("/api/v1/recovery/redeem")
+def recover_with_backup(req: RecoverRequest):
+    """Re-enroll from an encrypted export, without admin or an old device.
+
+    The backup passphrase never reaches this API. The client decrypts locally
+    and sends only the independent, high-entropy recovery capability.
+    """
+    with transaction() as c:
+        throttle(c, "recovery_redeem_global", 30)
+    with transaction() as c:
+        row = c.execute("SELECT profile_id,secret_hash FROM recovery_keys "
+                        "WHERE profile_id=? AND key_id=? AND revoked_at IS NULL",
+                        (req.profileId, req.keyId)).fetchone()
+        if row is None or not hmac.compare_digest(row["secret_hash"], digest(req.secret)):
+            raise HTTPException(status_code=401, detail="invalid_recovery_credential")
+        device_id, token = str(uuid.uuid4()), secrets.token_urlsafe(32)
+        c.execute("INSERT INTO devices(id,profile_id,label,token_hash,created_at) "
+                  "VALUES(?,?,?,?,?)",
+                  (device_id, req.profileId, req.label.strip(), digest(token), int(time.time())))
+        replacement = create_recovery_key(c, req.profileId, device_id)
+    return {"profileId": req.profileId, "deviceId": device_id,
+            "token": token, "recovery": replacement}
+
+
+@public.get("/api/v1/recovery/keys")
+def list_my_recovery_keys(user: dict = Depends(current_device)):
+    with closing(connect()) as c:
+        rows = c.execute("SELECT key_id,device_id,created_at,revoked_at "
+                         "FROM recovery_keys WHERE profile_id=? ORDER BY created_at DESC",
+                         (user["profile_id"],)).fetchall()
+    return {"keys": [{"keyId": r["key_id"], "deviceId": r["device_id"],
+                      "createdAt": r["created_at"],
+                      "revoked": r["revoked_at"] is not None} for r in rows]}
+
+
+@public.post("/api/v1/recovery/keys/{key_id}/revoke")
+def revoke_recovery_key(key_id: str, user: dict = Depends(current_device)):
+    with transaction() as c:
+        n = c.execute("UPDATE recovery_keys SET revoked_at=? WHERE key_id=? "
+                      "AND profile_id=? AND revoked_at IS NULL",
+                      (int(time.time()), key_id, user["profile_id"])).rowcount
+    if not n:
+        raise HTTPException(status_code=404, detail="recovery_key_not_found")
+    return {"ok": True}
 
 
 @public.post("/api/v1/pair/start")
