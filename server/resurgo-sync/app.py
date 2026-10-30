@@ -18,6 +18,7 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 VERSION = "0.1.0-candidate"
@@ -197,6 +198,16 @@ def startup_admin():
         raise RuntimeError("RS_PAIR_PEPPER missing or shorter than 32 characters")
 
 
+@public.middleware("http")
+async def restrict_request_body(request: Request, call_next):
+    if request.method in {"POST", "PUT", "PATCH"}:
+        header = request.headers.get("content-length")
+        # Public Funnel API rejects unbounded streaming bodies.
+        if header is None or not header.isdecimal() or int(header) > 2_000_000:
+            return JSONResponse({"error": "invalid_content_length"}, status_code=413)
+    return await call_next(request)
+
+
 @public.get("/health")
 def health():
     return {"ok": True, "service": "resurgo-sync-public", "version": VERSION}
@@ -238,8 +249,10 @@ def revoke_device(device_id: str, _: None = Depends(require_admin)):
 
 @public.post("/api/v1/pair/redeem")
 def redeem(req: RedeemRequest):
+    # Throttling commits separately, including for invalid codes.
     with transaction() as c:
         throttle(c, "pair_redeem_global", 40)
+    with transaction() as c:
         row = c.execute("SELECT hash,profile_id,expires_at,used_at,attempts FROM pair_codes "
                         "WHERE hash=?", (pairing_digest(req.code),)).fetchone()
         now = int(time.time())
