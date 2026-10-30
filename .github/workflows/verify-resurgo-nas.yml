@@ -25,6 +25,12 @@ jobs:
           cd server/resurgo-sync
           cp .env.example .env  # CI uniquement, valeurs factices
           RS_HOST_DATA_DIR=/tmp/resurgo-ci           RS_ADMIN_TOKEN=CI_NOT_PRODUCTION_ADMIN_TOKEN_ONLY_FOR_CONFIG_TEST           RS_PAIR_PEPPER=CI_NOT_PRODUCTION_PEPPER_ONLY_FOR_CONFIG_TEST           docker compose -f docker-compose.yml --env-file .env.example config --quiet
+      - name: QNAP permissions regression — image imports as UID 10001
+        run: |
+          cd server/resurgo-sync
+          chmod 600 app.py admin.html admin.js
+          docker build --tag resurgo-sync-permissions-test:ci .
+          docker run --rm --entrypoint python3 resurgo-sync-permissions-test:ci -c "import os, app; assert os.getuid() == 10001; assert os.access('/app/app.py', os.R_OK); assert os.access('/app/admin.html', os.R_OK); print('UID 10001 can import app.py and read admin files')"
       - name: API tests
         run: |
           python -m pip install -r server/resurgo-sync/requirements-test.txt
