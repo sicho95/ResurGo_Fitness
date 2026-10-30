@@ -13,7 +13,7 @@ function appContext({supported=false,device=null}={}){
   const buttons={bleHrSourceType:{value:"chest_strap"},bleMachineKind:{value:"treadmill"}};
   const notices=[], connections=[];
   const context=vm.createContext({
-    DataView,Uint8Array,Date,Number,Math,
+    DataView,Uint8Array,Date,Number,Math,isSecureContext:true,
     navigator:{bluetooth:supported?{requestDevice:async(options)=>{connections.push(options);return device;}}:undefined},
     document:{getElementById:id=>buttons[id]||null,createRange:()=>({selectNodeContents(){}})},
     globalThis:null,location:{href:"https://example.org/resurgo/index.html"},
