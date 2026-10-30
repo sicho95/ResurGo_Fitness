@@ -112,7 +112,7 @@
       const url=new URL(pending.url);
       if(url.protocol!=="https:"||url.username||url.password||url.search||url.hash)
         throw Error("URL NAS non valide.");
-      const base=url.href.replace(/\\/$/,"");
+      const base=url.href.replace(/\/$/,"");
       const label=el("nasDeviceName")?.value?.trim()||"Appareil ResurGo restauré";
       const recovered=await nasRequest(base,"/api/v1/recovery/redeem",{
         method:"POST",payload:{profileId:pending.profileId,
