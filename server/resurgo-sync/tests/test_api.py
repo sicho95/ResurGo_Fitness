@@ -207,3 +207,31 @@ def test_recovery_requires_valid_secret_and_auth_on_management(clients):
         "secret": "wrong" * 15, "label": "Attacker"
     }).status_code == 401
 
+
+def test_public_first_profile_no_admin_and_new_recovery_key(clients):
+    adm, api = clients
+    request = {"profileName":"Coupeur autonome", "deviceName":"iPhone initial"}
+    response = api.post("/api/v1/profiles/create",json=request)
+    assert response.status_code == 200, response.text
+    created = response.json()
+    assert created["profileName"] == "Coupeur autonome"
+    assert created["token"] and created["recovery"]["keyId"]
+    assert api.get("/api/v1/devices",headers=headers(created)).status_code == 200
+    key = created["recovery"]
+    backup_recover = api.post("/api/v1/recovery/redeem",json={
+        "profileId":created["profileId"],"keyId":key["keyId"],
+        "secret":key["secret"],"label":"Nouvel appareil"
+    })
+    assert backup_recover.status_code == 200
+    assert backup_recover.json()["profileId"] == created["profileId"]
+
+
+def test_public_profile_creation_is_limited_without_admin(clients,monkeypatch):
+    adm, api = clients
+    monkeypatch.setenv("RS_MAX_PROFILES","2")
+    for i in range(2):
+        result=api.post("/api/v1/profiles/create",json={"profileName":"Test", "deviceName":f"iPhone {i}"})
+        assert result.status_code == 200, result.text
+    blocked=api.post("/api/v1/profiles/create",json={"profileName":"Overflow", "deviceName":"Other"})
+    assert blocked.status_code==429
+    assert api.get("/admin/profiles").status_code==404
