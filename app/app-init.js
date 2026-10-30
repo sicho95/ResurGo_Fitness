@@ -63,6 +63,8 @@
     const status=el("notificationStatus");
     if(status) status.textContent=notificationStatusText();
     scheduleSessionReminder();
+    pushUpdateReminderSetting().catch(err=>
+      console.warn("Rappel NAS non synchronisé, réessayer avec la connexion NAS",err?.message));
   }
   function confirmTwice(first,second){ return confirm(first)&&confirm(second); }
   function placeSmileyMenu(details){
