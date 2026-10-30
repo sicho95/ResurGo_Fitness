@@ -281,6 +281,7 @@
       targetWeightKg:num("newTarget"),
       targetMonths:num("newTargetMonths")||6,
       availabilityDays:Number(el("newAvailabilityDays")?.value)===7?7:5,
+      goalFocus:el("newGoalFocus")?.value||"global",
       equipment:"Poids du corps, chaise ou banc, élastique",
       sportsHistory:"",
       health:{
@@ -321,15 +322,44 @@
     const E=short?["warmup_flow",knee&&!protect?"run_walk":"brisk_walk","cooldown_breathing"]:["warmup_flow",protect?"brisk_walk":knee?"easy_run":"low_impact_cardio","ankle_wall","cooldown_breathing"];
     const F=short?["hip_flexor","ankle_wall","cooldown_breathing"]:["hip_flexor","thoracic_rotation","ankle_wall","hamstring_floss","cooldown_breathing"];
     const G=short?["warmup_flow","thoracic_rotation","cooldown_breathing"]:["warmup_flow","thoracic_rotation","bird_dog","ankle_wall","cooldown_breathing"];
-    const sets=[
-      defineSession(knee?"Renfo genou doux":"Force profonde",short?22:42,knee?"mobility":"strength",A,short?"light":"hard",null),
-      defineSession(knee&&!protect?"Marche-course plate":protect?"Cardio protection":"Endurance facile",knee?30:protect?25:35,"cardio",C,protect||knee?"light":"moderate","mobility"),
-      defineSession(knee?"Stabilité genou / rotule":"Renfo mobilité",short?18:34,"mobility",B,"light",null),
-      defineSession("Force complète",short?24:40,"strength",D,short||knee?"light":"moderate",short?"mobility":null),
-      defineSession("Cardio bas impact",short?22:32,"cardio",E,short?"light":"moderate","mobility"),
-      defineSession("Mobilité récupération",short?16:28,"mobility",F,"light",null),
-      defineSession("Récupération active",short?14:24,"mobility",G,"light",short?null:"light_strength")
-    ].slice(0,days);
+    // Une seule allocation multisport pour éviter les calendriers concurrents.
+    // Les types restent 'strength/cardio/mobility' pour conserver l'historique.
+    const strength1=defineSession(knee?"Renfo genou doux":"Force profonde",
+      short?22:42,knee?"mobility":"strength",A,short?"light":"hard",null);
+    const strength2=defineSession("Renforcement complet",short?24:40,
+      "strength",D,short||knee?"light":"moderate",short?"mobility":null);
+    const runEasy=defineSession(knee&&!protect?"Marche-course plate":
+      protect?"Cardio protection":"Course facile",knee?30:protect?25:35,
+      "cardio",C,protect||knee?"light":"moderate","mobility");
+    const runSecond=defineSession("Endurance course / marche",short?22:30,
+      "cardio",["warmup_flow",protect?"brisk_walk":knee?"run_walk":"easy_run",
+        "cooldown_breathing"],"light","mobility");
+    const bikeEasy=defineSession("Vélo en endurance facile",short?22:35,
+      "cardio",["warmup_flow",protect?"brisk_walk":"easy_bike","cooldown_breathing"],
+      "light","mobility");
+    const bikeSecond=defineSession("Vélo souple de progression",short?24:40,
+      "cardio",["warmup_flow",protect?"brisk_walk":"easy_bike",
+        "ankle_wall","cooldown_breathing"],"light","mobility");
+    const mobility=defineSession(knee?"Stabilité genou / rotule":"Renfo mobilité",
+      short?18:34,"mobility",B,"light",null);
+    const recovery=defineSession("Mobilité récupération",short?16:28,
+      "mobility",F,"light",null);
+    const activeRecovery=defineSession("Récupération active",short?14:24,
+      "mobility",G,"light",null);
+    const focus=["global","running","cycling","fitness","weight_loss","strength"]
+      .includes(p.goalFocus)?p.goalFocus:"global";
+    const agendas={
+      global:[strength1,runEasy,mobility,strength2,bikeEasy,recovery,activeRecovery],
+      running:[runEasy,strength1,runSecond,mobility,strength2,recovery,bikeEasy],
+      cycling:[bikeEasy,strength1,bikeSecond,mobility,strength2,recovery,runEasy],
+      fitness:[strength1,bikeEasy,mobility,runEasy,strength2,recovery,activeRecovery],
+      weight_loss:[runEasy,strength1,bikeEasy,mobility,strength2,recovery,activeRecovery],
+      strength:[strength1,mobility,strength2,runEasy,recovery,bikeEasy,activeRecovery]
+    };
+    // Si douleur/alerte, la sécurité prévaut sur la priorité sportive.
+    const sets=(protect||knee?[
+      strength1,runEasy,mobility,strength2,bikeEasy,recovery,activeRecovery
+    ]:agendas[focus]).slice(0,days);
     const weekEnd=weekEndDate(anchor,windowDays);
     const extraActivities=next||staleWeek?[]:state.activities.filter(a=>a.profileId===pid&&!a.sessionRunId).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
     const doneTypes=completed.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},extraActivities.reduce((a,x)=>{ const type=activityPlanType(x); if(type) a[type]=(a[type]||0)+1; return a; },{}));
