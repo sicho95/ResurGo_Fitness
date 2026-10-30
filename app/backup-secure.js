@@ -74,6 +74,27 @@
       return data;
     }finally{clearTimeout(timeout);}
   }
+  async function nasCreateProfile(){
+    try{
+      const url=nasUrlFromInput();
+      const name=el("nasProfileName")?.value?.trim()||profile()?.name||"Profil sportif";
+      const label=el("nasDeviceName")?.value?.trim()||"Premier appareil ResurGo";
+      if(!url)throw Error("Renseigner l'URL HTTPS du NAS.");
+      if(!name.trim())throw Error("Donner un nom au profil.");
+      const connected=await nasStoredConnection();
+      if(connected?.token)throw Error("Appareil déjà associé. Utiliser le jumelage ou la restauration.");
+      if(!confirm("Créer un nouveau profil NAS indépendant, sans administrateur, et préparer sa sauvegarde chiffrée ?"))return;
+      const data=await nasRequest(url,"/api/v1/profiles/create",{method:"POST",
+        payload:{profileName:name,deviceName:label}});
+      if(!data.profileId||!data.token||!data.recovery?.secret)
+        throw Error("Le NAS n'a pas confirmé la création du profil sécurisé.");
+      await put("nasConnection",{url,profileId:data.profileId,deviceId:data.deviceId,
+        token:data.token,recovery:data.recovery,label,profileName:data.profileName});
+      state.settings.nasSyncUrl=url;
+      await save("Profil NAS créé sans administrateur. Exporte maintenant une sauvegarde chiffrée.");
+      render();
+    }catch(err){alert(err.message||"Inscription autonome au NAS impossible.");}
+  }
   async function nasPairWithCode(){
     try{
       const url=nasUrlFromInput(),code=el("nasPairCodeInput")?.value?.trim().toUpperCase();
