@@ -32,6 +32,7 @@ const legacyFragments = [
 const newModules = [
   "backup-secure.js",
   "sync-local-first.js",
+  "push-inbox.js",
   "voice-pack.js",
   "sensor-fusion.js",
   "ble-bluefy.js",
