@@ -17,19 +17,10 @@ info(){ printf '[ResurGo] %s\n' "$*"; }
 command -v docker >/dev/null || fail "Docker est introuvable sur le NAS."
 docker compose version >/dev/null || fail "Docker Compose V2 indisponible."
 command -v curl >/dev/null || fail "curl requis."
-if ! command -v python3 >/dev/null 2>&1; then
-  for candidate in \
-    /share/CE_CACHEDEV1_DATA/.qpkg/Python3/bin/python3 \
-    /share/CE_CACHEDEV1_DATA/.qpkg/Python312/bin/python3 \
-    /share/CACHEDEV1_DATA/.qpkg/Python3/bin/python3
-  do
-    if [[ -x "$candidate" ]]; then
-      export PATH="$(dirname "$candidate"):$PATH"
-      break
-    fi
-  done
-fi
-command -v python3 >/dev/null || fail "Python 3 requis pour valider les secrets/config."
+# Pas de Python requis sur l'hôte QNAP : le diagnostic JSON et le test
+# d'écoute sont réalisés dans un conteneur Python jetable, SANS montage du / NAS.
+# Pour tester les vrais ports hôtes : --network host.
+docker info >/dev/null 2>&1 || fail "Docker doit être accessible depuis ce SSH."
 # Le CLI QNAP Tailscale n'est pas toujours dans le PATH des connexions SSH.
 if ! command -v tailscale >/dev/null 2>&1; then
   for candidate in \
@@ -75,22 +66,16 @@ docker ps --format 'table {{.Names}}\t{{.Ports}}' || fail "Impossible de lire le
 # Parse official JSON status; never wipe the whole tailnet with reset.
 info "Contrôle des ports HTTPS Tailscale."
 export RS_FUNNEL_HTTPS_PORT RS_SERVE_ADMIN_HTTPS_PORT
-python3 - <<'PY'
-import json, os, re, subprocess, sys
-ports = [os.environ["RS_FUNNEL_HTTPS_PORT"],os.environ["RS_SERVE_ADMIN_HTTPS_PORT"]]
-seen = []
-for command in (["tailscale","funnel","status","--json"],["tailscale","serve","status","--json"]):
-    result = subprocess.run(command,capture_output=True,text=True)
-    if result.returncode != 0:sys.exit(f"Statut Tailscale illisible ({' '.join(command)}) ; refus de modifier la configuration.")
-    try: cfg=json.loads(result.stdout or "{}")
-    except json.JSONDecodeError:sys.exit("Impossible de décoder les routes JSON Tailscale ; refus de modifier.")
-    seen.append(json.dumps(cfg,ensure_ascii=False))
-for p in ports:
-    for raw in seen:
-        if re.search(r'(?<!\d):'+re.escape(p)+r'(?=\D|$)',raw) or re.search(r'"'+re.escape(p)+r'":',raw):
-            sys.exit(f"Port Tailscale {p} déjà défini : ne pas écraser la configuration existante.")
-print("Ports Tailscale choisis non référencés dans la configuration actuelle.")
-PY
+TS_FUNNEL_JSON="$(tailscale funnel status --json)" ||
+  fail "Impossible de lire Funnel en JSON ; aucun port modifié."
+TS_SERVE_JSON="$(tailscale serve status --json)" ||
+  fail "Impossible de lire Serve en JSON ; aucun port modifié."
+export TS_FUNNEL_JSON TS_SERVE_JSON RS_PUBLIC_HOST_PORT RS_ADMIN_HOST_PORT
+docker run --rm --network host -i \
+  -e RS_FUNNEL_HTTPS_PORT -e RS_SERVE_ADMIN_HTTPS_PORT \
+  -e RS_PUBLIC_HOST_PORT -e RS_ADMIN_HOST_PORT \
+  -e TS_FUNNEL_JSON -e TS_SERVE_JSON \
+  python:3.12-alpine 
 
 info "Étape 2 : vérifier le volume isolé et les ports Docker."
 # Volume dédié : la base SQLite est écrite par UID/GID 10001 dans les conteneurs.
