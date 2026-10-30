@@ -53,6 +53,7 @@
     const pending=new Map(meta.outbox.map(x=>[nasEntityKey(x.entityType,x.entityId),x]));
     for(const item of items){
       const key=nasEntityKey(item.kind,item.entityId),value=nasLocalFingerprint(item.payload);
+      if(meta.conflicts.some(x=>nasEntityKey(x.kind,x.entityId)===key))continue;
       if(value===meta.hashes[key]&&!pending.has(key))continue;
       if(pending.has(key)&&pending.get(key).fingerprint===value)continue;
       const candidate={
@@ -120,8 +121,9 @@
         const base=meta.hashes[key];
         const diverged=current&&currentFingerprint!==base&&currentFingerprint!==remoteFingerprint;
         if(pending||diverged){
-          if(!meta.conflicts.some(x=>x.kind===evt.kind&&x.entityId===evt.entity_id))
-            meta.conflicts.push({kind:evt.kind,entityId:evt.entity_id,
+          const conflict=meta.conflicts.find(x=>x.kind===evt.kind&&x.entityId===evt.entity_id);
+          if(conflict)conflict.remoteValue=clone(evt.payload);
+          else meta.conflicts.push({kind:evt.kind,entityId:evt.entity_id,
               localValue:clone(current),remoteValue:clone(evt.payload),
               at:new Date().toISOString()});
         }else{
@@ -185,6 +187,46 @@
     });
     setInterval(()=>{if(document.visibilityState==="visible")nasSyncSchedule();},60000);
     nasSyncSchedule();
+  }
+  async function nasSyncResolveConflicts(){
+    const conn=await nasStoredConnection();
+    if(!conn?.token)throw Error("Pas de profil NAS associé.");
+    const meta=await nasSyncLoadMeta(conn);
+    if(!meta.conflicts.length){alert("Aucun conflit.");return;}
+    for(const conflict of [...meta.conflicts]){
+      if(!conflict.remoteValue){
+        alert("Version NAS non encore récupérée pour "+conflict.entityId+". Synchroniser à nouveau.");
+        continue;
+      }
+      const keepLocal=confirm("Conflit sur "+conflict.kind+"/"+conflict.entityId+
+        ". OK = conserver les données de CE téléphone et proposer leur envoi au NAS. "+
+        "Annuler = conserver la version actuellement sur le NAS sur ce téléphone.");
+      const key=nasEntityKey(conflict.kind,conflict.entityId);
+      meta.outbox=meta.outbox.filter(x=>nasEntityKey(x.entityType,x.entityId)!==key);
+      if(keepLocal){
+        // CAS on latest observed NAS revision. Never bypass explicit conflict.
+        const mine=conflict.localValue?.profile?conflict.localValue:
+          conflict.kind==="profile_settings"?{profile:conflict.localValue}:
+            conflict.localValue;
+        if(!mine||!mine.id&&!mine.profile?.id)continue;
+        const operation={operationId:crypto.randomUUID(),entityType:conflict.kind,
+          entityId:conflict.entityId,expectedRevision:meta.revisions[key]||0,
+          payload:mine,deleted:false,fingerprint:nasLocalFingerprint(mine)};
+        meta.outbox.push(operation);
+      }else{
+        nasApplyingRemote=true;
+        try{nasSyncReplaceRemote({kind:conflict.kind,entity_id:conflict.entityId,
+          payload:conflict.remoteValue,deleted:false});}
+        finally{nasApplyingRemote=false;}
+        meta.hashes[key]=nasLocalFingerprint(conflict.remoteValue);
+        await put("app",state);
+        render();
+      }
+      meta.conflicts=meta.conflicts.filter(x=>x!==conflict);
+    }
+    await put("nasSyncMeta",meta);
+    await nasSyncNow();
+    await nasSyncDisplayStatus();
   }
   async function nasSyncDisplayStatus(){
     const conn=await nasStoredConnection();
