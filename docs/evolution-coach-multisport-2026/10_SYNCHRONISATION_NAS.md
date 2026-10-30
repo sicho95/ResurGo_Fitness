@@ -1,6 +1,6 @@
 # ResurGo Fitness — Synchronisation local-first multi-appareils sur NAS QNAP
 
-**Statut : PROPOSITION d'architecture à évaluer et prototyper.** Damien propose le 2026-10-30 de s'appuyer, si cela aide, sur un **conteneur Docker dédié sur le NAS**, à l'image d'AlphaTerminal. L'objectif confirmé est une **synchronisation automatique entre appareils**, sans sacrifier l'autonomie locale. L'utilisation du NAS en tant qu'unique backend n'est pas encore un choix irréversible.
+**Statut : PROPOSITION d'architecture Docker à évaluer et prototyper.** L'objectif **CONFIRMÉ** est une synchronisation automatique local-first. **Décision réseau confirmée le 30/10/2026 :** les téléphones/utilisateurs ne sont PAS membres Tailscale ; ils utilisent l'API via **Tailscale Funnel HTTPS public**. Seul Damien utilise Tailscale depuis son iMac ou autre poste d'administration pour accéder à une **interface d'administration privée**. Le NAS Docker reste une option d'hébergement privilégiée, non une obligation irréversible.
 
 **Référence technique analysée :** `sicho95/AlphaTerminal`, notamment `worker/docker-compose.yml`, `worker/README.md`, `worker/app/db.py` et `js/sync-client.js` : Python/FastAPI, SQLite WAL, volume `/data`, jetons par appareil, association avec approbation, révisions CAS, conflits explicites, sauvegardes. **Ne pas réutiliser les données, le stockage, les secrets ou les ports d'AlphaTerminal pour ResurGo**.
 
@@ -10,7 +10,7 @@
 - **SYNC-001** Chaque téléphone reste pleinement fonctionnel hors ligne : profils, programmes, séances, collecte capteurs, coaching vocal, historique, saisie des données et calculs. La sauvegarde locale est immédiate.
 - **SYNC-002** En présence d'une connexion autorisée, transférer automatiquement les nouveaux événements vers les autres appareils associés au **même profil**, puis récupérer leurs changements.
 - **SYNC-003** Respecter l'indépendance des profils familiaux. Un iPhone peut héberger plusieurs profils, mais aucun profil ne doit recevoir les données d'un autre sans partage explicitement autorisé.
-- **SYNC-004** Tolérer pannes NAS, absence Internet, changement Wi-Fi/4G/5G et déconnexion Tailscale sans perdre ni bloquer la séance.
+- **SYNC-004** Tolérer pannes NAS, absence Internet, changement Wi-Fi/4G/5G, panne du tunnel Funnel ou perte de liaison Tailscale du NAS sans perdre ni bloquer la séance. Les clients utilisateurs n'installent pas Tailscale.
 - **SYNC-005** Synchroniser plans, records, séances, statistiques corporelles, préférences, progression, bibliothèque d'exercices personnalisée et retours de douleur volontairement stockés ; **ne pas** exporter les flux capteurs bruts, médias ou sons systématiquement.
 - **SYNC-006** Ne jamais créer de double activité quand Garmin, Apple Santé, montre, téléphone ou import externe représentent une même séance.
 - **SYNC-007** Toute modification locale reste récupérable ; les conflits ne doivent pas entraîner d'écrasement silencieux.
@@ -33,8 +33,8 @@ iPhone 15 Pro / iPhone 13 / iPad
  ├─ Outbox locale persistante, versions et curseurs
  └─ SyncClient HTTPS (quand app active + événements réseau)
                          ⇅
-                  Tailscale Serve privé (préféré)
-             ou HTTPS exposé avec protection renforcée
+                  HTTPS PUBLIC via Tailscale Funnel (choix confirmé)
+                 uniquement API client authentifiée
                          ⇅
 NAS QNAP NAS-DAMIEN — Docker Compose
  └─ resurgo-sync (API dédiée ; suggestion : Python FastAPI)
@@ -43,6 +43,10 @@ NAS QNAP NAS-DAMIEN — Docker Compose
      ├─ Journal de changements incrémental et résolution de conflit
      ├─ Sauvegarde/restauration versionnée, contrôle de santé
      └─ Journal technique sans contenu médical nominatif
+
+ADMINISTRATION : iMac ou poste de Damien sur le tailnet
+          → Tailscale Serve PRIVÉ sur une écoute distincte
+          → panneau admin et API admin uniquement, non exposés par Funnel
 ```
 
 Le serveur NAS agit comme **point de convergence et de diffusion**, pas comme dépendance vitale de l'UI ni du coach. Les horloges murales des iPhone ne doivent pas être utilisées comme arbitre unique de conflit ; préférer séquences et révisions côté serveur.
@@ -119,7 +123,9 @@ Identifiants source natifs (Garmin/HealthKit) quand existants, empreinte robuste
 
 **Bonne pratique (AlphaTerminal) :** conteneur non-root, `read_only`, `no-new-privileges`, suppression de capabilities, volume dédié `/data`, healthcheck, limite ressources calibrée après mesure, port publié sur `127.0.0.1` uniquement, HTTPS via proxy/tunnel séparé, secrets dans un `.env` non versionné.
 
-**Réseau privé préféré :** Tailscale Serve (accessible au tailnet et soumis à ses ACL) ; ne pas remplacer par Funnel sans décision : **Funnel rend le service publiquement accessible**, même si le HTTPS est actif. L'utilisation de Funnel exige une authentification forte, contrôles anti-abus, revue exposition et consentement explicite.
+**Réseau confirmé :** **Funnel HTTPS public pour l'API de synchronisation**, accessible aux clients iPhone sans Tailscale ; **Serve privé réservé à l'administration** depuis l'iMac ou un poste d'administration autorisé de Damien. **Ne pas exposer la console admin via Funnel**. Funnel laisse entrer des requêtes Internet arbitraires : toutes les routes publiques doivent appliquer authentification par appareil et profil, contrôle d'autorisation, limitation de débit/quotas, protection de création/appairage contre brute-force, validation des tailles et contenus, révocation et journaux sobres. L'absence de compte Tailscale sur les iPhone n'affaiblit jamais ces contrôles, car c'est l'API qui les porte.
+
+**Séparation stricte :** listener/service public minimal ne montant **aucune route /admin ni /api/admin** ; listener/service privé distinct, non accessible via le reverse proxy public. Tailscale documente que **Serve et Funnel ne peuvent pas cohabiter sur le même port HTTPS** ; utiliser des ports distincts et vérifier la configuration Tailscale existante (autres projets Funnel) avant toute commande. Une simple « route /admin masquée » derrière le même Funnel ne suffit pas. Le tableau de bord privé doit conserver sa propre authentification, même depuis le tailnet. Utiliser deux points d'entrée réellement isolés et vérifier depuis un navigateur hors Tailscale que toute interface d'administration est inaccessible.
 
 **CORS :** n'autoriser que les origines de PWA réelles (`https://sicho95.github.io` notamment), et ne jamais considérer CORS comme une authentification. Tester Safari iOS, port HTTPS et certificat avant l'appairage.
 
@@ -160,9 +166,9 @@ La proposition NAS est cohérente avec l'objectif de Damien. Elle est **retenue 
 
 ## 11. Questions à Damien (non bloquantes pour prototype)
 
-- Tous les appareils seront-ils dans le tailnet Tailscale, ou faut-il offrir l'accès aux proches sans Tailscale ? L'accès public via Funnel n'est **pas** autorisé par cette proposition seule.
+- **RÉPONDU PAR DAMIEN :** aucun appareil utilisateur ne fait partie du tailnet ; API client sur HTTPS public **Funnel**, administration uniquement par Damien sur iMac ou poste Tailscale via **Serve privé**. **À vérifier techniquement :** quelle configuration Funnel/Serve utilise déjà le QNAP pour AlphaTerminal et les autres projets, afin de ne pas écraser les routes ou ports.
 - L'utilisateur souhaite-t-il une synchronisation limitée aux données structurées et résultats, ou également les **traces GPS détaillées** de toutes les sorties ? Enjeu taille de stockage et confidentialité.
 - Faut-il prendre en charge la synchronisation multi-profils entre appareils de plusieurs personnes, ou seulement chaque personne entre ses propres appareils ? La séparation de profil reste obligatoire.
 - Autorisation de dupliquer une copie privée de certaines données de santé sur le NAS ? En l'absence de réponse, ne synchroniser ces champs qu'après consentement explicite.
 - QNAP : capacité RAM/disque disponible réelle, partition du volume dédié, stratégie sauvegardes ; ne pas inventer l'état des conteneurs.
-- Déploiement public automatique souhaité pour l'app : ne pas étendre cette demande au NAS/à Funnel sans recette de sécurité.
+- La décision de recourir à Funnel est confirmée pour l'architecture client. **Son activation effective sur le NAS ne doit intervenir qu'après** mise en place des contrôles de sécurité, revue des routes, recette sur réseau externe, sauvegarde et vérification de la non-régression AlphaTerminal/Home Assistant/Forgejo. L'autodéploiement de la PWA ne justifie pas la mise en ligne d'un service non protégé.
