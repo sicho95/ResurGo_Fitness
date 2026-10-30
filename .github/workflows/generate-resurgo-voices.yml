@@ -1,0 +1,45 @@
+name: ResurGo — générer et versionner les deux voix naturelles (brouillon)
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/resurgo-sync-funnel-20261030]
+    paths:
+      - "scripts/generate-voice-pack.py"
+      - "docs/evolution-coach-multisport-2026/07_CATALOGUE_VOCAL.md"
+      - ".github/workflows/generate-resurgo-voices.yml"
+permissions:
+  contents: write
+jobs:
+  synthese-audio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install voice synthesis
+        run: pip install --no-cache-dir "piper-tts>=1.3,<2"
+      - name: Download both identity models
+        run: |
+          mkdir -p .voice-models
+          python -m piper.download_voices --data-dir .voice-models fr_FR-siwis-medium fr_FR-upmc-medium
+      - name: Generate 80 candidate phrases per identity
+        run: python scripts/generate-voice-pack.py --models .voice-models --out static/voice/fr-FR/v1
+      - name: Upload audio sample pack to run artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: resurgo-voice-fr-FR-v1-preview
+          path: static/voice/fr-FR/v1/
+          retention-days: 30
+      - name: Save the generated assets in candidate branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add static/voice/fr-FR/v1/
+          if ! git diff --cached --quiet; then
+            git commit -m "assets(voices): voix naturelles francaises prégénérées, manifest et licences"
+            git push
+          fi
