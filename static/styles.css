@@ -30,6 +30,11 @@ button{cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-se
 .top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:20px}.logo{width:42px;height:42px;border-radius:12px;display:block;object-fit:cover;flex:0 0 auto}
 .pill{padding:8px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;white-space:nowrap}
+.topActions{display:flex;align-items:center;gap:8px;min-width:0}
+.topActions #pushInboxButton{padding:8px 10px;font-size:13px;white-space:nowrap;min-height:38px}
+@media(max-width:520px){.topActions .pill{display:none}.topActions #pushInboxButton{padding:8px 10px;font-size:12px}.brand{font-size:17px}}
+.pushInboxItem{display:block;width:100%;text-align:left;margin:6px 0}
+.pushInboxItem span{display:block}
 .content{display:grid;gap:16px;min-width:0}
 h1{margin:0;font-size:40px;line-height:1;letter-spacing:0} h2{margin:0 0 10px;font-size:22px;line-height:1.15} h3{margin:14px 0 8px}
 .hero{min-height:68vh;display:grid;align-content:end;gap:18px;padding:24px;border-radius:8px;background:linear-gradient(160deg,#10231e,#26483e);color:white;overflow:hidden;position:relative}
