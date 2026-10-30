@@ -20,6 +20,7 @@ jobs:
         run: |
           bash -n server/resurgo-sync/deploy-nas-qnap.sh
           bash -n server/resurgo-sync/bootstrap-qnap.sh
+          bash -n server/resurgo-sync/enable-tailscale-140.sh
       - name: Validate Docker Compose without secrets or deployment
         run: |
           cd server/resurgo-sync
