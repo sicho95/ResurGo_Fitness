@@ -86,7 +86,7 @@ Statut : **CONFIRMÉ** sauf mentions contraires. Référence : `00_INDEX.md`.
 
 **FON-060** Coaching audio superposé à la musique d'une autre application sans intégration obligatoire Spotify/Deezer/Apple Music. « Ducking » temporaire sur périphériques compatibles, puis volume rétabli ; appels et alertes système prioritaires.
 
-**FON-061** Deux identités vocales stables, homme/femme, naturelles et encourageantes ; catalogue préenregistré offline avec intonations et variantes pour départ, allure, côte, récupération, rythme, avertissement, hydratation, fractionné, difficulté, arrivée. Rendu de chiffres variable et assemblage doivent être testés pour éviter un effet robotique.
+**FON-061** Deux identités vocales stables, homme/femme, **voix naturelles synthétisées et prégénérées par lot**, chaleureuses et encourageantes ; **mémoriser identité, fournisseur/modèle, référence de locuteur/paramètres de prosodie et recettes versionnées** pour pouvoir produire de nouveaux clips avec les mêmes voix. Catalogue de fichiers audio offline avec intonations et variantes pour départ, allure, côte, récupération, rythme, avertissement, hydratation, fractionné, difficulté, arrivée. Rendu des chiffres variables et assemblage testés pour éviter un effet robotique. Aucun rendu audio n'est considéré livré avant génération réelle et validation.
 
 **FON-062** Nombreux encouragements variés, jamais injonctions culpabilisantes ; répétition limitée ; modes de fréquence de parole discret/équilibré/intensif : **PROPOSITION** de paramétrage ; jamais au détriment d'une alerte importante.
 
