@@ -37,7 +37,7 @@ function runner() {
     ui:{view:"settings",message:"Test en cours",modal:null}
   };
   const ctx=vm.createContext({
-    crypto:webcrypto,Blob,URL:TestURL,TextEncoder,TextDecoder,Uint8Array,Date,
+    crypto:webcrypto,Blob,URL:TestURL,TextEncoder,TextDecoder,Uint8Array,Date,AbortController,
     btoa:buffer=>Buffer.from(buffer,"binary").toString("base64"),
     atob:buffer=>Buffer.from(buffer,"base64").toString("binary"),
     document,isSecureContext:true,APP_VERSION:"1.3.4",empty:structuredClone(initial),
