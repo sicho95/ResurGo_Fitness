@@ -42,3 +42,24 @@ services:
     cap_drop: [ALL]
     mem_limit: 192m
     pids_limit: 64
+
+  # Worker optionnel, sans port, et réseau Docker bridge déjà existant.
+  resurgo-push-worker:
+    profiles: ["push"]
+    build: .
+    network_mode: bridge
+    container_name: resurgo-push-worker
+    command: ["python3", "-m", "push_worker"]
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      RS_DB_PATH: /data/resurgo.sqlite3
+      RS_VAPID_SUBJECT: "https://sicho95.github.io/ResurGo_Fitness/"
+    volumes:
+      - ${RS_HOST_DATA_DIR:?Configurer RS_HOST_DATA_DIR absolu et privé}:/data
+    read_only: true
+    tmpfs: ["/tmp:size=16m"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    mem_limit: 192m
+    pids_limit: 64
