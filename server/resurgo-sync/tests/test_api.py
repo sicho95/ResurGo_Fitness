@@ -51,6 +51,29 @@ def test_public_api_has_no_admin_routes(clients):
     assert adm.get("/health", headers=admin_headers()).status_code == 200
 
 
+def test_private_admin_dashboard_is_not_exposed_by_funnel_app(clients):
+    adm, api = clients
+    assert api.get("/").status_code == 404
+    assert api.get("/admin.js").status_code == 404
+    page = adm.get("/")
+    assert page.status_code == 200
+    assert "ResurGo Sync" in page.text
+    assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
+    assert adm.get("/admin.js").status_code == 200
+    assert adm.get("/admin/profiles").status_code == 401
+
+
+def test_private_admin_can_list_profile_devices(clients):
+    adm, api = clients
+    user = enrolled(clients)
+    path = "/admin/profiles/" + user["profileId"] + "/devices"
+    assert adm.get(path).status_code == 401
+    data = adm.get(path, headers=admin_headers())
+    assert data.status_code == 200
+    assert len(data.json()["devices"]) == 1
+    assert data.json()["devices"][0]["id"] == user["deviceId"]
+
+
 def test_enrollment_and_pairing_code_single_use(clients):
     adm, api = clients
     created = adm.post("/admin/profiles", json={"label": "Test"}, headers=admin_headers()).json()
