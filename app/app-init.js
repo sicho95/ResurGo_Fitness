@@ -113,8 +113,8 @@
     on("disableNasPush",pushDisableFromSettings);
     on("testNasPush",pushTestFromSettings);
     on("checkNasPush",pushStatusInSettings);
-    $("[data-open-push]").forEach(b=>b.onclick=()=>pushInboxOpen(b.dataset.openPush));
-    $("[data-push-session]").forEach(b=>b.onclick=()=>{
+    $$("[data-open-push]").forEach(b=>b.onclick=()=>pushInboxOpen(b.dataset.openPush));
+    $$("[data-push-session]").forEach(b=>b.onclick=()=>{
       const session=state.plans.find(x=>x.id===b.dataset.pushSession);
       if(!session)return;
       if(state.profiles.some(x=>x.id===session.profileId))state.activeProfileId=session.profileId;
