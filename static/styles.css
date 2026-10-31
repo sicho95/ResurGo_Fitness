@@ -30,9 +30,15 @@ button{cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-se
 .top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:20px}.logo{width:42px;height:42px;border-radius:12px;display:block;object-fit:cover;flex:0 0 auto}
 .pill{padding:8px 12px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-weight:800;font-size:13px;white-space:nowrap}
+.brandLabel{display:grid;gap:3px;min-width:0}
+.brandLabel>span{white-space:nowrap}
+.brandVersion{color:var(--muted);font-size:11px;line-height:1.15;font-weight:750;letter-spacing:.02em}
 .topActions{display:flex;align-items:center;gap:8px;min-width:0}
-.topActions #pushInboxButton{padding:8px 10px;font-size:13px;white-space:nowrap;min-height:38px}
-@media(max-width:520px){.topActions .pill{display:none}.topActions #pushInboxButton{padding:8px 10px;font-size:12px}.brand{font-size:17px}}
+.topActions .notificationButton{position:relative;display:grid;place-items:center;flex:0 0 auto;width:42px;height:42px;min-width:42px;min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:0}
+.notificationButton:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.notificationButton .notificationCount{position:absolute;right:-6px;top:-6px;min-width:18px;height:18px;padding:0 4px;display:grid;place-items:center;border-radius:999px;background:var(--blue);color:white;font-size:10px;font-weight:900;line-height:1}
+.notificationButton .notificationCount[hidden]{display:none}
+@media(max-width:520px){.brand{font-size:16px;gap:8px}.top{gap:8px}}
 .pushInboxItem{display:block;width:100%;text-align:left;margin:6px 0}
 .pushInboxItem span{display:block}
 .content{display:grid;gap:16px;min-width:0}
