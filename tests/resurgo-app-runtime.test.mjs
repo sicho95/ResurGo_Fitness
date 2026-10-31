@@ -31,3 +31,40 @@ test("the built webapp exposes all new modules in render() lexical scope",()=>{
     assert.equal(value,"function",name+" is missing from app render/bind scope.");
   }
 });
+
+test("bottom navigation handlers remain bound when push controls are present",()=>{
+  const source=readFileSync(resolve(".webapp-build/app.js"),"utf8");
+  const initCall="  init();\n})();";
+  assert.ok(source.includes(initCall),"Cannot intercept bootstrap safely.");
+  const safeSource=source.replace(initCall,"  output.bind=bind;\n})();");
+  const bottomTab={dataset:{view:"plan"}};
+  const inboxButton={};
+  const pushRow={dataset:{openPush:"push_123"}};
+  const sessionRow={dataset:{pushSession:"session_123"}};
+  const documentStub={
+    getElementById:id=>id==="pushInboxButton"?inboxButton:null,
+    querySelectorAll:selector=>({
+      "[data-view]":[bottomTab],
+      "[data-open-push]":[pushRow],
+      "[data-push-session]":[sessionRow]
+    }[selector]||[]),
+    addEventListener:()=>{}
+  };
+  const windowStub={addEventListener:()=>{}};
+  const output={bind:null};
+  new Function("window","document","navigator","location","output",safeSource)(
+    windowStub,documentStub,{}, {},output);
+  assert.equal(typeof output.bind,"function");
+  assert.doesNotThrow(()=>output.bind(),"Binding must not abort before bottom tabs.");
+  for(const [label,button] of Object.entries({bottomTab,inboxButton,pushRow,sessionRow}))
+    assert.equal(typeof button.onclick,"function",label+" is not interactive");
+});
+
+test("the header keeps the version visible beside a compact notification action",()=>{
+  const source=readFileSync(resolve(".webapp-build/app.js"),"utf8");
+  const css=readFileSync(resolve(".webapp-build/styles.css"),"utf8");
+  assert.ok(source.includes('class="brandVersion"'),"The version label is absent.");
+  assert.ok(source.includes('class="notificationButton"'),"The notification icon is absent.");
+  assert.ok(css.includes(".brandVersion{"),"Version styling is absent.");
+  assert.ok(!css.includes(".topActions .pill{display:none}"),"The mobile version is being hidden.");
+});

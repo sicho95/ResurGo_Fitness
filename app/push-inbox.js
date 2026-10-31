@@ -13,6 +13,14 @@
       request.onerror=()=>reject(request.error);
     });
   }
+  function pushInboxRefreshBadge(){
+    const button=el("pushInboxButton");
+    if(!button)return;
+    const unread=pushInboxItems.filter(item=>!item.read).length;
+    button.setAttribute("aria-label",unread?`${unread} notification${unread>1?"s":""} non lue${unread>1?"s":""}`:"Consulter les notifications");
+    const badge=button.querySelector(".notificationCount");
+    if(badge){badge.hidden=!unread;badge.textContent=unread>99?"99+":String(unread);}
+  }
   async function pushInboxLoad(){
     let db;
     try{
@@ -26,6 +34,7 @@
       pushInboxItems=items.sort((a,b)=>String(b.receivedAt||"").localeCompare(String(a.receivedAt||""))).slice(0,200);
     }catch(e){console.warn("Historique push indisponible",e);}
     finally{db?.close();}
+    pushInboxRefreshBadge();
     if(state.ui.view==="pushInbox")render();
   }
   async function pushInboxMarkRead(id){
@@ -41,6 +50,7 @@
         tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
       });
     }finally{db?.close();}
+    pushInboxRefreshBadge();
   }
   async function pushInboxOpen(id=""){
     state.ui.view="pushInbox";

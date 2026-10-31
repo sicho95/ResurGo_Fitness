@@ -43,3 +43,4 @@ jobs:
       - run: node --test tests/resurgo-backup.test.mjs tests/resurgo-sync.test.mjs tests/resurgo-bluefy.test.mjs
       - run: node scripts/build-static.mjs --out .webapp-build
       - run: node --check .webapp-build/app.js
+      - run: node --test tests/resurgo-app-runtime.test.mjs tests/resurgo-push.test.mjs
