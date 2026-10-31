@@ -1,0 +1,1569 @@
+{
+  "files": {
+    "feminine/phrase_001": {
+      "bytes": 23492,
+      "sha256": "d88b8494689daa326c4c5d9a41bc78ec8925cbe82b1d7815c9f44a0631259a4a",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_001.m4a",
+      "text": "C'est parti. Prends le temps de trouver ton rythme."
+    },
+    "feminine/phrase_002": {
+      "bytes": 30182,
+      "sha256": "379ff45f651eb0bf72bf55661f245a8c3b350141cc24054b70384eb1953dd918",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_002.m4a",
+      "text": "On commence tranquillement. Tu as toute la séance devant toi."
+    },
+    "feminine/phrase_003": {
+      "bytes": 25416,
+      "sha256": "a392ab1b2511ae73ff51ebc1135c88082d45cc9968f9e057857696db42eb11f4",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_003.m4a",
+      "text": "Voilà, installe-toi dans une allure confortable."
+    },
+    "feminine/phrase_004": {
+      "bytes": 24967,
+      "sha256": "814a7b58f5abdaaf1a91b67a9f12561cf128fc3de1e1400499d599444590cbbd",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_004.m4a",
+      "text": "Laisse le souffle se mettre en place progressivement."
+    },
+    "feminine/phrase_005": {
+      "bytes": 26166,
+      "sha256": "4de82c507bfcedc14b382f488addf04d5f05f937ca3aed1bfbe59f18beeee2da",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_005.m4a",
+      "text": "Prends tes repères, inutile de partir trop vite."
+    },
+    "feminine/phrase_006": {
+      "bytes": 33770,
+      "sha256": "a4d8700a84cca272922c0eab15678c2f655c509d68e1dbbabcf0164c422e0804",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_006.m4a",
+      "text": "Très bien, profite des premières minutes pour te mettre en route."
+    },
+    "feminine/phrase_007": {
+      "bytes": 32988,
+      "sha256": "f184dea6c68d8df4ebcb2a2418f653da75589ffe864c428b0168b0d69df2c7cc",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_007.m4a",
+      "text": "Garde une foulée souple, ton rythme viendra naturellement."
+    },
+    "feminine/phrase_008": {
+      "bytes": 25222,
+      "sha256": "99717e96f2ba77597200fea01698084a00e01a36285e3bf81a0b1b8a3a3baf82",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_008.m4a",
+      "text": "On avance à ton rythme, un pas après l'autre."
+    },
+    "feminine/phrase_009": {
+      "bytes": 19838,
+      "sha256": "683380489da8ea095547c3ace19f61bf42588ef6a699128f9d3cb29b9667dfcc",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_009.m4a",
+      "text": "C'est bien, le rythme est régulier."
+    },
+    "feminine/phrase_010": {
+      "bytes": 20831,
+      "sha256": "1efe90389e06e37feadb120864ba4f768f065b8546b1c008c88a9bdaca80b503",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_010.m4a",
+      "text": "Tu gères ton effort, continue comme ça."
+    },
+    "feminine/phrase_011": {
+      "bytes": 29068,
+      "sha256": "325597a7adbfafa792a5b21efc2928bf660864bdd9bf8d2084b844cd89f881d7",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_011.m4a",
+      "text": "Rien à forcer pour le moment, garde cette facilité."
+    },
+    "feminine/phrase_012": {
+      "bytes": 34167,
+      "sha256": "5acff3161207bf760536986e3a58d67be7fee6e9480065459042bf9d13d0bfa3",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_012.m4a",
+      "text": "La régularité d'aujourd'hui construit les progrès de demain."
+    },
+    "feminine/phrase_013": {
+      "bytes": 27180,
+      "sha256": "1d0db49de6560db57bfc3adf1c08698a956779039265d423669adb3931e2ba75",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_013.m4a",
+      "text": "Prends plaisir à cette allure, elle a toute son utilité."
+    },
+    "feminine/phrase_014": {
+      "bytes": 29321,
+      "sha256": "3cf19819b1ffb0fc1c2a5ee4cf488b4275bcbc2c33678fdc0eecdc3d0f0026c9",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_014.m4a",
+      "text": "Une sortie facile compte vraiment dans ta progression."
+    },
+    "feminine/phrase_015": {
+      "bytes": 28972,
+      "sha256": "536d45dcc0f1172776d531c57f42924787584283a0a3bac1480cb2814aebf0b0",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_015.m4a",
+      "text": "Reste détendu, c'est une belle séance de travail."
+    },
+    "feminine/phrase_016": {
+      "bytes": 24613,
+      "sha256": "1a818adea1df9d1f84fc6d7154a519b0d877277b690993b02d9712ec433d156d",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_016.m4a",
+      "text": "Très bien, laisse les kilomètres défiler naturellement."
+    },
+    "feminine/phrase_017": {
+      "bytes": 45126,
+      "sha256": "38c367de35d2b44d92e6d2123ab37b7796f1aa3f1deabb9abee14c9c8ce52b08",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_017.m4a",
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat."
+    },
+    "feminine/phrase_018": {
+      "bytes": 36149,
+      "sha256": "674652f184fa0aa9f7e70d19192e33b3af2ffa099e35942a92c1c0a15c9f367a",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_018.m4a",
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre."
+    },
+    "feminine/phrase_019": {
+      "bytes": 30083,
+      "sha256": "b6c35d608415c7911339ba19964c627eaa8819da6bd7153528b4aeacb15c723e",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_019.m4a",
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement."
+    },
+    "feminine/phrase_020": {
+      "bytes": 30613,
+      "sha256": "7beaf4fd9be917c6f49d258ac4e8d2f08649aa9656c62928863492aac8917926",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_020.m4a",
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable."
+    },
+    "feminine/phrase_021": {
+      "bytes": 28563,
+      "sha256": "8b95ef27257302aecb2f16ced523e9daf4796b0df1882013f8de463db6a51a43",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_021.m4a",
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle."
+    },
+    "feminine/phrase_022": {
+      "bytes": 21375,
+      "sha256": "6bdcaa1febddc4e2c8794944b8b84da19694db3f3c35239eda3bd85eb8e66e5b",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_022.m4a",
+      "text": "Tu avances, c'est ce qui compte dans cette montée."
+    },
+    "feminine/phrase_023": {
+      "bytes": 25888,
+      "sha256": "a931eac5001e3f66d0ed4656eb69fa805bb1f9cdc04f88d0419c975b259ffd0e",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_023.m4a",
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui."
+    },
+    "feminine/phrase_024": {
+      "bytes": 34177,
+      "sha256": "7cee0e24e860f0a853ed12cdf3e130a10d00766e191810bb352bd06bee6323c7",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_024.m4a",
+      "text": "Reste relâché autant que possible, on progresse pas à pas."
+    },
+    "feminine/phrase_025": {
+      "bytes": 30786,
+      "sha256": "2a0f92ae9d7966e2d81b1c02c409c98da4036944817982b947b52e6702346ba3",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_025.m4a",
+      "text": "La montée est passée. Prends quelques instants pour souffler."
+    },
+    "feminine/phrase_026": {
+      "bytes": 29633,
+      "sha256": "9ed8cfaff32c8fb70abcf5f13bbf32de458096bb71ffbf1081e9fd9729f3f7fc",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_026.m4a",
+      "text": "Profite du plat pour retrouver un effort confortable."
+    },
+    "feminine/phrase_027": {
+      "bytes": 25839,
+      "sha256": "10d503209cca1476a1806421dd8bab6f795cf79eee24b2f0e3df19fe94eb6dd2",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_027.m4a",
+      "text": "Pas besoin de rattraper le temps perdu tout de suite."
+    },
+    "feminine/phrase_028": {
+      "bytes": 31852,
+      "sha256": "da55ae3fb8d813f29b64972eb9015d8252494af6af88ffbfa5818724f799dbc3",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_028.m4a",
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas."
+    },
+    "feminine/phrase_029": {
+      "bytes": 19189,
+      "sha256": "d2a11c3a52dfdba08745491cab338ad97b251eaf8ffeec60426107f37ad64892",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_029.m4a",
+      "text": "Laisse ta foulée revenir sans forcer."
+    },
+    "feminine/phrase_030": {
+      "bytes": 29056,
+      "sha256": "418a0ae129d792e726d77833355110e83e3a4855a265a2f94b067148847d04c9",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_030.m4a",
+      "text": "Bien joué pour cette côte, prends le temps de récupérer."
+    },
+    "feminine/phrase_031": {
+      "bytes": 33007,
+      "sha256": "ac466da8129ceb9b3ab15fb17fa1634eea9d0f876c57d5ebc0ab31bc682cd588",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_031.m4a",
+      "text": "Relâche les épaules, retrouve progressivement tes sensations."
+    },
+    "feminine/phrase_032": {
+      "bytes": 37170,
+      "sha256": "7e1af635f8613bdfa5ccac76437c78967dffc7c1cade3b4f29f26ad503894f2c",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_032.m4a",
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement."
+    },
+    "feminine/phrase_033": {
+      "bytes": 33289,
+      "sha256": "f4b95e07507c53ee702b6793dda59a1bbf2b42d5355f0398997f07eb77f9b812",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_033.m4a",
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied."
+    },
+    "feminine/phrase_034": {
+      "bytes": 38571,
+      "sha256": "9f17a346a7b0dc9d202583633e78462de668a7d377b81ced20e3d37944b80aad",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_034.m4a",
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance."
+    },
+    "feminine/phrase_035": {
+      "bytes": 31882,
+      "sha256": "1aff1d1ba4aaa46ef23d4ebe57589a91e15dde453f1240fe172efed8bb4f5948",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_035.m4a",
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort."
+    },
+    "feminine/phrase_036": {
+      "bytes": 33965,
+      "sha256": "973e25b2a0b67db635e9ba660becb43961efb848a0058621ddec35945e802b3e",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_036.m4a",
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup."
+    },
+    "feminine/phrase_037": {
+      "bytes": 32932,
+      "sha256": "1c1f04ee22091de6684e05c113ff43bdb5b88730b8e6737bdf00d47e7e5b310b",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_037.m4a",
+      "text": "Prends quelques respirations naturelles et retrouve ton confort."
+    },
+    "feminine/phrase_038": {
+      "bytes": 32052,
+      "sha256": "8babd380149015309a7596626045275055bf0bdf8f9f8d07f964a2eeb5554695",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_038.m4a",
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner."
+    },
+    "feminine/phrase_039": {
+      "bytes": 28896,
+      "sha256": "7dfccd7485da98718f8a3512bd90a4dd33892f3a5f6f74b72d39f03c914bc482",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_039.m4a",
+      "text": "Un passage difficile ne résume pas toute ta course."
+    },
+    "feminine/phrase_040": {
+      "bytes": 24614,
+      "sha256": "a3ec41e7ba565f64340c23e1eb42b1c4739d9e4a5b0047705332d3936aea54ec",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_040.m4a",
+      "text": "Garde le mouvement le plus confortable possible."
+    },
+    "feminine/phrase_041": {
+      "bytes": 28909,
+      "sha256": "533263092d1a6e2a70b991504ec30508c44aa11690ac49e60e4af8c367d99c5c",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_041.m4a",
+      "text": "Le prochain effort approche. Prépare-toi progressivement."
+    },
+    "feminine/phrase_042": {
+      "bytes": 30475,
+      "sha256": "1d85bb3f99bef350908287f579f9a0f32c9afd15140b6b96d47cb46d71a03d14",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_042.m4a",
+      "text": "Encore quelques instants, garde le contrôle de ton allure."
+    },
+    "feminine/phrase_043": {
+      "bytes": 26867,
+      "sha256": "a361bfc4f9a7d04d413161b8972511dc8066987d840557ff5131d7dd0500bed6",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_043.m4a",
+      "text": "Fin de répétition. On passe en récupération."
+    },
+    "feminine/phrase_044": {
+      "bytes": 33912,
+      "sha256": "0b0880867ba815f8c346f9bc884acf3b6ddc8e8f75d2e3da26aef5936fbb5411",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_044.m4a",
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos."
+    },
+    "feminine/phrase_045": {
+      "bytes": 28579,
+      "sha256": "95bd9b87b77e3325c805ac7690d6998f28c8711771b2c27ae672c612f3f3b7b5",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_045.m4a",
+      "text": "Tu peux prolonger la récupération si tu en as besoin."
+    },
+    "feminine/phrase_046": {
+      "bytes": 23024,
+      "sha256": "a6f8fae78ca92b613f5eac7e7b3b38046282ef3df34b255ffdc0dab44339cba8",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_046.m4a",
+      "text": "Très bien, cette répétition est terminée."
+    },
+    "feminine/phrase_047": {
+      "bytes": 30151,
+      "sha256": "6dfcc1dc4b044433313408c09a4d0bac32ac88b5b3bc5f378aed32e921de2bab",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_047.m4a",
+      "text": "La prochaine séquence commence dans quelques instants."
+    },
+    "feminine/phrase_048": {
+      "bytes": 28652,
+      "sha256": "3465d54fd05647888708725f322cfed476de27e993b68aa70233676c24dc24ed",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_048.m4a",
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue."
+    },
+    "feminine/phrase_049": {
+      "bytes": 29095,
+      "sha256": "cd8787c4db94d111d63e74d08a08e219aa904d9da39959c179962f5154754fab",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_049.m4a",
+      "text": "Un ravitaillement approche, décide selon tes besoins."
+    },
+    "feminine/phrase_050": {
+      "bytes": 23883,
+      "sha256": "d178a0a43a7fd3933ac96872db9201e8e30f66e16d188ac8bea66e218352c76d",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_050.m4a",
+      "text": "Tu connais ce point d'eau, il arrive bientôt."
+    },
+    "feminine/phrase_051": {
+      "bytes": 32874,
+      "sha256": "84a29531f8039134c7f41b491c3b50ca98e7d8efe232a0f559b7aea1a6345b68",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_051.m4a",
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono."
+    },
+    "feminine/phrase_052": {
+      "bytes": 37023,
+      "sha256": "6d6c2ef0918961d65064b66254a0850bcc85672196637ba8ddff553ce812e039",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_052.m4a",
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite."
+    },
+    "feminine/phrase_053": {
+      "bytes": 28247,
+      "sha256": "124f283b9c91ccaa688ebe6f91e52148fc948633a6291cf2921205d3deb1ac42",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_053.m4a",
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations."
+    },
+    "feminine/phrase_054": {
+      "bytes": 35126,
+      "sha256": "a89b347ac50626d9b6d040d1dfddfa4bb45578b24eb44e5b289151f23997232b",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_054.m4a",
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan."
+    },
+    "feminine/phrase_055": {
+      "bytes": 24047,
+      "sha256": "287feb66adbbf86b90785a2f96eb8a8206ebc95efb61e894a597d4940e6bcdf9",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_055.m4a",
+      "text": "La fin approche, garde un effort contrôlé."
+    },
+    "feminine/phrase_056": {
+      "bytes": 37199,
+      "sha256": "2163b4f3c52623fdcbf6d90ada9c03f86357fb9d7f9af3cb5c772cb6c5445f98",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_056.m4a",
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité."
+    },
+    "feminine/phrase_057": {
+      "bytes": 22114,
+      "sha256": "1d2258e6b646505caa85cd89443ea8330b6fea3ae9ba1f9c1750de14a838bee0",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_057.m4a",
+      "text": "Tu prends du temps pour toi, et c'est précieux."
+    },
+    "feminine/phrase_058": {
+      "bytes": 27185,
+      "sha256": "af2ae54f495ad8b8efc336fa85b795e859761de10c22d05fd221601f8ce05b26",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_058.m4a",
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite."
+    },
+    "feminine/phrase_059": {
+      "bytes": 29359,
+      "sha256": "d594d66eb58874985b834b82188017f0b5ba08e861960850d83b091aa85829f1",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_059.m4a",
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité."
+    },
+    "feminine/phrase_060": {
+      "bytes": 29202,
+      "sha256": "f3ccf7dbc0c505c4afeda61ea984f0c70ffaad373e0d4ce8c5a641d11a62356b",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_060.m4a",
+      "text": "Tu fais du bon travail, même sans courir plus vite."
+    },
+    "feminine/phrase_061": {
+      "bytes": 21944,
+      "sha256": "f9bc80b9155104ad9b5a45b103786bf6e6c2475e4481f5016b9c86321f2a1946",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_061.m4a",
+      "text": "Très bien, profite simplement de ce moment."
+    },
+    "feminine/phrase_062": {
+      "bytes": 21088,
+      "sha256": "1cf79516e71d1e794ed3d5b3a6ca4b8d2849c194cf65ad08accefd7c369e7588",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_062.m4a",
+      "text": "Tu peux être fier de la constance que tu construis."
+    },
+    "feminine/phrase_063": {
+      "bytes": 22602,
+      "sha256": "f41b438cfad757827dc6d2937cb95bbb47f231be26407ae252001f911f411bf6",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_063.m4a",
+      "text": "Chaque séance a sa place dans ton parcours."
+    },
+    "feminine/phrase_064": {
+      "bytes": 23049,
+      "sha256": "cbdcf4b31030b7e3812b75d807ce7cd0d9a3b621189e61c33786ec96f808d254",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_064.m4a",
+      "text": "Ce n'est pas une compétition contre les autres."
+    },
+    "feminine/phrase_065": {
+      "bytes": 32579,
+      "sha256": "ef019c5b447ef8ee803a1098de893c1ea60d6b4f9e0728734d6a08d68bd18994",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_065.m4a",
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !"
+    },
+    "feminine/phrase_066": {
+      "bytes": 27533,
+      "sha256": "cc51a0102d015f6cacb8416d8e6c2551ba31ae0ac8d19f9a488b742da7e9174d",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_066.m4a",
+      "text": "Félicitations, quelle belle régularité aujourd'hui."
+    },
+    "feminine/phrase_067": {
+      "bytes": 29238,
+      "sha256": "3d373d58f157adbdcf934755829225f780ab167dc7dfa45edb50a17307956503",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_067.m4a",
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort."
+    },
+    "feminine/phrase_068": {
+      "bytes": 35234,
+      "sha256": "e60dbe87d0f10140de84b2544ad9a0894fd03c794de8c08617b52b7bff785c4c",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_068.m4a",
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat."
+    },
+    "feminine/phrase_069": {
+      "bytes": 34897,
+      "sha256": "2640fb2beceb432f6a36f72242f68bed343aba771dde2459faec6b270bffd412",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_069.m4a",
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo."
+    },
+    "feminine/phrase_070": {
+      "bytes": 34323,
+      "sha256": "e8cdf622b67f34303c5d7ca74658f2ae84e9c7dc0c006285d892c194712059f9",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_070.m4a",
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations."
+    },
+    "feminine/phrase_071": {
+      "bytes": 41854,
+      "sha256": "96223e444d4ebc2cbd62e6c1e6a41b8665d9b669f56cfe8b8fe99be1ba5d0233",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_071.m4a",
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi."
+    },
+    "feminine/phrase_072": {
+      "bytes": 35872,
+      "sha256": "d61344dd18e0a4575b19bd4302f8545a97a21edbe38bf628b8d8e4869d19f3d6",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_072.m4a",
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement."
+    },
+    "feminine/phrase_073": {
+      "bytes": 40985,
+      "sha256": "dfb36fcf3088f002c34628566f93b49d372b200e2e886d8e010dff4ed7ba3cc2",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_073.m4a",
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait."
+    },
+    "feminine/phrase_074": {
+      "bytes": 25120,
+      "sha256": "77f63f75790c02514d9f772b83a54b0203fca91f32d92185b66a60ae76ebf547",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_074.m4a",
+      "text": "Prends le temps de récupérer et de savourer ce moment."
+    },
+    "feminine/phrase_075": {
+      "bytes": 30336,
+      "sha256": "f752cab872bc8254872d44f15b47cd41091784dddc681608a424308826ef251b",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_075.m4a",
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement."
+    },
+    "feminine/phrase_076": {
+      "bytes": 35612,
+      "sha256": "16bc8938fc207552eef596548d18be63b358c62ac9e29223dc9d2f20e1b4d1bc",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_076.m4a",
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée."
+    },
+    "feminine/phrase_077": {
+      "bytes": 32658,
+      "sha256": "bf07c921ae7ed1f47e62b6c88ec252f81cc035c3674f1845215370e9d16d0c42",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_077.m4a",
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude."
+    },
+    "feminine/phrase_078": {
+      "bytes": 36173,
+      "sha256": "a7eab8da0083e377afd611cfe15821310bf2a37364d7b69b97a6bbd5bb2b8959",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_078.m4a",
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps."
+    },
+    "feminine/phrase_079": {
+      "bytes": 41847,
+      "sha256": "c486751cfc5c2f1a5463fa92e46306002fad55db97e5924f829fd5d770a3a116",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_079.m4a",
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas."
+    },
+    "feminine/phrase_080": {
+      "bytes": 27302,
+      "sha256": "37edbbaa97c242680968d67e2ca51e5dfa1305c95bd0886fafb94bd46da72935",
+      "speakerIdentity": "fr-FR-feminine-siwis-v1",
+      "src": "feminine/phrase_080.m4a",
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur."
+    },
+    "masculine/phrase_001": {
+      "bytes": 22772,
+      "sha256": "39e2a21f5316db71644ba4d9da295c75fde303ae168657d123a0182cc4a8e6bc",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_001.m4a",
+      "text": "C'est parti. Prends le temps de trouver ton rythme."
+    },
+    "masculine/phrase_002": {
+      "bytes": 28204,
+      "sha256": "dfe6d2b745c090dff9d5459346c5803d1f60eece8dece132cd09ff1b58d01b9b",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_002.m4a",
+      "text": "On commence tranquillement. Tu as toute la séance devant toi."
+    },
+    "masculine/phrase_003": {
+      "bytes": 25812,
+      "sha256": "6114a0bef07754c83f62299c7fea44167f412232d78d426fec1b89c3dc975348",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_003.m4a",
+      "text": "Voilà, installe-toi dans une allure confortable."
+    },
+    "masculine/phrase_004": {
+      "bytes": 25999,
+      "sha256": "257a9124d17dc634d8049526b184bf438b505966f12ccfff525b26ccd0673aee",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_004.m4a",
+      "text": "Laisse le souffle se mettre en place progressivement."
+    },
+    "masculine/phrase_005": {
+      "bytes": 25438,
+      "sha256": "0f879f2d820e13e60590bbba4451c408e33b6e9b3b220a0dc6b920d0f889032d",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_005.m4a",
+      "text": "Prends tes repères, inutile de partir trop vite."
+    },
+    "masculine/phrase_006": {
+      "bytes": 31047,
+      "sha256": "53e1ec44fa620aa1364bbdcff471a798aaa1fc14af146cf4652079e8b9d5c71f",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_006.m4a",
+      "text": "Très bien, profite des premières minutes pour te mettre en route."
+    },
+    "masculine/phrase_007": {
+      "bytes": 29804,
+      "sha256": "013db04aa615d421961beab45d5ccaac74505ddc754f753fe5cb09617f68029e",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_007.m4a",
+      "text": "Garde une foulée souple, ton rythme viendra naturellement."
+    },
+    "masculine/phrase_008": {
+      "bytes": 25866,
+      "sha256": "1843e403936dc5f211b7cdf9bd0a891f4c3ec0688197320c298bd85640bf4de0",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_008.m4a",
+      "text": "On avance à ton rythme, un pas après l'autre."
+    },
+    "masculine/phrase_009": {
+      "bytes": 23375,
+      "sha256": "d85ed5d93b5c93fb47641d0a8dc3b722d2d1d1db0ce147cc481ecf87c434b2fa",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_009.m4a",
+      "text": "C'est bien, le rythme est régulier."
+    },
+    "masculine/phrase_010": {
+      "bytes": 21318,
+      "sha256": "51c0608a9a8e59ee896f2504352f490c1e9912cbb87d8c97789345cd1011830e",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_010.m4a",
+      "text": "Tu gères ton effort, continue comme ça."
+    },
+    "masculine/phrase_011": {
+      "bytes": 28554,
+      "sha256": "62f5cd16631d1080112cb29b5a6ea652490d50197d29195f7b07abf8e3a62c41",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_011.m4a",
+      "text": "Rien à forcer pour le moment, garde cette facilité."
+    },
+    "masculine/phrase_012": {
+      "bytes": 31027,
+      "sha256": "f13b5ab06b8ec4317bbf730931bf9c840bb8c9d11054e8f66a2b4b5de302b670",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_012.m4a",
+      "text": "La régularité d'aujourd'hui construit les progrès de demain."
+    },
+    "masculine/phrase_013": {
+      "bytes": 29057,
+      "sha256": "aad1c077a443ed4ba378d54f1dd5072d6924f25bdd1fd9714677a0ab089b9c19",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_013.m4a",
+      "text": "Prends plaisir à cette allure, elle a toute son utilité."
+    },
+    "masculine/phrase_014": {
+      "bytes": 24196,
+      "sha256": "5bdee536343778419353eae966e3962d0834a07eb2842f1419f870cc6eeccb8d",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_014.m4a",
+      "text": "Une sortie facile compte vraiment dans ta progression."
+    },
+    "masculine/phrase_015": {
+      "bytes": 26556,
+      "sha256": "3bf794336858cc837876fc7b2c16558fa660a59e4dbbfee46ec742eeff3ab1d2",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_015.m4a",
+      "text": "Reste détendu, c'est une belle séance de travail."
+    },
+    "masculine/phrase_016": {
+      "bytes": 29550,
+      "sha256": "a14636ed53c7ffcb83e69109f9e4ba8641710ec52b059490ef97c0bb6d86210a",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_016.m4a",
+      "text": "Très bien, laisse les kilomètres défiler naturellement."
+    },
+    "masculine/phrase_017": {
+      "bytes": 44271,
+      "sha256": "cf9e6f3144c6adba1bce4808c4923af696290637419aa7071111dfec766dd6e4",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_017.m4a",
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat."
+    },
+    "masculine/phrase_018": {
+      "bytes": 32406,
+      "sha256": "df3a43847773e27f62c67f16b992a29661fd334f13d2f0bbcef34a6fc36c7a7c",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_018.m4a",
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre."
+    },
+    "masculine/phrase_019": {
+      "bytes": 30329,
+      "sha256": "7a15ec5c45745eb4da5ab1b6a068981b6fd319ac8a33485d9c568610cd870fec",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_019.m4a",
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement."
+    },
+    "masculine/phrase_020": {
+      "bytes": 29477,
+      "sha256": "2c4c78be5b088094dd2e419da0312c4d240d8477630b2e76f51e7d115a302505",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_020.m4a",
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable."
+    },
+    "masculine/phrase_021": {
+      "bytes": 29134,
+      "sha256": "38bf42f540b72e45628dc19224f0dd359be9433bb5c4c87500aed137cd678ac4",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_021.m4a",
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle."
+    },
+    "masculine/phrase_022": {
+      "bytes": 24857,
+      "sha256": "3696a205a01aa9d5910a404ecf663f390a5fd45c44b6fefae00ffe189e05e099",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_022.m4a",
+      "text": "Tu avances, c'est ce qui compte dans cette montée."
+    },
+    "masculine/phrase_023": {
+      "bytes": 27072,
+      "sha256": "c37c1289866b8d4683ffab385c6da1f6022492a211df06b77f1b9de3ca8de090",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_023.m4a",
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui."
+    },
+    "masculine/phrase_024": {
+      "bytes": 37398,
+      "sha256": "5c4b2128f44c0f3b250a890a3a861641cd138e26ff99faedda44977eba168e1c",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_024.m4a",
+      "text": "Reste relâché autant que possible, on progresse pas à pas."
+    },
+    "masculine/phrase_025": {
+      "bytes": 29548,
+      "sha256": "7b71b4de93f0daa4ea1c0cd4a40c6d85ef7228d4310ec6ecbe5ae39e5f869baa",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_025.m4a",
+      "text": "La montée est passée. Prends quelques instants pour souffler."
+    },
+    "masculine/phrase_026": {
+      "bytes": 26595,
+      "sha256": "722b49c27cd9143f1b27373cd94a1f80487ee5e5237e2741e20dcee16a44d089",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_026.m4a",
+      "text": "Profite du plat pour retrouver un effort confortable."
+    },
+    "masculine/phrase_027": {
+      "bytes": 27593,
+      "sha256": "b0f874e446b0049c8e48467e1cb28c80d560d06f6ea171b19e8b3a921bab8f90",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_027.m4a",
+      "text": "Pas besoin de rattraper le temps perdu tout de suite."
+    },
+    "masculine/phrase_028": {
+      "bytes": 33185,
+      "sha256": "c065850f09df3e12a36558fc5f7ba2333478643ffb5d6dd4380184493885806a",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_028.m4a",
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas."
+    },
+    "masculine/phrase_029": {
+      "bytes": 18812,
+      "sha256": "40a5801f12d16ce897cba79bdf9955975a14389b02aa6423ac7d5e9236739bbb",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_029.m4a",
+      "text": "Laisse ta foulée revenir sans forcer."
+    },
+    "masculine/phrase_030": {
+      "bytes": 30992,
+      "sha256": "17ddb9992e04a916941c00df1dc885b3bb5ff111b5c94916bce572138673a36a",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_030.m4a",
+      "text": "Bien joué pour cette côte, prends le temps de récupérer."
+    },
+    "masculine/phrase_031": {
+      "bytes": 33979,
+      "sha256": "3ed798219bc7bcf822b60356753f7bd451b61100fdef1921a6756179639f03e1",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_031.m4a",
+      "text": "Relâche les épaules, retrouve progressivement tes sensations."
+    },
+    "masculine/phrase_032": {
+      "bytes": 31952,
+      "sha256": "f0bb503d36eb5268a8977d6a8b8628d08384201db55fc3bb27a713db20d5ed1a",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_032.m4a",
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement."
+    },
+    "masculine/phrase_033": {
+      "bytes": 28163,
+      "sha256": "634d090be210967ccb72db71177c79a829823535bbf79d10ebfe29a467f8fbca",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_033.m4a",
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied."
+    },
+    "masculine/phrase_034": {
+      "bytes": 42544,
+      "sha256": "307c5a43fca5797e4ca9f2ff7c0bdc7ba1f14c360f57e877f9f966fd4374339d",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_034.m4a",
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance."
+    },
+    "masculine/phrase_035": {
+      "bytes": 31741,
+      "sha256": "198a022c7f24bb7231c77a21c149cd52ede2bc1d7281ba9cc89855313e3903e4",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_035.m4a",
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort."
+    },
+    "masculine/phrase_036": {
+      "bytes": 32982,
+      "sha256": "9f2b5cca74d4ac7a21cbd48c0d264dc234dbdb6901be99c9a0f9e69c142619cf",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_036.m4a",
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup."
+    },
+    "masculine/phrase_037": {
+      "bytes": 30645,
+      "sha256": "e6f6bb37110652be5590de3c6868019e60118af2517419f4e0a618f7c31ad2a7",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_037.m4a",
+      "text": "Prends quelques respirations naturelles et retrouve ton confort."
+    },
+    "masculine/phrase_038": {
+      "bytes": 27424,
+      "sha256": "d7c615815e9bda94e70fca1348de3ee0e6f0f3794b44d1a2ee2156ccdab202ed",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_038.m4a",
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner."
+    },
+    "masculine/phrase_039": {
+      "bytes": 27292,
+      "sha256": "69c4175a3381247402058eec61cce0eed38225b2ec5027edb1555c48664e398d",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_039.m4a",
+      "text": "Un passage difficile ne résume pas toute ta course."
+    },
+    "masculine/phrase_040": {
+      "bytes": 26213,
+      "sha256": "2bbf61d9292d3e614e8469bc437aeb270fa6f2c6da7a419e7ad810900e4970ea",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_040.m4a",
+      "text": "Garde le mouvement le plus confortable possible."
+    },
+    "masculine/phrase_041": {
+      "bytes": 32382,
+      "sha256": "40a03d7e980a9f660f84b67d85cc0f3acda186e658cb8097c3f8241eab417a12",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_041.m4a",
+      "text": "Le prochain effort approche. Prépare-toi progressivement."
+    },
+    "masculine/phrase_042": {
+      "bytes": 31613,
+      "sha256": "eb82eb17588d5b5df214dc49e4b34a790029fd402ffc55804cca9557f1fd45d2",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_042.m4a",
+      "text": "Encore quelques instants, garde le contrôle de ton allure."
+    },
+    "masculine/phrase_043": {
+      "bytes": 23517,
+      "sha256": "855739a80dbcf94eadbaf071565f48dc377ab8361ce3e7289978b51652f57063",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_043.m4a",
+      "text": "Fin de répétition. On passe en récupération."
+    },
+    "masculine/phrase_044": {
+      "bytes": 29951,
+      "sha256": "4f1d1b2d92a0cc68f9de9d1872892c270b53a10aeac53f7eca42d75e142e2257",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_044.m4a",
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos."
+    },
+    "masculine/phrase_045": {
+      "bytes": 28907,
+      "sha256": "2615305f840f698f5ddf78cfda63b7d7dd44d0e5c1898eb73864764589653e28",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_045.m4a",
+      "text": "Tu peux prolonger la récupération si tu en as besoin."
+    },
+    "masculine/phrase_046": {
+      "bytes": 24618,
+      "sha256": "c47cdc190e7112d28743c2a4909114d1366b5f4b2c9e25083d278b438966d7e6",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_046.m4a",
+      "text": "Très bien, cette répétition est terminée."
+    },
+    "masculine/phrase_047": {
+      "bytes": 24091,
+      "sha256": "faa6c1f650e1af636d7a3cf50588ed3ace6fa8ea2787912c0e900906e38579aa",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_047.m4a",
+      "text": "La prochaine séquence commence dans quelques instants."
+    },
+    "masculine/phrase_048": {
+      "bytes": 33183,
+      "sha256": "2750077c87a6dc523403b3e4fd03685059d707859a0039952592b715e5e60cd9",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_048.m4a",
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue."
+    },
+    "masculine/phrase_049": {
+      "bytes": 26137,
+      "sha256": "62af51b89a0548a1287c237dd2f1c4a2da61b20d67fbb0882d84be3d011d60ca",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_049.m4a",
+      "text": "Un ravitaillement approche, décide selon tes besoins."
+    },
+    "masculine/phrase_050": {
+      "bytes": 22324,
+      "sha256": "d27778ec797bd229a912e6e1433eaba739512f2a1851afbdb55167f818502bd6",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_050.m4a",
+      "text": "Tu connais ce point d'eau, il arrive bientôt."
+    },
+    "masculine/phrase_051": {
+      "bytes": 34096,
+      "sha256": "3d9afbbf7be9fc659d9cdd9a62d2492653436b23a3237ab15b646325227de75b",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_051.m4a",
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono."
+    },
+    "masculine/phrase_052": {
+      "bytes": 30572,
+      "sha256": "8fc84d3ceb3db7085284b1c0d1f8a10c0f8490cb3cba06ddb98707422bb05cf3",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_052.m4a",
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite."
+    },
+    "masculine/phrase_053": {
+      "bytes": 27109,
+      "sha256": "ba8afcce4e0dfc8573fcd063524d3aba03f94d04a42ba94d6c57ce1bba20fcbb",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_053.m4a",
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations."
+    },
+    "masculine/phrase_054": {
+      "bytes": 33945,
+      "sha256": "a95ac4e63bc2e5173152930e4ba334873eb223b2539bf9879a023080d76af387",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_054.m4a",
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan."
+    },
+    "masculine/phrase_055": {
+      "bytes": 26374,
+      "sha256": "50c4de35c4dd3274a929c551a15e96e757810315fc3948a1059e5ecfce513d53",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_055.m4a",
+      "text": "La fin approche, garde un effort contrôlé."
+    },
+    "masculine/phrase_056": {
+      "bytes": 40749,
+      "sha256": "7ec6ed6d377bc72eeb4a8cd7891367fc2aa59cc32a7ccb37acd5d03daa6499f2",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_056.m4a",
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité."
+    },
+    "masculine/phrase_057": {
+      "bytes": 21729,
+      "sha256": "5d8a4437eb87d3d211889810a123ce1a5956789ad59e0135918a92283c8245e0",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_057.m4a",
+      "text": "Tu prends du temps pour toi, et c'est précieux."
+    },
+    "masculine/phrase_058": {
+      "bytes": 25428,
+      "sha256": "4b68521a7597626a9d065de011fe6cf177b28bd37eda8925464c82d6e1729316",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_058.m4a",
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite."
+    },
+    "masculine/phrase_059": {
+      "bytes": 33585,
+      "sha256": "d705a608a92ad861416ad986e2ca2d3bac010c41528a4626442e4eda64eb098b",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_059.m4a",
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité."
+    },
+    "masculine/phrase_060": {
+      "bytes": 26703,
+      "sha256": "745726d3c162c9266132c4d80f3b21d051320a058ccc263d1d6efc4c7f2027e0",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_060.m4a",
+      "text": "Tu fais du bon travail, même sans courir plus vite."
+    },
+    "masculine/phrase_061": {
+      "bytes": 21348,
+      "sha256": "9c0dafb26bd92118ab146a9e96fa3e389673984f0326f18805571d86de7c2b25",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_061.m4a",
+      "text": "Très bien, profite simplement de ce moment."
+    },
+    "masculine/phrase_062": {
+      "bytes": 23982,
+      "sha256": "473d527c8044f2654b94cedf116f3ef52b394c733177ac7691d26fcda44a3ab5",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_062.m4a",
+      "text": "Tu peux être fier de la constance que tu construis."
+    },
+    "masculine/phrase_063": {
+      "bytes": 19395,
+      "sha256": "81eedba3da032d5b43cf6e7c7f2eba4ce6f109540cfef3cd3b3230590c8a4156",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_063.m4a",
+      "text": "Chaque séance a sa place dans ton parcours."
+    },
+    "masculine/phrase_064": {
+      "bytes": 23532,
+      "sha256": "a1c0a43d9a9b555225982118d6cc1b29f984c285ed41ecbb0fa0389081f15391",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_064.m4a",
+      "text": "Ce n'est pas une compétition contre les autres."
+    },
+    "masculine/phrase_065": {
+      "bytes": 29921,
+      "sha256": "2d901d88412a1a9c65707d6a4a54f5daace2217ee516131a56d3c46c36b793da",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_065.m4a",
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !"
+    },
+    "masculine/phrase_066": {
+      "bytes": 29390,
+      "sha256": "4617155b564333f5f5730e1ec1229695a81a8ac618150af90a6dee638df99864",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_066.m4a",
+      "text": "Félicitations, quelle belle régularité aujourd'hui."
+    },
+    "masculine/phrase_067": {
+      "bytes": 30235,
+      "sha256": "4e554af5f0f29d53208a8346739d824cec08412b04b3cce9753ec94b9b9321d5",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_067.m4a",
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort."
+    },
+    "masculine/phrase_068": {
+      "bytes": 35358,
+      "sha256": "20064e4dc742290b5de6fcc53c4e14771e7edac16fdcc3aca76d5fc9be30a750",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_068.m4a",
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat."
+    },
+    "masculine/phrase_069": {
+      "bytes": 32965,
+      "sha256": "cdf8f0da3389e91a6f5624a9159f348d89470c3edc18a096b09a0ec2686d7c89",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_069.m4a",
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo."
+    },
+    "masculine/phrase_070": {
+      "bytes": 38072,
+      "sha256": "a8ce4560c3287db543def52c7fe1d31f5b42b04f55ab5e67db7a1a91506efffd",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_070.m4a",
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations."
+    },
+    "masculine/phrase_071": {
+      "bytes": 41810,
+      "sha256": "4577b7466dab00e08aa87b259fc1428db66aacf7cb2164e062dc669f0a6878af",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_071.m4a",
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi."
+    },
+    "masculine/phrase_072": {
+      "bytes": 34131,
+      "sha256": "8b4e6e3d06cedb9cb9cd3b372da0978be52912ca6c60da71e66abb9c27a03818",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_072.m4a",
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement."
+    },
+    "masculine/phrase_073": {
+      "bytes": 42126,
+      "sha256": "5c25ecb8adce39ef028f4cfb37cc5bed1432fd9c5dedde2c4479d473c5aa10a6",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_073.m4a",
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait."
+    },
+    "masculine/phrase_074": {
+      "bytes": 23878,
+      "sha256": "da51997cfd309f2c3437675f6ba1fc106502a44d9d8afb96f4633731d808634b",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_074.m4a",
+      "text": "Prends le temps de récupérer et de savourer ce moment."
+    },
+    "masculine/phrase_075": {
+      "bytes": 28482,
+      "sha256": "3407107b48fc7813c1e54be0a0f411b6411f1f5d32b1358da5751c97836745de",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_075.m4a",
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement."
+    },
+    "masculine/phrase_076": {
+      "bytes": 31438,
+      "sha256": "197bce883615d9cd2cecbae83d0d0cf996b14afdd5d07c5c3ab7657d0aaf6126",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_076.m4a",
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée."
+    },
+    "masculine/phrase_077": {
+      "bytes": 32655,
+      "sha256": "f9cbd96b2508f31ab175a66624b275488197114eec6e31010aa5adced8a7b34e",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_077.m4a",
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude."
+    },
+    "masculine/phrase_078": {
+      "bytes": 31854,
+      "sha256": "714c04bde7c51ef986cc28731b5be5db927fcf18832b88ef5bade68cf87fdb28",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_078.m4a",
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps."
+    },
+    "masculine/phrase_079": {
+      "bytes": 40593,
+      "sha256": "34e2e1a29b455b2e90aad2248f2ad963653796edaa807b0a4ac25467e4ebf0ea",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_079.m4a",
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas."
+    },
+    "masculine/phrase_080": {
+      "bytes": 32747,
+      "sha256": "a03dd9834790cc59d00eccf670efa88b2b232d0e817cf867934d2cd7e6badbfc",
+      "speakerIdentity": "fr-FR-masculine-upmc-v1",
+      "src": "masculine/phrase_080.m4a",
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur."
+    }
+  },
+  "format": "resurgo-pregenerated-voice-pack",
+  "locale": "fr-FR",
+  "packId": "fr-FR-v1",
+  "phrases": [
+    {
+      "id": "phrase_001",
+      "number": 1,
+      "text": "C'est parti. Prends le temps de trouver ton rythme."
+    },
+    {
+      "id": "phrase_002",
+      "number": 2,
+      "text": "On commence tranquillement. Tu as toute la séance devant toi."
+    },
+    {
+      "id": "phrase_003",
+      "number": 3,
+      "text": "Voilà, installe-toi dans une allure confortable."
+    },
+    {
+      "id": "phrase_004",
+      "number": 4,
+      "text": "Laisse le souffle se mettre en place progressivement."
+    },
+    {
+      "id": "phrase_005",
+      "number": 5,
+      "text": "Prends tes repères, inutile de partir trop vite."
+    },
+    {
+      "id": "phrase_006",
+      "number": 6,
+      "text": "Très bien, profite des premières minutes pour te mettre en route."
+    },
+    {
+      "id": "phrase_007",
+      "number": 7,
+      "text": "Garde une foulée souple, ton rythme viendra naturellement."
+    },
+    {
+      "id": "phrase_008",
+      "number": 8,
+      "text": "On avance à ton rythme, un pas après l'autre."
+    },
+    {
+      "id": "phrase_009",
+      "number": 9,
+      "text": "C'est bien, le rythme est régulier."
+    },
+    {
+      "id": "phrase_010",
+      "number": 10,
+      "text": "Tu gères ton effort, continue comme ça."
+    },
+    {
+      "id": "phrase_011",
+      "number": 11,
+      "text": "Rien à forcer pour le moment, garde cette facilité."
+    },
+    {
+      "id": "phrase_012",
+      "number": 12,
+      "text": "La régularité d'aujourd'hui construit les progrès de demain."
+    },
+    {
+      "id": "phrase_013",
+      "number": 13,
+      "text": "Prends plaisir à cette allure, elle a toute son utilité."
+    },
+    {
+      "id": "phrase_014",
+      "number": 14,
+      "text": "Une sortie facile compte vraiment dans ta progression."
+    },
+    {
+      "id": "phrase_015",
+      "number": 15,
+      "text": "Reste détendu, c'est une belle séance de travail."
+    },
+    {
+      "id": "phrase_016",
+      "number": 16,
+      "text": "Très bien, laisse les kilomètres défiler naturellement."
+    },
+    {
+      "id": "phrase_017",
+      "number": 17,
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat."
+    },
+    {
+      "id": "phrase_018",
+      "number": 18,
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre."
+    },
+    {
+      "id": "phrase_019",
+      "number": 19,
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement."
+    },
+    {
+      "id": "phrase_020",
+      "number": 20,
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable."
+    },
+    {
+      "id": "phrase_021",
+      "number": 21,
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle."
+    },
+    {
+      "id": "phrase_022",
+      "number": 22,
+      "text": "Tu avances, c'est ce qui compte dans cette montée."
+    },
+    {
+      "id": "phrase_023",
+      "number": 23,
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui."
+    },
+    {
+      "id": "phrase_024",
+      "number": 24,
+      "text": "Reste relâché autant que possible, on progresse pas à pas."
+    },
+    {
+      "id": "phrase_025",
+      "number": 25,
+      "text": "La montée est passée. Prends quelques instants pour souffler."
+    },
+    {
+      "id": "phrase_026",
+      "number": 26,
+      "text": "Profite du plat pour retrouver un effort confortable."
+    },
+    {
+      "id": "phrase_027",
+      "number": 27,
+      "text": "Pas besoin de rattraper le temps perdu tout de suite."
+    },
+    {
+      "id": "phrase_028",
+      "number": 28,
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas."
+    },
+    {
+      "id": "phrase_029",
+      "number": 29,
+      "text": "Laisse ta foulée revenir sans forcer."
+    },
+    {
+      "id": "phrase_030",
+      "number": 30,
+      "text": "Bien joué pour cette côte, prends le temps de récupérer."
+    },
+    {
+      "id": "phrase_031",
+      "number": 31,
+      "text": "Relâche les épaules, retrouve progressivement tes sensations."
+    },
+    {
+      "id": "phrase_032",
+      "number": 32,
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement."
+    },
+    {
+      "id": "phrase_033",
+      "number": 33,
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied."
+    },
+    {
+      "id": "phrase_034",
+      "number": 34,
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance."
+    },
+    {
+      "id": "phrase_035",
+      "number": 35,
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort."
+    },
+    {
+      "id": "phrase_036",
+      "number": 36,
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup."
+    },
+    {
+      "id": "phrase_037",
+      "number": 37,
+      "text": "Prends quelques respirations naturelles et retrouve ton confort."
+    },
+    {
+      "id": "phrase_038",
+      "number": 38,
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner."
+    },
+    {
+      "id": "phrase_039",
+      "number": 39,
+      "text": "Un passage difficile ne résume pas toute ta course."
+    },
+    {
+      "id": "phrase_040",
+      "number": 40,
+      "text": "Garde le mouvement le plus confortable possible."
+    },
+    {
+      "id": "phrase_041",
+      "number": 41,
+      "text": "Le prochain effort approche. Prépare-toi progressivement."
+    },
+    {
+      "id": "phrase_042",
+      "number": 42,
+      "text": "Encore quelques instants, garde le contrôle de ton allure."
+    },
+    {
+      "id": "phrase_043",
+      "number": 43,
+      "text": "Fin de répétition. On passe en récupération."
+    },
+    {
+      "id": "phrase_044",
+      "number": 44,
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos."
+    },
+    {
+      "id": "phrase_045",
+      "number": 45,
+      "text": "Tu peux prolonger la récupération si tu en as besoin."
+    },
+    {
+      "id": "phrase_046",
+      "number": 46,
+      "text": "Très bien, cette répétition est terminée."
+    },
+    {
+      "id": "phrase_047",
+      "number": 47,
+      "text": "La prochaine séquence commence dans quelques instants."
+    },
+    {
+      "id": "phrase_048",
+      "number": 48,
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue."
+    },
+    {
+      "id": "phrase_049",
+      "number": 49,
+      "text": "Un ravitaillement approche, décide selon tes besoins."
+    },
+    {
+      "id": "phrase_050",
+      "number": 50,
+      "text": "Tu connais ce point d'eau, il arrive bientôt."
+    },
+    {
+      "id": "phrase_051",
+      "number": 51,
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono."
+    },
+    {
+      "id": "phrase_052",
+      "number": 52,
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite."
+    },
+    {
+      "id": "phrase_053",
+      "number": 53,
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations."
+    },
+    {
+      "id": "phrase_054",
+      "number": 54,
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan."
+    },
+    {
+      "id": "phrase_055",
+      "number": 55,
+      "text": "La fin approche, garde un effort contrôlé."
+    },
+    {
+      "id": "phrase_056",
+      "number": 56,
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité."
+    },
+    {
+      "id": "phrase_057",
+      "number": 57,
+      "text": "Tu prends du temps pour toi, et c'est précieux."
+    },
+    {
+      "id": "phrase_058",
+      "number": 58,
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite."
+    },
+    {
+      "id": "phrase_059",
+      "number": 59,
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité."
+    },
+    {
+      "id": "phrase_060",
+      "number": 60,
+      "text": "Tu fais du bon travail, même sans courir plus vite."
+    },
+    {
+      "id": "phrase_061",
+      "number": 61,
+      "text": "Très bien, profite simplement de ce moment."
+    },
+    {
+      "id": "phrase_062",
+      "number": 62,
+      "text": "Tu peux être fier de la constance que tu construis."
+    },
+    {
+      "id": "phrase_063",
+      "number": 63,
+      "text": "Chaque séance a sa place dans ton parcours."
+    },
+    {
+      "id": "phrase_064",
+      "number": 64,
+      "text": "Ce n'est pas une compétition contre les autres."
+    },
+    {
+      "id": "phrase_065",
+      "number": 65,
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !"
+    },
+    {
+      "id": "phrase_066",
+      "number": 66,
+      "text": "Félicitations, quelle belle régularité aujourd'hui."
+    },
+    {
+      "id": "phrase_067",
+      "number": 67,
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort."
+    },
+    {
+      "id": "phrase_068",
+      "number": 68,
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat."
+    },
+    {
+      "id": "phrase_069",
+      "number": 69,
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo."
+    },
+    {
+      "id": "phrase_070",
+      "number": 70,
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations."
+    },
+    {
+      "id": "phrase_071",
+      "number": 71,
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi."
+    },
+    {
+      "id": "phrase_072",
+      "number": 72,
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement."
+    },
+    {
+      "id": "phrase_073",
+      "number": 73,
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait."
+    },
+    {
+      "id": "phrase_074",
+      "number": 74,
+      "text": "Prends le temps de récupérer et de savourer ce moment."
+    },
+    {
+      "id": "phrase_075",
+      "number": 75,
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement."
+    },
+    {
+      "id": "phrase_076",
+      "number": 76,
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée."
+    },
+    {
+      "id": "phrase_077",
+      "number": 77,
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude."
+    },
+    {
+      "id": "phrase_078",
+      "number": 78,
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps."
+    },
+    {
+      "id": "phrase_079",
+      "number": 79,
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas."
+    },
+    {
+      "id": "phrase_080",
+      "number": 80,
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur."
+    }
+  ],
+  "productionMethod": "offline-neural-tts",
+  "qualityStatus": "candidate-not-reviewed-by-user",
+  "revision": "draft-2026-10-30",
+  "sourceDocument": "docs/evolution-coach-multisport-2026/07_CATALOGUE_VOCAL.md",
+  "voices": {
+    "feminine": {
+      "attribution": "Siwis, dataset: University of Edinburgh corpus",
+      "configSha256": "39479916c2db192b5ac9764daddd0c744d83e023ad890c6976c0633ae4df8959",
+      "engine": "piper-tts",
+      "license": "CC BY 4.0",
+      "licenseSource": "https://huggingface.co/rhasspy/piper-voices/blob/main/fr/fr_FR/siwis/medium/MODEL_CARD",
+      "model": "fr_FR-siwis-medium",
+      "modelSha256": "641d1ab097da2b81128c076810edb052b385decc8be3381814802a64a73baf99",
+      "speakerId": 0,
+      "synthesisConfig": {
+        "lengthScale": 1.0,
+        "noiseScale": 0.667,
+        "noiseWScale": 0.8,
+        "speakerId": 0
+      },
+      "voiceId": "fr-FR-feminine-siwis-v1"
+    },
+    "masculine": {
+      "attribution": "UPMC Pierre corpus",
+      "configSha256": "e8636ec15dfd5d72db37a02cb5320a20f2b8d339f2a0e4337da64c58a33a5868",
+      "engine": "piper-tts",
+      "license": "CC BY-SA 4.0",
+      "licenseSource": "https://huggingface.co/rhasspy/piper-voices/blob/main/fr/fr_FR/upmc/medium/MODEL_CARD",
+      "model": "fr_FR-upmc-medium",
+      "modelSha256": "9abb3800c199148897a9ed64e100d224f3de83579f100044174ad19418f1786f",
+      "speakerId": 0,
+      "synthesisConfig": {
+        "lengthScale": 1.0,
+        "noiseScale": 0.667,
+        "noiseWScale": 0.8,
+        "speakerId": 0
+      },
+      "voiceId": "fr-FR-masculine-upmc-v1"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "resurgo-sync",
+  "main": "worker.js",
+  "compatibility_date": "2026-06-28",
+  "vars": {
+    "APP_ORIGIN": "https://sicho95.github.io"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "RESURGO_SYNC_KV",
+      "id": "A_REMPLACER_PAR_TON_ID_KV"
+    }
+  ]
+}
