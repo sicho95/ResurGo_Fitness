@@ -128,3 +128,59 @@ def test_invalid_timezone_and_clock_are_rejected(api_pair):
         resp=api.post("/api/v1/push/subscribe",headers=auth,json={
             "subscription":SUB,"timezone":tz,"reminderTime":clock})
         assert resp.status_code == 422
+
+
+@pytest.mark.parametrize("configured", [
+    None,
+    "https://sicho95.github.io",
+    "https://sicho95.github.io/ResurGo_Fitness/",
+])
+def test_vapid_subject_legacy_path_is_normalized(monkeypatch, configured):
+    if configured is None:
+        monkeypatch.delenv("RS_VAPID_SUBJECT", raising=False)
+    else:
+        monkeypatch.setenv("RS_VAPID_SUBJECT", configured)
+    assert push_service.vapid_subject() == "https://sicho95.github.io"
+
+
+def test_vapid_subject_can_sign_without_network_or_key_rotation(tmp_path, monkeypatch):
+    from py_vapid import Vapid
+
+    db_path = tmp_path / "resurgo.sqlite3"
+    monkeypatch.setenv("RS_VAPID_SUBJECT", "https://sicho95.github.io/ResurGo_Fitness/")
+    key = push_service._read_or_create_private(db_path)
+    original_public = push_service.public_key(db_path)
+    assert key is not None
+
+    # py-vapid previously raised VapidException: Missing 'sub' from claims
+    # because the configured contact included a PWA path.
+    signer = Vapid.from_file(str(push_service._keyfile(db_path)))
+    headers = signer.sign({
+        "sub": push_service.vapid_subject(), "aud": "https://web.push.apple.com"
+    })
+    assert headers["Authorization"].startswith("vapid ")
+    assert push_service.public_key(db_path) == original_public
+
+
+def test_send_passes_valid_origin_claim_without_network(tmp_path, monkeypatch):
+    captured = []
+    monkeypatch.setenv("RS_VAPID_SUBJECT", "https://sicho95.github.io/ResurGo_Fitness/")
+    monkeypatch.setattr(push_service, "webpush",
+                        lambda **kw: captured.append(kw) or object())
+    push_service.send(tmp_path / "resurgo.sqlite3", SUB, {
+        "id": "local-test", "title": "Test", "body": "No network"
+    })
+    assert len(captured) == 1
+    assert captured[0]["vapid_claims"]["sub"] == "https://sicho95.github.io"
+
+
+@pytest.mark.parametrize("configured", [
+    "http://sicho95.github.io",
+    "https://user:pass@sicho95.github.io",
+    "https://sicho95.github.io?token=bad",
+    "https://sicho95.github.io:8443/",
+])
+def test_invalid_vapid_subject_is_rejected(monkeypatch, configured):
+    monkeypatch.setenv("RS_VAPID_SUBJECT", configured)
+    with pytest.raises(RuntimeError, match="VAPID subject invalid"):
+        push_service.vapid_subject()
