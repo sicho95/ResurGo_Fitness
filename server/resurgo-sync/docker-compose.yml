@@ -54,7 +54,7 @@ services:
     env_file: .env
     environment:
       RS_DB_PATH: /data/resurgo.sqlite3
-      RS_VAPID_SUBJECT: "https://sicho95.github.io/ResurGo_Fitness/"
+      RS_VAPID_SUBJECT: "https://sicho95.github.io"
     volumes:
       - ${RS_HOST_DATA_DIR:?Configurer RS_HOST_DATA_DIR absolu et privé}:/data
     read_only: true

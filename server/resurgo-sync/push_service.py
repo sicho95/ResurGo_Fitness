@@ -18,7 +18,7 @@ from pywebpush import webpush
 
 PUSH_HOSTS = {"web.push.apple.com", "fcm.googleapis.com",
               "updates.push.services.mozilla.com", "push.services.mozilla.com"}
-DEFAULT_SUBJECT = "https://sicho95.github.io/ResurGo_Fitness/"
+DEFAULT_SUBJECT = "https://sicho95.github.io"
 
 
 def ensure_schema(db):
@@ -103,13 +103,31 @@ def validate_subscription(subscription: dict) -> dict:
                                           "auth":keys["auth"]}}
 
 
+def vapid_subject() -> str:
+    """Return a VAPID-compatible contact origin; preserve legacy PWA paths.
+
+    py-vapid accepts a contact mailto: or a bare HTTPS origin, but rejects
+    an HTTPS URL containing a /path (the old ResurGo default).
+    This normalizes previously deployed RS_VAPID_SUBJECT without key rotation.
+    """
+    raw = os.getenv("RS_VAPID_SUBJECT", DEFAULT_SUBJECT).strip()
+    if raw.startswith("https://"):
+        parsed = urlsplit(raw)
+        if (not parsed.hostname or parsed.username or parsed.password or
+                parsed.query or parsed.fragment or parsed.port is not None or
+                parsed.netloc != parsed.hostname):
+            raise RuntimeError("VAPID subject invalid")
+        return "https://" + parsed.hostname
+    if raw.startswith("mailto:"):
+        return raw
+    raise RuntimeError("VAPID subject invalid")
+
+
 def send(db_path: Path, subscription: dict, payload: dict):
     # Validate AGAIN before any worker delivery, even when data came from SQLite.
     safe = validate_subscription(subscription)
     _read_or_create_private(db_path)
-    subject = os.getenv("RS_VAPID_SUBJECT", DEFAULT_SUBJECT)
-    if not subject.startswith(("mailto:", "https://")):
-        raise RuntimeError("VAPID subject invalid")
+    subject = vapid_subject()
     return webpush(
         subscription_info=safe,
         data=json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
