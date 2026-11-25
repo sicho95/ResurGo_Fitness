@@ -94,3 +94,8 @@ test("Hot Refresh uses same-origin recovery without deleting databases or voice 
  assert.ok(!page.includes(".unregister("));
  assert.ok(page.includes('location.replace(entry'));
 });
+
+test("live dashboard and source controls are compiled",()=>{
+ const source=readFileSync(resolve(".webapp-build/app.js"),"utf8"),css=readFileSync(resolve(".webapp-build/styles.css"),"utf8");
+ assert.ok(source.includes("function sourceManager"));assert.ok(source.includes("function liveFreeCue"));assert.ok(source.includes("resurgo_indoor_timer"));assert.ok(css.includes(".liveMetrics{display:grid;grid-template-columns:repeat(2"));
+});

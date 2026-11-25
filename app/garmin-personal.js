@@ -14,9 +14,11 @@
     if(local.machineKind&&remote.machineKind&&local.machineKind!==remote.machineKind)return false;
     if(local.source==="resurgo_gps_phone"&&remote.machineKind)return false;
     const t=garminTime(local),u=garminTime(remote),d=local.durationSeconds,e=remote.durationSeconds;
-    if(![t,u,d,e].every(garminPresent)||Math.min(d,e)<60||Math.abs(t-u)>300000)return false;
-    const overlap=Math.min(t+d*1000,u+(remote.elapsedSeconds||e)*1000)-Math.max(t,u);
-    return overlap>=Math.min(d,e)*700&&Math.abs(d-e)<=Math.max(180,Math.max(d,e)*.25);
+    if(![t,u,d,e].every(garminPresent)||Math.min(d,e)<60)return false;
+    const end=Date.parse(local.completedAt||""),localEnd=Number.isFinite(end)?end:t+d*1000,remoteEnd=u+(remote.elapsedSeconds||e)*1000;
+    const overlap=Math.min(localEnd,remoteEnd)-Math.max(t,u);
+    if(Math.abs(t-u)<=300000&&overlap>=Math.min(d,e)*700&&Math.abs(d-e)<=Math.max(180,Math.max(d,e)*.25))return true;
+    return ["resurgo_pm5_ble","resurgo_ftms_ble","resurgo_indoor_timer"].includes(local.source)&&local.machineKind&&remote.machineKind===local.machineKind&&d>=120&&e>d*1.25&&t>=u-60000&&localEnd<=remoteEnd+60000&&overlap>=d*900;
   }
   function garminMergeActivity(local,remote){
     const source=local.source||"resurgo";
@@ -26,6 +28,7 @@
       if(!garminPresent(original.hrAvg)&&garminPresent(local.averageHeartRate))original.hrAvg=local.averageHeartRate;
       if(!garminPresent(original.hrMax)&&garminPresent(local.maxHeartRate))original.hrMax=local.maxHeartRate;
     }
+    const partial=garminPresent(original.durationSeconds)&&remote.durationSeconds>original.durationSeconds*1.25;
     const metrics={},chosen={};
     for(const k of garminMetricKeys){
       const a=original[k],b=remote[k];
@@ -33,12 +36,12 @@
       // Direct PM5 measurement wins only if the distance is not estimated.
       const direct=["resurgo_pm5_ble","resurgo_ftms_ble"].includes(source);
       const indoorMetric=["distanceKm","averagePowerW","maxPowerW","averageCadenceRpm","avgSpeedKmh"].includes(k);
-      const preferLocal=direct&&indoorMetric&&!(k==="distanceKm"&&(local.estimatedDistance!==false))&&
+      const preferLocal=!partial&&direct&&indoorMetric&&!(k==="distanceKm"&&(local.estimatedDistance!==false))&&
         !(k==="avgSpeedKmh"&&local.estimatedDistance!==false)&&!(k==="averagePowerW"||k==="averageCadenceRpm");
-      if(garminPresent(a)&&(preferLocal||!garminPresent(b))){metrics[k]=a;chosen[k]=source;}
+      if(garminPresent(a)&&(preferLocal||!garminPresent(b))){if(partial&&["distanceKm","durationSeconds","elevationGainM","hrAvg","averagePowerW","averageCadenceRpm","avgSpeedKmh","calories"].includes(k)&&!garminPresent(b)){metrics[k]=null;chosen[k]="partial_local_only";}else{metrics[k]=a;chosen[k]=source;}}
       else if(garminPresent(b)){metrics[k]=b;chosen[k]="garmin_personal";}
     }
-    return {...local,...metrics,garminActivityId:remote.garminActivityId,garminLocalMetrics:original,metricSources:chosen,
+    return {...local,...metrics,garminActivityId:remote.garminActivityId,garminLocalMetrics:original,garminPartialRecording:partial,garminStartedAt:remote.startedAt,metricSources:chosen,
       ...(garminPresent(metrics.hrAvg)?{averageHeartRate:metrics.hrAvg}:{}),...(garminPresent(metrics.hrMax)?{maxHeartRate:metrics.hrMax}:{})};
   }
   function garminReconcile(pid){

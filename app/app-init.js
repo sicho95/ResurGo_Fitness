@@ -11,7 +11,7 @@
       if(e.data?.type==="RESURGO_PUSH")pushInboxLoad().catch(()=>{});
     });
     let refreshing=false;
-    navigator.serviceWorker?.addEventListener("controllerchange",()=>{ if(refreshing) return; refreshing=true; window.location.reload(); });
+    navigator.serviceWorker?.addEventListener("controllerchange",()=>{ if(refreshing||state?.liveSession||run()) return; refreshing=true; window.location.reload(); });
   }
   async function registerServiceWorker(){
     if(!("serviceWorker" in navigator)) return;
@@ -136,8 +136,11 @@
     on("liveRun",()=>liveStart("run")); on("liveBike",()=>liveStart("bike"));
     on("liveBack",()=>{state.ui.view="session";save().then(render);});
     on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
-    on("liveEncourage",()=>liveSpeech("positive"));
-    on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",bleHrDisconnect);
+    on("liveEncourage",()=>liveEncourage());
+    on("liveConnectMachine",bleConnectForSession);on("liveConnectWatch",()=>bleHrConnect("watch"));on("liveConnectStrap",()=>bleHrConnect("chest_strap"));on("liveConnectStandard",()=>bleMachineConnect("standard",sourceMachineKind()));
+    $$("[data-source-toggle]").forEach(x=>x.onchange=()=>{bleSourceEnabled[x.dataset.sourceToggle]=x.checked;bleStatusRefresh();});
+    if(el("sourceStatus_watch")||el("liveHeartRate"))bleStatusRefresh();
+    on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",()=>bleHrDisconnect());
     on("bleMachineConnect",()=>bleMachineConnect()); on("blePm5Connect",()=>bleMachineConnect("pm5")); on("blePm5Scan",()=>bleMachineConnect("pm5scan")); on("blePm5Data",()=>bleMachineConnect("pm5data")); on("copyBleDiagnostic",copyBleDiagnostic); on("bleCscConnect",()=>bleMachineConnect("csc")); on("bleCpsConnect",()=>bleMachineConnect("cps")); on("bleMachineDisconnect",bleMachineDisconnect);
     on("copyBluefyUrl",bluefyCopyAddress);
     on("liveStartIndoor",liveStartIndoor);

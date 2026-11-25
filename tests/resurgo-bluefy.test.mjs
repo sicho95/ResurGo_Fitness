@@ -21,7 +21,7 @@ function appContext({supported=false,device=null}={}){
     alert:m=>notices.push(m),esc:s=>s
   });
   context.globalThis=context;
-  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleParsePm5,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
+  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleParsePm5,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleHrDisconnect,bleSourceEnabled,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
   return {ctx:context,api:context.__test,notices,buttons,connections};
 }
 const packet=bytes=>new DataView(Uint8Array.from(bytes).buffer);
@@ -166,4 +166,19 @@ test("PM5 scan and data-filter alternatives do not mix service filters",async()=
  assert.equal(connections[0].acceptAllDevices,true);assert.equal(connections[0].optionalServices.length,1);
  await api.bleMachineConnect("pm5data");
  assert.equal(connections[1].filters[0].services[0],"ce060030-43e5-11e4-916c-0800200c9a66");assert.equal(connections[1].optionalServices,undefined);
+});
+
+test("source toggles fall through without discarding other sensors",()=>{
+ const {api}=appContext(),now=Date.now();
+ api.bleIngestMetric("heartRate",120,"watch","watch",now);api.bleIngestMetric("heartRate",122,"chest_strap","strap",now);
+ assert.equal(api.bleHrSnapshot().bpm,122);api.bleSourceEnabled.chest_strap=false;assert.equal(api.bleHrSnapshot().bpm,120);
+ api.bleSourceEnabled.watch=false;assert.equal(api.bleHrSnapshot().available,false);
+});
+test("partial indoor session merges with full Garmin recording without preferring partial distance",()=>{
+ const state={activities:[],metrics:[]},ctx=vm.createContext({state,Date,Number,Math});
+ vm.runInContext(fs.readFileSync(path.join(root,"app/garmin-personal.js"),"utf8")+"\n globalThis.api={garminUpsertActivities,garminVisibleActivities};",ctx);
+ const local={id:"local",profileId:"a",source:"resurgo_pm5_ble",machineKind:"bike",type:"bike",startedAt:"2026-11-25T12:50:00Z",durationSeconds:600,distanceKm:4,estimatedDistance:false};
+ state.activities.push(local);
+ ctx.api.garminUpsertActivities("a",[{garminActivityId:"1",type:"bike",machineKind:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:2700,distanceKm:17}]);
+ assert.equal(ctx.api.garminVisibleActivities("a").length,1);assert.equal(local.distanceKm,17);assert.equal(local.garminLocalMetrics.distanceKm,4);assert.equal(local.garminPartialRecording,true);
 });

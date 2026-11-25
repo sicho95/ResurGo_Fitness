@@ -88,6 +88,9 @@
       bleStatusRefresh();
     }catch(e){bleStatusRefresh();}
   }
+  const bleHeartLinks=new Map();
+  const bleSourceEnabled={watch:true,chest_strap:true,fitness_machine:true};
+  function bleForgetDevice(id){if(!id)return;for(const k of Object.keys(globalThis.resurgoLiveSensors||{}))globalThis.resurgoLiveSensors[k]=globalThis.resurgoLiveSensors[k].filter(x=>x.deviceId!==id);}
   let bleHrLink=null,bleMachineLink=null,bleHrState="unavailable",bleMachineState="unavailable";
   let bleHrReading=null,bleMachineReading=null,bleHrKind="chest_strap",bleMachineKind=null;
   const bleAvailable=()=>Boolean(globalThis.isSecureContext&&navigator.bluetooth?.requestDevice);
@@ -142,17 +145,17 @@
   }
   function bleReadingIsFresh(reading){return Boolean(reading&&Date.now()-reading.timestamp<BLE_MAX_AGE_MS);}
   function bleMetric(metric){
-    return chooseSensorMetric(metric,globalThis.resurgoLiveSensors?.[metric]||[],Date.now());
+    return chooseSensorMetric(metric,(globalThis.resurgoLiveSensors?.[metric]||[]).filter(s=>bleSourceEnabled[s.sourceType]!==false),Date.now());
   }
   function bleHrSnapshot(){
     const reading=bleMetric("heartRate");
     return {available:reading.available,bpm:reading.available?reading.value:null,
       source:reading.available?reading.source:null,
-      device:bleHrLink?.device?.name||null,
+      device:[...bleHeartLinks.values()].find(x=>x.id===reading.deviceId)?.device?.name||null,deviceId:reading.deviceId||null,
       status:bleHrState};
   }
   function bleMachineSnapshot(){
-    const fresh=bleMachineState==="live"&&bleReadingIsFresh(bleMachineReading);
+    const fresh=bleSourceEnabled.fitness_machine!==false&&bleMachineState==="live"&&bleReadingIsFresh(bleMachineReading);
     const d=fresh?bleMachineReading:null;
     const progressive=Boolean(d&&(Number.isFinite(d.distanceM)||Number.isFinite(d.speedKmh)));
     return {connected:bleMachineLink?.device?.gatt?.connected||false,
@@ -170,52 +173,47 @@
     if(diagnostic)diagnostic.textContent=JSON.stringify({protocol:m.protocol,device:m.device||bleMachineSelected,state:m.state,trace:bleMachineTrace,speedKmh:m.speedKmh,distanceM:m.distanceM,cadenceRpm:m.cadenceRpm,powerW:m.powerW,heartRate:hr.bpm,heartSource:hr.source},null,2);
     for(const [id,value,unit] of [["liveCadence",m.cadenceRpm," rpm"],["livePower",m.powerW," W"]]){const field=document.getElementById(id);if(field)field.textContent=Number.isFinite(value)?Math.round(value)+unit:"—";}
     const hc=document.getElementById("liveHeartRate");
-    if(hc)hc.textContent=hr.available?hr.bpm+" bpm ("+hr.source+")":"— (non mesuré)";
+    if(hc)hc.textContent=hr.available?hr.bpm+" bpm":"—";
+    for(const role of ["watch","chest_strap","fitness_machine"]){const field=document.getElementById("sourceStatus_"+role);if(!field)continue;const names=role==="fitness_machine"?(m.connected?[m.device||"Machine"]:[]):[...bleHeartLinks.values()].filter(x=>x.role===role).map(x=>x.device.name||"Capteur");field.textContent=bleSourceEnabled[role]===false?"Désactivée":names.length?names.join(", "):"Non connectée";}
+    const hp=document.getElementById("liveHeartSource");if(hp)hp.textContent=hr.available?(hr.device||hr.source):"Aucune mesure";
     const ms=document.getElementById("liveMachineStatus");
     if(ms)ms.textContent=m.available?
-      "Machine "+m.kind+" : données reçues":m.connected?"Machine : mesures indisponibles — coaching suspendu":
-      "Machine déconnectée — coaching suspendu";
+      (m.device||"Machine")+" · mesures reçues":m.connected?"Machine : attente de mesures":"Machine facultative";
   }
-  async function bleHrDisconnect(){
-    if(bleHrLink){
-      try{bleHrLink.characteristic.removeEventListener("characteristicvaluechanged",bleHrNotify);}catch{}
-      try{bleHrLink.device.removeEventListener("gattserverdisconnected",bleHrLost);}catch{}
-      try{bleHrLink.device.gatt?.disconnect();}catch{}
+  async function bleHrDisconnect(role=null){
+    for(const [id,link] of [...bleHeartLinks]){
+      if(role&&link.role!==role)continue;
+      try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);}catch{}
+      try{link.device.removeEventListener("gattserverdisconnected",link.lost);}catch{}
+      try{link.device.gatt.disconnect();}catch{}
+      bleForgetDevice(id);bleHeartLinks.delete(id);
     }
-    bleHrLink=null;bleHrReading=null;bleHrState="unavailable";
-    bleStatusRefresh();
+    bleHrLink=null;bleHrReading=null;bleHrState=bleHeartLinks.size?"connected":"unavailable";bleStatusRefresh();
   }
-  function bleHrLost(){bleHrState="lost";bleHrReading=null;bleStatusRefresh();}
-  function bleHrNotify(event){
-    try{
-      const data=bleHeartPacket(event.target.value);
-      bleHrReading={...data,timestamp:Date.now()};
-      bleHrState="live";
-      bleIngestMetric("heartRate",data.heartRate,bleHrKind,bleHrLink?.device?.id||"ble_hr");
-      bleStatusRefresh();
-    }catch{bleHrState="stale";bleStatusRefresh();}
-  }
-  async function bleHrConnect(){
+  async function bleHrConnect(role=null){
     if(!bleAvailable()){alert(bleTextStatus());return;}
+    const selected=typeof role==="string"?role:document.getElementById("bleHrSourceType")?.value||"chest_strap";
     try{
-      bleHrDisconnect();
-      bleHrKind=document.getElementById("bleHrSourceType")?.value==="watch"?"watch":"chest_strap";
-      bleHrState="connecting";bleStatusRefresh();
+      // Request directly in user gesture, without disconnecting existing sensors.
       const device=await navigator.bluetooth.requestDevice({filters:[{services:[BLE_HR]}]});
-      const server=await device.gatt.connect();
-      const service=await server.getPrimaryService(BLE_HR);
-      const characteristic=await service.getCharacteristic(BLE_HR_MEAS);
-      bleHrLink={device,characteristic};
-      device.addEventListener("gattserverdisconnected",bleHrLost);
-      characteristic.addEventListener("characteristicvaluechanged",bleHrNotify);
-      await characteristic.startNotifications();
+      const kind=typeof role==="string"?role:/enduro|fenix|forerunner|watch|vivoactive|venu/i.test(device.name||"")?"watch":selected;
+      const id=device.id||device.name||kind;
+      if(bleHeartLinks.has(id)){bleSourceEnabled[kind]=true;bleStatusRefresh();return;}
+      const server=await device.gatt.connect(),service=await server.getPrimaryService(BLE_HR),characteristic=await service.getCharacteristic(BLE_HR_MEAS);
+      const lost=()=>{bleForgetDevice(id);bleHeartLinks.delete(id);bleStatusRefresh();};
+      const handler=event=>{try{const data=bleHeartPacket(event.target.value);bleIngestMetric("heartRate",data.heartRate,kind,id);bleStatusRefresh();}catch{}};
+      const link={id,device,characteristic,role:kind,handler,lost};
+      bleHeartLinks.set(id,link);bleSourceEnabled[kind]=true;
+      device.addEventListener("gattserverdisconnected",lost);characteristic.addEventListener("characteristicvaluechanged",handler);
+      try{await characteristic.startNotifications();}catch(err){lost();try{device.gatt.disconnect();}catch{}throw err;}
       bleHrState="connected";bleStatusRefresh();
-    }catch(e){bleHrState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")alert("Cardio BLE : "+bleErrorText(e));}
+    }catch(e){if(e?.name!=="NotFoundError")alert("Cardio BLE : "+bleErrorText(e));}
   }
   async function bleMachineDisconnect(){
     for(const link of bleBikeLinks){try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);}catch{}}
     bleBikeLinks=[];bleBikePrevious={};bleBikeMetrics={};bleMachineProtocol="FTMS";
     if(bleMachineLink){
+      bleForgetDevice(bleMachineLink.device.id||"pm5");
       try{bleMachineLink.characteristic.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}
       try{bleMachineLink.device.removeEventListener("gattserverdisconnected",bleMachineLost);}catch{}
       try{bleMachineLink.device.gatt?.disconnect();}catch{}
@@ -223,7 +221,7 @@
     bleMachineLink=null;bleMachineReading=null;bleMachineKind=null;bleMachineState="unavailable";
     bleStatusRefresh();
   }
-  function bleMachineLost(){bleMachineState="lost";bleMachineReading=null;bleStatusRefresh();}
+  function bleMachineLost(){bleForgetDevice(bleMachineLink?.device?.id);bleMachineState="lost";bleMachineReading=null;bleStatusRefresh();}
   function bleMachineNotify(event){
     if(!bleMachineLink)return;
     try{
@@ -240,12 +238,13 @@
       bleStatusRefresh();
     }catch{bleMachineState="stale";bleStatusRefresh();}
   }
-  async function bleMachineConnect(mode="standard"){
+  async function bleMachineConnect(mode="standard",requestedKind=null){
     if(!bleAvailable()){alert(bleTextStatus());return;}
     const nativeMode=["pm5","pm5scan","pm5data"].includes(mode),cyclingMode=["csc","cps"].includes(mode);
-    const kind=nativeMode||cyclingMode?"bike":document.getElementById("bleMachineKind")?.value||"bike";
+    const kind=nativeMode||cyclingMode?"bike":requestedKind||document.getElementById("bleMachineKind")?.value||"bike";
     if(!FTMS_CHARACTERISTICS[kind]){alert("Sélectionner un type d'appareil valide.");return;}
     bleMachineDisconnect();
+    bleSourceEnabled.fitness_machine=true;
     bleMachineTrace=[];bleMachineSelected=null;
     bleMachineState="connecting";bleStatusRefresh();
     let stage="sélection de l'appareil";
@@ -298,7 +297,7 @@
 
   function bluefyHelpPanel(){
     const appUrl=location.href.split("#")[0].split("?")[0];
-    return `<details class="panel" id="bluefyHelp">
+    return `${sourceManager(true)}<details class="panel" id="bluefyHelp">
       <summary aria-label="Informations pour connecter les capteurs avec Bluefy">ⓘ Utiliser Bluefy sur iPhone — mode d'emploi</summary>
       <p><strong>Bluefy est un navigateur BLE</strong> : il faut ouvrir ResurGo directement DANS Bluefy, pas dans la PWA installée depuis Safari. Les deux navigateurs ont leurs propres données locales ; pour retrouver les profils, utiliser la synchronisation NAS ou la sauvegarde chiffrée.</p>
       <ol>
@@ -311,7 +310,7 @@
       </ol>
       <p><strong>Limites :</strong> Bluefy doit rester au premier plan pendant l'utilisation ; réception BLE, GPS et son en arrière-plan non garantis sur iPhone. Une machine « Bluetooth » n'est pas forcément FTMS. Une Apple Watch ne diffuse pas automatiquement son GPS ni son altitude au téléphone.</p>
     </details>
-    <div class="grid two">
+    <details class="bleAdvanced"><summary>Diagnostic avancé / autre machine</summary><div class="grid two">
       <label>Source de fréquence cardiaque
         <select id="bleHrSourceType">
           <option value="chest_strap">Ceinture cardio (prioritaire)</option>
@@ -337,7 +336,7 @@
       <button type="button" class="secondary" id="bleCpsConnect">PM5 — puissance CPS</button>
       <button type="button" class="secondary" id="bleMachineDisconnect">Déconnecter machine</button>
     </div>
-    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p><details open><summary>Diagnostic vélo (copier le texte)</summary><pre id="bleBikeDiagnostic" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;font-size:12px;user-select:text">En attente de connexion</pre><button type="button" class="secondary" id="copyBleDiagnostic">Copier le diagnostic</button></details>`;
+    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p><details><summary>Diagnostic vélo (copier le texte)</summary><pre id="bleBikeDiagnostic" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;font-size:12px;user-select:text">En attente de connexion</pre><button type="button" class="secondary" id="copyBleDiagnostic">Copier le diagnostic</button></details></details>`;
   }
   async function copyBleDiagnostic(){
     const field=document.getElementById("bleBikeDiagnostic");
@@ -350,3 +349,8 @@
     try{await navigator.clipboard.writeText(address);alert("Adresse HTTPS de ResurGo copiée. Colle-la dans Bluefy.");}
     catch{const e=document.getElementById("bluefyUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Bluefy.");}
   }
+
+  function sourceMachineKind(){return (typeof liveSelectedMachine==="function"?liveSelectedMachine():null)||document.getElementById("liveIndoorKind")?.value||"bike";}
+  function bleConnectForSession(){const k=sourceMachineKind();return bleMachineConnect(k==="bike"?"pm5":"standard",k);}
+  function sourceRow(role,title,button){return '<div class="sourceRow"><label><input type="checkbox" data-source-toggle="'+role+'" '+(bleSourceEnabled[role]!==false?"checked":"")+'><span><strong>'+title+'</strong><small id="sourceStatus_'+role+'">Non connectée</small></span></label><button class="secondary" id="'+button+'">Connecter</button></div>';}
+  function sourceManager(includeMachine=true){return '<div class="sourceManager"><h3>Sources de données</h3>'+(includeMachine?sourceRow("fitness_machine","Machine de sport","liveConnectMachine"):"")+sourceRow("watch","Montre · cardio","liveConnectWatch")+sourceRow("chest_strap","Ceinture cardio","liveConnectStrap")+'<div class="sourceRow"><span>Chronomètre</span><small>Toujours actif</small></div><p class="muted">Sources facultatives. La meilleure mesure fraîche est retenue automatiquement.</p></div>';}
