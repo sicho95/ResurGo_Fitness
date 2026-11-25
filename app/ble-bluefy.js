@@ -3,6 +3,59 @@
   const BLE_HR=0x180d, BLE_HR_MEAS=0x2a37, BLE_FTMS=0x1826;
   const FTMS_CHARACTERISTICS={treadmill:0x2acd,elliptical:0x2ace,bike:0x2ad2};
   const BLE_MAX_AGE_MS=9000;
+  const BLE_CSC=0x1816,BLE_CSC_MEAS=0x2a5b,BLE_POWER=0x1818,BLE_POWER_MEAS=0x2a63;
+  let bleBikeLinks=[],bleBikePrevious={},bleBikeMetrics={},bleMachineProtocol="FTMS";
+  const BIKEERG_WHEEL_M=2; // Concept2 recommended virtual wheel size; only for PM5.
+  function bleCscPacket(view){
+    if(!(view instanceof DataView)||view.byteLength<1)throw Error("CSC : paquet court");
+    const flags=view.getUint8(0);let i=1,result={};
+    if(flags&1){if(view.byteLength<i+6)throw Error("CSC : roue tronquée");result.wheel=view.getUint32(i,true);result.wheelTime=view.getUint16(i+4,true);i+=6;}
+    if(flags&2){if(view.byteLength<i+4)throw Error("CSC : pédalier tronqué");result.crank=view.getUint16(i,true);result.crankTime=view.getUint16(i+2,true);}
+    return result;
+  }
+  function bleCyclingPowerPacket(view){
+    if(!(view instanceof DataView)||view.byteLength<4)throw Error("CPS : paquet court");
+    const flags=view.getUint16(0,true),powerW=view.getInt16(2,true);let i=4,result={powerW};
+    if(flags&1)i+=1;if(flags&4)i+=2;
+    if(flags&16){if(view.byteLength<i+6)throw Error("CPS : roue tronquée");result.wheel=view.getUint32(i,true);result.wheelTime=view.getUint16(i+4,true);i+=6;}
+    if(flags&32){if(view.byteLength<i+4)throw Error("CPS : pédalier tronqué");result.crank=view.getUint16(i,true);result.crankTime=view.getUint16(i+2,true);}
+    return result;
+  }
+  function bleBikeDeltas(current,previous,wheelHz=1024){
+    const result={};
+    if(Number.isFinite(current.wheel)&&Number.isFinite(previous?.wheel)){
+      const n=(current.wheel-previous.wheel)>>>0,t=(current.wheelTime-previous.wheelTime+65536)%65536;
+      if(t>0&&n<500){const speed=n*BIKEERG_WHEEL_M*wheelHz/t*3.6;if(speed<=120)result.speedKmh=speed;}
+      if(n===0)result.speedKmh=0;
+    }
+    if(Number.isFinite(current.crank)&&Number.isFinite(previous?.crank)){
+      const n=(current.crank-previous.crank+65536)%65536,t=(current.crankTime-previous.crankTime+65536)%65536;
+      if(t>0&&n<300){const rpm=n*60*1024/t;if(rpm<=250)result.cadenceRpm=rpm;}
+      if(n===0)result.cadenceRpm=0;
+    }
+    return result;
+  }
+  function bleBikeNotify(event,protocol){
+    if(!bleMachineLink)return;
+    try{
+      const current=protocol==="CSC"?bleCscPacket(event.target.value):bleCyclingPowerPacket(event.target.value);
+      const now=Date.now(),old=bleBikePrevious[protocol],delta=old&&now-old.at<BLE_MAX_AGE_MS?bleBikeDeltas(current,old.data,protocol==="CSC"?1024:2048):{};
+      // Wheel/crank event timestamps can remain unchanged between notifications.
+      // Retain the last speed until new revolutions or 3 seconds of inactivity.
+      if(delta.speedKmh===0&&old&&now-(old.wheelMove||now)<3000)delete delta.speedKmh;
+      if(delta.cadenceRpm===0&&old&&now-(old.crankMove||now)<3000)delete delta.cadenceRpm;
+      bleBikePrevious[protocol]={data:current,at:now,wheelMove:!old||current.wheel!==old.data.wheel?now:old.wheelMove,crankMove:!old||current.crank!==old.data.crank?now:old.crankMove};
+      const metrics={...delta};if(Number.isFinite(current.powerW))metrics.powerW=current.powerW;
+      for(const [key,value] of Object.entries(metrics))bleBikeMetrics[key]={value,at:now};
+      const snapshot={kind:"bike",timestamp:now};
+      for(const [key,metric] of Object.entries(bleBikeMetrics))if(now-metric.at<BLE_MAX_AGE_MS)snapshot[key]=metric.value;
+      if(Number.isFinite(snapshot.speedKmh)){bleMachineReading=snapshot;bleMachineState="live";}
+      else if(bleMachineReading)bleMachineReading={...snapshot,timestamp:bleMachineReading.timestamp};
+      const dev=bleMachineLink.device.id||"pm5";
+      for(const [key,metric] of Object.entries({speedKmh:"speed",cadenceRpm:"cadence",powerW:"power"}))if(Number.isFinite(metrics[key]))bleIngestMetric(metric,key==="speedKmh"?metrics[key]/3.6:metrics[key],"fitness_machine",dev,now);
+      bleStatusRefresh();
+    }catch(e){bleStatusRefresh();}
+  }
   let bleHrLink=null,bleMachineLink=null,bleHrState="unavailable",bleMachineState="unavailable";
   let bleHrReading=null,bleMachineReading=null,bleHrKind="chest_strap",bleMachineKind=null;
   const bleAvailable=()=>Boolean(globalThis.isSecureContext&&navigator.bluetooth?.requestDevice);
@@ -35,6 +88,11 @@
       if(flags&4)result.cadenceRpm=u16()/2;
       if(flags&8)result.averageCadenceRpm=u16()/2;
       if(flags&16){result.distanceM=bleReadU24(view,i);i+=3;}
+      if(flags&32)result.resistanceLevel=(u16()<<16>>16)/10;
+      if(flags&64)result.powerW=u16()<<16>>16;
+      if(flags&128)result.averagePowerW=u16()<<16>>16;
+      if(flags&256){u16();u16();if(i>=view.byteLength)throw Error("FTMS : énergie tronquée");i++;}
+      if(flags&512){if(i>=view.byteLength)throw Error("FTMS : FC tronquée");const bpm=view.getUint8(i++);if(bpm>=25&&bpm<=245)result.heartRate=bpm;}
     }else if(flags&4){result.distanceM=bleReadU24(view,i);i+=3;}
     // Cross trainer 3-byte flags: step rate and later fields deliberately not
     // decoded until hardware is tested; no guessed machine distance or speed.
@@ -68,7 +126,7 @@
     return {connected:bleMachineLink?.device?.gatt?.connected||false,
       available:progressive,kind:bleMachineKind,state:fresh?"live":bleMachineState==="live"?"stale":bleMachineState,
       speedKmh:progressive?d.speedKmh??null:null,distanceM:progressive?d.distanceM??null:null,
-      cadenceRpm:d?.cadenceRpm??null,device:bleMachineLink?.device?.name||null};
+      cadenceRpm:d?.cadenceRpm??null,powerW:d?.powerW??null,protocol:bleMachineProtocol,device:bleMachineLink?.device?.name||null};
   }
   function bleStatusRefresh(){
     const st=document.getElementById("bleDeviceStatus");
@@ -76,6 +134,9 @@
     if(st)st.textContent=bleTextStatus()+" Cardio : "+(hr.available?hr.bpm+" bpm ("+hr.source+")":"aucune mesure fraîche")+
       ". Machine : "+(m.available?m.kind+" / "+(m.distanceM!==null?m.distanceM+" m":m.speedKmh+" km/h"):
         (m.connected?"connectée, données de progression absentes/périmées":"non connectée"))+".";
+    const diagnostic=document.getElementById("bleBikeDiagnostic");
+    if(diagnostic)diagnostic.textContent=JSON.stringify({protocol:m.protocol,device:m.device,state:m.state,speedKmh:m.speedKmh,distanceM:m.distanceM,cadenceRpm:m.cadenceRpm,powerW:m.powerW,heartRate:hr.bpm,heartSource:hr.source});
+    for(const [id,value,unit] of [["liveCadence",m.cadenceRpm," rpm"],["livePower",m.powerW," W"]]){const field=document.getElementById(id);if(field)field.textContent=Number.isFinite(value)?Math.round(value)+unit:"—";}
     const hc=document.getElementById("liveHeartRate");
     if(hc)hc.textContent=hr.available?hr.bpm+" bpm ("+hr.source+")":"— (non mesuré)";
     const ms=document.getElementById("liveMachineStatus");
@@ -120,6 +181,8 @@
     }catch(e){bleHrState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")alert("Cardio BLE : "+e.message);}
   }
   async function bleMachineDisconnect(){
+    for(const link of bleBikeLinks){try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);}catch{}}
+    bleBikeLinks=[];bleBikePrevious={};bleBikeMetrics={};bleMachineProtocol="FTMS";
     if(bleMachineLink){
       try{bleMachineLink.characteristic.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}
       try{bleMachineLink.device.removeEventListener("gattserverdisconnected",bleMachineLost);}catch{}
@@ -140,6 +203,8 @@
       if(Number.isFinite(parsed.speedKmh))bleIngestMetric("speed",parsed.speedKmh/3.6,"fitness_machine",dev);
       if(Number.isFinite(parsed.distanceM))bleIngestMetric("distance",parsed.distanceM,"fitness_machine",dev);
       if(Number.isFinite(parsed.cadenceRpm))bleIngestMetric("cadence",parsed.cadenceRpm,"fitness_machine",dev);
+      if(Number.isFinite(parsed.powerW))bleIngestMetric("power",parsed.powerW,"fitness_machine",dev);
+      if(Number.isFinite(parsed.heartRate))bleIngestMetric("heartRate",parsed.heartRate,"fitness_machine",dev);
       bleStatusRefresh();
     }catch{bleMachineState="stale";bleStatusRefresh();}
   }
@@ -150,15 +215,32 @@
     try{
       await bleMachineDisconnect();
       bleMachineState="connecting";bleStatusRefresh();
-      const device=await navigator.bluetooth.requestDevice({filters:[{services:[BLE_FTMS]}]});
-      const service=await (await device.gatt.connect()).getPrimaryService(BLE_FTMS);
-      const characteristic=await service.getCharacteristic(FTMS_CHARACTERISTICS[kind]);
-      bleMachineLink={device,characteristic};bleMachineKind=kind;
+      const device=await navigator.bluetooth.requestDevice(kind==="bike"?{filters:[{services:[BLE_FTMS]},{namePrefix:"PM5"},{namePrefix:"Concept2"},{services:[BLE_CSC]},{services:[BLE_POWER]}],optionalServices:[BLE_FTMS,BLE_CSC,BLE_POWER]}:{filters:[{services:[BLE_FTMS]}]});
+      const server=await device.gatt.connect();
+      bleMachineLink={device,characteristic:null};bleMachineKind=kind;
       device.addEventListener("gattserverdisconnected",bleMachineLost);
-      characteristic.addEventListener("characteristicvaluechanged",bleMachineNotify);
-      await characteristic.startNotifications();
-      bleMachineState="connected";bleStatusRefresh();
-    }catch(e){bleMachineState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")
+      try{
+        const service=await server.getPrimaryService(BLE_FTMS);
+        const characteristic=await service.getCharacteristic(FTMS_CHARACTERISTICS[kind]);
+        bleMachineLink.characteristic=characteristic;
+        characteristic.addEventListener("characteristicvaluechanged",bleMachineNotify);
+        await characteristic.startNotifications();
+      }catch(error){
+        // A PM5 may expose standard cycling services instead of FTMS.
+        if(kind!=="bike"||!/PM5|Concept2|BikeErg/i.test(device.name||""))throw error;
+        bleMachineProtocol="PM5 CSC/CPS";
+        for(const [serviceId,charId,protocol] of [[BLE_CSC,BLE_CSC_MEAS,"CSC"],[BLE_POWER,BLE_POWER_MEAS,"CPS"]]){
+          try{
+            const service=await server.getPrimaryService(serviceId),characteristic=await service.getCharacteristic(charId);
+            const handler=event=>bleBikeNotify(event,protocol);
+            characteristic.addEventListener("characteristicvaluechanged",handler);
+            await characteristic.startNotifications();bleBikeLinks.push({characteristic,handler});
+          }catch{}
+        }
+        if(!bleBikeLinks.length)throw Error("PM5 : ni FTMS ni services cyclisme accessibles");
+      }
+      if(bleMachineState!=="live")bleMachineState="connected";bleStatusRefresh();
+    }catch(e){await bleMachineDisconnect();bleMachineState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")
       alert("Machine FTMS : "+e.message+" — vérifier la caractéristique et le mode appairage.");}
   }
 
@@ -188,17 +270,17 @@
         <select id="bleMachineKind">
           <option value="treadmill">Tapis de course (FTMS)</option>
           <option value="elliptical">Elliptique / cross trainer (FTMS)</option>
-          <option value="bike">Vélo intérieur (FTMS)</option>
+          <option value="bike">Vélo intérieur (FTMS / Concept2 PM5)</option>
         </select>
       </label>
     </div>
     <div class="actions">
       <button type="button" class="primary" id="bleHrConnect">Connecter le cardio</button>
       <button type="button" class="secondary" id="bleHrDisconnect">Déconnecter le cardio</button>
-      <button type="button" class="primary" id="bleMachineConnect">Connecter machine FTMS</button>
+      <button type="button" class="primary" id="bleMachineConnect">Connecter machine FTMS / PM5</button>
       <button type="button" class="secondary" id="bleMachineDisconnect">Déconnecter machine</button>
     </div>
-    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p>`;
+    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p><details><summary>Diagnostic vélo (copier le texte)</summary><p id="bleBikeDiagnostic">En attente de connexion</p></details>`;
   }
   async function bluefyCopyAddress(){
     const address=location.href.split("#")[0].split("?")[0];

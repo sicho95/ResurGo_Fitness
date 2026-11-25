@@ -7,9 +7,17 @@
     downhill:[28,"La descente t'aide déjà à avancer. N'en rajoute pas."],
     positive:[57,"Tu prends du temps pour toi, et c'est précieux."],
     finish:[65,"Bravo, tu as terminé ta séance. Savoure cet instant !"],
+    warmup:[5,"Prends tes repères, inutile de partir trop vite."],
+    steady:[21,"Garde un rythme qui te permet de maîtriser ton souffle."],
+    active:[51,"Reste concentré sur ton effort, pas seulement sur le chrono."],
+    easy:[31,"Relâche les épaules, retrouve progressivement tes sensations."],
+    cool:[75,"Aujourd’hui, la récupération fait partie de ton entraînement."],
+    halfway:[53,"Tu es à mi-parcours, continue de suivre tes sensations."],
+    slower:[35,"Tu peux ralentir, l’important est de bien gérer ton effort."],
     stop:[70,"Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations."]
   };
   function liveSpeech(key){
+    if(state.settings?.tts?.enabled===false)return;
     const [n,phrase]=liveMessages[key]||liveMessages.positive;
     voiceSpeakId("phrase_"+String(n).padStart(3,"0"))
       .then(played=>{if(!played)speak(phrase);}).catch(()=>speak(phrase));
@@ -37,6 +45,7 @@
       <div class="actions"><button class="primary" id="liveRun">Course extérieure</button>
       <button class="secondary" id="liveBike">Vélo extérieur</button></div>
       <p><strong>Intérieur FTMS (Bluefy)</strong> : connecter d’abord la machine dans Réglages → Capteurs Bluetooth ⓘ, puis démarrer si ResurGo reçoit réellement vitesse ou distance.</p>
+      <label>Programme vélo intérieur<select id="liveBikeProgram"><option value="free">Libre guidé</option><option value="endurance35">Endurance progressive · 35 min</option></select></label>
       <div class="actions"><button class="secondary" id="liveStartIndoor">Démarrer avec machine connectée</button></div>
       <p class="muted">Un cardio seul ne suffit pas pour le guidage intérieur. En cas de coupure de la machine, les conseils de progression sont suspendus. Connexion Bluetooth non garantie sur Safari standard.</p>
       <p class="muted">Pendant une séance, garder la PWA au premier plan : le suivi GPS n'est pas garanti si l'iPhone est verrouillé.</p>
@@ -48,9 +57,9 @@
       <div><p class="muted">Temps</p><h2 id="liveTime">${liveClock(liveSeconds(s))}</h2></div>
       <div><p class="muted">Distance</p><h2 id="liveDistance">${(s.distanceM/1000).toFixed(2)} km</h2></div>
       <div><p class="muted">${s.sport==="run"?"Allure":"Vitesse"}</p><h2 id="liveSpeed">—</h2></div>
-      <div><p class="muted">Dénivelé filtré</p><h2 id="liveGain">${Math.round(s.gainM)} m</h2></div>
+       ${s.machineKind==="bike"?'<div><p class="muted">Puissance</p><h2 id="livePower">—</h2></div><div><p class="muted">Cadence</p><h2 id="liveCadence">—</h2></div><div><p class="muted">Puissance moyenne mesurée</p><h2 id="liveAveragePower">—</h2></div>':'<div><p class="muted">Dénivelé filtré</p><h2 id="liveGain">'+Math.round(s.gainM)+' m</h2></div>'}
       </div>
-      <p id="liveTerrain">Terrain : ${esc(s.terrain)}</p>
+      <p id="liveTerrain">Terrain : ${esc(s.terrain)}</p>${s.machineKind==="bike"?'<p id="liveBikePhase" class="notice"></p>':""}
       <p id="liveSignal" class="muted">${s.machineKind?"Machine FTMS":"GPS téléphone"} : ${esc(s.signal)}</p>
       <p id="liveHeartRate" class="muted">Cardio : mesure indisponible</p>
       <button class="secondary" id="openBluefyHelp">ⓘ Informations sur Bluefy / Bluetooth</button>
@@ -68,7 +77,29 @@
       liveGain:Math.round(s.gainM)+" m",liveTerrain:"Terrain : "+s.terrain,
       liveSignal:(s.machineKind?"Machine FTMS : ":"GPS : ")+s.signal};
     for(const [id,value] of Object.entries(o)){const elmt=el(id);if(elmt)elmt.textContent=value;}
+    const avg=el("liveAveragePower");if(avg)avg.textContent=s.powerSamples?Math.round(s.powerSum/s.powerSamples)+" W":"—";
+    const phase=el("liveBikePhase");if(phase)phase.textContent=liveBikePhase(s).label;
     bleStatusRefresh();
+  }
+  function liveBikePhase(s){
+    if(s.bikeProgram!=="endurance35")return {id:"free",label:"Libre · effort confortable",cue:"steady"};
+    const t=liveSeconds(s);
+    if(t<300)return {id:"warmup",label:"Échauffement · 60–70 rpm",cue:"warmup"};
+    if(t<900)return {id:"steady",label:"Endurance facile · 70–80 rpm",cue:"steady"};
+    if(t<1500)return {id:"active",label:"Endurance active · 80–90 rpm, sans forcer",cue:"active"};
+    if(t<1800)return {id:"easy",label:"Endurance facile · 70–80 rpm",cue:"easy"};
+    if(t<2100)return {id:"cool",label:"Retour au calme · 60–65 rpm",cue:"cool"};
+    return {id:"done",label:"Programme terminé · termine quand tu es prêt",cue:"finish"};
+  }
+  async function liveIndoorWake(){try{if(navigator.wakeLock?.request)liveWake=await navigator.wakeLock.request("screen");}catch{}}
+  function liveBikeCoach(s,m){
+    const phase=liveBikePhase(s),now=Date.now();
+    if(s.bikePhase!==phase.id){s.bikePhase=phase.id;s.lastSpeech=now;liveSpeech(phase.cue);return;}
+    if(now-s.lastSpeech<150000||phase.id==="done")return;
+    s.lastSpeech=now;
+    const cycle=["steady","easy","positive","active"];
+    s.bikeCueIndex=((s.bikeCueIndex||0)+1)%cycle.length;
+    liveSpeech(Number.isFinite(m.cadenceRpm)&&m.cadenceRpm>105?"slower":cycle[s.bikeCueIndex]);
   }
   function liveTrackStop(){
     if(liveGpsWatch!==null){navigator.geolocation.clearWatch(liveGpsWatch);liveGpsWatch=null;}
@@ -151,12 +182,18 @@
     const m=bleMachineSnapshot();
     if(!m.available||m.kind!==s.machineKind){
       s.signal="machine déconnectée ou mesure périmée : coaching suspendu";
+      if(!s.machineLost){s.machineLost=true;s.rawDistanceM=null;s.lastMachineTimestamp=null;speak("Signal Bluetooth perdu. Les conseils de progression sont suspendus.");}
       s.speedMps=0;liveUpdate();return;
     }
     if(!bleMachineReading||s.lastMachineTimestamp===bleMachineReading.timestamp){
       s.signal="machine FTMS connectée";return;
     }
     const at=bleMachineReading.timestamp;
+    if(s.machineLost){s.machineLost=false;s.lastMachineTimestamp=null;s.rawDistanceM=null;speak("Signal Bluetooth retrouvé.");}
+    if(s.machineKind==="bike"){
+      for(const [key,value] of [["power",m.powerW],["cadence",m.cadenceRpm],["heart",bleHrSnapshot().bpm]])if(Number.isFinite(value)){s[key+"Sum"]=(s[key+"Sum"]||0)+value;s[key+"Samples"]=(s[key+"Samples"]||0)+1;s[key+"Max"]=Math.max(s[key+"Max"]??value,value);}
+      liveBikeCoach(s,m);
+    }
     if(s.lastMachineTimestamp&&at>s.lastMachineTimestamp&&at-s.lastMachineTimestamp<9000){
       if(Number.isFinite(m.distanceM)&&Number.isFinite(s.rawDistanceM)){
         const advance=m.distanceM-s.rawDistanceM;
@@ -169,7 +206,7 @@
     s.lastMachineTimestamp=at;
     if(Number.isFinite(m.distanceM))s.rawDistanceM=m.distanceM;
     s.speedMps=Number.isFinite(m.speedKmh)?m.speedKmh/3.6:0;
-    s.signal="données FTMS reçues"+(s.estimatedDistance?" (distance estimée)":"");
+    s.signal="données "+(m.protocol||"FTMS")+" reçues"+(s.estimatedDistance?" (distance estimée)":"");
     if(++s.sampleCount%5===0)put("app",state).catch(()=>{});
     liveUpdate();
   }
@@ -178,7 +215,8 @@
     if(state.liveSession)return alert("Une séance est déjà active.");
     const m=bleMachineSnapshot();
     if(!m.available)return alert("Impossible de démarrer : connecter une machine FTMS qui transmet une vitesse ou une distance fraîche. Le cardio seul ne suffit pas.");
-    state.liveSession={id:uid("activity"),profileId:profile().id,sport:m.kind==="bike"?"bike":"run",
+    const bikeProgram=el("liveBikeProgram")?.value==="endurance35"?"endurance35":"free";
+    state.liveSession={id:uid("activity"),profileId:profile().id,sport:m.kind==="bike"?"bike":"run",bikeProgram,machineProtocol:m.protocol||"FTMS",bikePhase:bikeProgram==="endurance35"?"warmup":"free",
       machineKind:m.kind,startedAt:new Date().toISOString(),pausedAt:null,pausedMs:0,
       distanceM:0,gainM:0,speedMps:0,rawDistanceM:Number.isFinite(m.distanceM)?m.distanceM:null,
       lastMachineTimestamp:bleMachineReading?.timestamp||null,estimatedDistance:false,
@@ -186,7 +224,7 @@
       lastSpeech:Date.now()};
     state.ui.view="coachLive";await save();render();
     if(!liveInterval)liveInterval=setInterval(()=>{liveIndoorTick();liveUpdate();},1000);
-    liveSpeech("start");
+    liveSpeech("start");liveIndoorWake();
   }
   async function livePause(){
     const s=state.liveSession;if(!s||s.pausedAt)return;
@@ -201,7 +239,7 @@
       if(!m.available||m.kind!==s.machineKind){s.pausedAt=new Date().toISOString();return alert("Reconnecter la machine FTMS avant reprise.");}
       s.rawDistanceM=Number.isFinite(m.distanceM)?m.distanceM:null;
       s.lastMachineTimestamp=bleMachineReading?.timestamp||null;
-      await save();render();if(!liveInterval)liveInterval=setInterval(()=>{liveIndoorTick();liveUpdate();},1000);
+      await save();render();if(!liveInterval)liveInterval=setInterval(()=>{liveIndoorTick();liveUpdate();},1000);liveIndoorWake();
     }else{await save();render();liveTrackStart();}
   }
   async function liveFinish(){
@@ -210,11 +248,12 @@
     const durationSeconds=liveSeconds(s),distanceKm=Math.round(s.distanceM)/1000;
     liveTrackStop();
     state.activities.push({id:s.id,profileId:s.profileId,type:s.sport,
-      source:s.machineKind?"resurgo_ftms_ble":"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
+      source:s.machineKind?(s.machineProtocol==="PM5 CSC/CPS"?"resurgo_pm5_ble":"resurgo_ftms_ble"):"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
+      averagePowerW:s.powerSamples?Math.round(s.powerSum/s.powerSamples):null,maxPowerW:s.powerMax??null,averageCadenceRpm:s.cadenceSamples?Math.round(s.cadenceSum/s.cadenceSamples):null,averageHeartRate:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,maxHeartRate:s.heartMax??null,
       completedAt:new Date().toISOString(),durationSeconds,distanceKm,
       elevationGainM:Math.round(s.gainM),
       status:distanceKm>.05&&durationSeconds>30?"completed":"stopped_early",
-      notes:s.machineKind?"Progression mesurée via FTMS BLE (distance estimée si vitesse seule). Relecture automatique hors ligne non garantie.":"GPS téléphone ; cardio optionnel BLE selon navigateur ; PWA non garantie en arrière-plan"});
+      notes:s.machineKind?"Progression mesurée via Bluetooth (distance estimée si vitesse seule). Moyennes des échantillons disponibles, non pondérées. Relecture automatique hors ligne non garantie.":"GPS téléphone ; cardio optionnel BLE selon navigateur ; PWA non garantie en arrière-plan"});
     state.liveSession=null;state.ui.view="today";await save();render();
     liveSpeech(distanceKm>.05?"finish":"stop");
   }

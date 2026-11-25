@@ -21,7 +21,7 @@ function appContext({supported=false,device=null}={}){
     alert:m=>notices.push(m),esc:s=>s
   });
   context.globalThis=context;
-  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
+  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
   return {ctx:context,api:context.__test,notices,buttons,connections};
 }
 const packet=bytes=>new DataView(Uint8Array.from(bytes).buffer);
@@ -102,4 +102,19 @@ test("user-initiated FTMS connection requires fresh speed or distance",async()=>
  assert.equal(api.bleMetric("speed").source,"fitness_machine");
  await api.bleMachineDisconnect();
  assert.equal(api.bleMachineSnapshot().available,false);
+});
+
+test("FTMS bike optional power, resistance and HR fields",()=>{
+ const {api}=appContext();
+ const f=api.bleParseFtms("bike",packet([0x74,0x02,0x2e,0x09,0xa6,0,0xb8,0x0b,0,0x14,0,0x96,0,130]));
+ assert.equal(f.powerW,150);assert.equal(f.heartRate,130);assert.equal(f.resistanceLevel,2);assert.equal(f.cadenceRpm,83);
+});
+test("PM5 cycling services decode and event counter rollover",()=>{
+ const {api}=appContext();
+ const a=api.bleCscPacket(packet([3,10,0,0,0,0,252,255,255,0,252]));
+ const b=api.bleCscPacket(packet([3,12,0,0,0,0,4,0,0,0,0]));
+ const d=api.bleBikeDeltas(b,a);
+ assert.ok(Math.abs(d.speedKmh-7.2)<1e-9);assert.equal(d.cadenceRpm,60);
+ assert.equal(api.bleCyclingPowerPacket(packet([0,0,150,0])).powerW,150);
+ assert.throws(()=>api.bleCscPacket(packet([1,0])),/tronquée/);
 });
