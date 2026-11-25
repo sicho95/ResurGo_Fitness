@@ -99,3 +99,5 @@ test("live dashboard and source controls are compiled",()=>{
  const source=readFileSync(resolve(".webapp-build/app.js"),"utf8"),css=readFileSync(resolve(".webapp-build/styles.css"),"utf8");
  assert.ok(source.includes("function sourceManager"));assert.ok(source.includes("function liveFreeCue"));assert.ok(source.includes("resurgo_indoor_timer"));assert.ok(css.includes(".liveMetrics{display:grid;grid-template-columns:repeat(2"));
 });
+
+test("coach audio is non-exclusive and releases the clip; background gaps are recorded",()=>{const app=readFileSync(resolve(".webapp-build/app.js"),"utf8");assert.ok(app.includes('navigator.audioSession.type=type'));assert.ok(app.includes('audio.addEventListener("ended"'));assert.ok(app.includes('requestBackgroundConnection({deviceId:id})'));assert.ok(app.includes("measurementGapSeconds"));});

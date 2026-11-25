@@ -68,9 +68,9 @@ test("priority chest > watch > machine, stale falls through",()=>{
 });
 test("Bluefy information and offline fallback visible to users",()=>{
  const {api}=appContext();
- assert.match(api.bleTextStatus(),/ouvrir ResurGo DANS Bluefy/);
+ assert.match(api.bleTextStatus(),/Safari avec l’extension beacio/);
  const ui=api.bluefyHelpPanel();
- for(const phrase of ["ⓘ","Copier l’adresse","Bluefy","FTMS","App Store","https:\/\/example.org\/resurgo\/index.html"])
+ for(const phrase of ["ⓘ","Copier l’adresse","beacio","FTMS","App Store","https:\/\/example.org\/resurgo\/index.html"])
    assert.ok(ui.includes(phrase),phrase);
 });
 function mockMachine(){
@@ -182,3 +182,5 @@ test("partial indoor session merges with full Garmin recording without preferrin
  ctx.api.garminUpsertActivities("a",[{garminActivityId:"1",type:"bike",machineKind:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:2700,distanceKm:17}]);
  assert.equal(ctx.api.garminVisibleActivities("a").length,1);assert.equal(local.distanceKm,17);assert.equal(local.garminLocalMetrics.distanceKm,4);assert.equal(local.garminPartialRecording,true);
 });
+
+test("beacio setup replaces old user guidance",()=>{const {api}=appContext();assert.match(api.bluefyHelpPanel(),/Safari \+ beacio/);assert.doesNotMatch(api.bluefyHelpPanel(),/Bluefy/);});

@@ -95,7 +95,7 @@
   let bleHrReading=null,bleMachineReading=null,bleHrKind="chest_strap",bleMachineKind=null;
   const bleAvailable=()=>Boolean(globalThis.isSecureContext&&navigator.bluetooth?.requestDevice);
   function bleTextStatus(){
-    return bleAvailable()?"Bluetooth web disponible : ouvrir l’association depuis cette page.":"Bluetooth web indisponible ici. Sur iPhone, ouvrir ResurGo DANS Bluefy (pas l’icône PWA Safari).";
+    return bleAvailable()?(navigator.beacio?"Bluetooth Safari + beacio disponible.":"Bluetooth web disponible."):"Bluetooth indisponible ici. Sur iPhone, ouvrir ResurGo dans Safari avec l’extension beacio activée (pas la PWA autonome).";
   }
   function bleHeartPacket(view){
     if(!(view instanceof DataView)||view.byteLength<2)throw Error("FC : paquet court");
@@ -164,6 +164,7 @@
       cadenceRpm:d?.cadenceRpm??null,powerW:d?.powerW??null,protocol:bleMachineProtocol,device:bleMachineLink?.device?.name||null};
   }
   function bleStatusRefresh(){
+    bleBackgroundStatus();
     const st=document.getElementById("bleDeviceStatus");
     const hr=bleHrSnapshot(),m=bleMachineSnapshot();
     if(st)st.textContent=bleTextStatus()+" Cardio : "+(hr.available?hr.bpm+" bpm ("+hr.source+")":"aucune mesure fraîche")+
@@ -186,7 +187,7 @@
       try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);}catch{}
       try{link.device.removeEventListener("gattserverdisconnected",link.lost);}catch{}
       try{link.device.gatt.disconnect();}catch{}
-      bleForgetDevice(id);bleHeartLinks.delete(id);
+      bleForgetDevice(id);bleHeartLinks.delete(id);bleBackgroundRelease(id);
     }
     bleHrLink=null;bleHrReading=null;bleHrState=bleHeartLinks.size?"connected":"unavailable";bleStatusRefresh();
   }
@@ -206,14 +207,14 @@
       bleHeartLinks.set(id,link);bleSourceEnabled[kind]=true;
       device.addEventListener("gattserverdisconnected",lost);characteristic.addEventListener("characteristicvaluechanged",handler);
       try{await characteristic.startNotifications();}catch(err){lost();try{device.gatt.disconnect();}catch{}throw err;}
-      bleHrState="connected";bleStatusRefresh();
+      bleHrState="connected";bleStatusRefresh();bleBackgroundKeep(device);
     }catch(e){if(e?.name!=="NotFoundError")alert("Cardio BLE : "+bleErrorText(e));}
   }
   async function bleMachineDisconnect(){
     for(const link of bleBikeLinks){try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);}catch{}}
     bleBikeLinks=[];bleBikePrevious={};bleBikeMetrics={};bleMachineProtocol="FTMS";
     if(bleMachineLink){
-      bleForgetDevice(bleMachineLink.device.id||"pm5");
+      bleForgetDevice(bleMachineLink.device.id||"pm5");bleBackgroundRelease(bleMachineLink.device.id);
       try{bleMachineLink.characteristic.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}
       try{bleMachineLink.device.removeEventListener("gattserverdisconnected",bleMachineLost);}catch{}
       try{bleMachineLink.device.gatt?.disconnect();}catch{}
@@ -240,7 +241,7 @@
   }
   async function bleMachineConnect(mode="standard",requestedKind=null){
     if(!bleAvailable()){alert(bleTextStatus());return;}
-    const nativeMode=["pm5","pm5scan","pm5data"].includes(mode),cyclingMode=["csc","cps"].includes(mode);
+    const universal=mode==="universal",nativeMode=["pm5","pm5scan","pm5data"].includes(mode),cyclingMode=["csc","cps"].includes(mode);
     const kind=nativeMode||cyclingMode?"bike":requestedKind||document.getElementById("bleMachineKind")?.value||"bike";
     if(!FTMS_CHARACTERISTICS[kind]){alert("Sélectionner un type d'appareil valide.");return;}
     bleMachineDisconnect();
@@ -252,7 +253,7 @@
       // Bluefy field test: one service filter opens the picker, mixed name/service filters do not.
       // PM5 direct button uses the proprietary data service; standard bike uses the same
       // single FTMS filter as treadmill and elliptical, with other services authorized.
-      const options=mode==="pm5"?{filters:[{services:[PM5_DISCOVERY]}],optionalServices:[PM5_DATA]}:
+      const options=universal?{acceptAllDevices:true,optionalServices:[BLE_FTMS,PM5_DATA,BLE_CSC,BLE_POWER]}:mode==="pm5"?{filters:[{services:[PM5_DISCOVERY]}],optionalServices:[PM5_DATA]}:
         mode==="pm5scan"?{acceptAllDevices:true,optionalServices:[PM5_DATA]}:
         mode==="pm5data"?{filters:[{services:[PM5_DATA]}]}:
         cyclingMode?{filters:[{services:[mode==="csc"?BLE_CSC:BLE_POWER]}]}:
@@ -268,7 +269,7 @@
       bleTrace("GATT connecté");
       const isPm5=nativeMode||/PM5|Concept2|BikeErg/i.test(device.name||"");
       let connected=false;
-      if(!nativeMode&&!cyclingMode){
+      if(!nativeMode&&!cyclingMode&&!(universal&&isPm5&&kind==="bike")){
         stage="FTMS "+FTMS_CHARACTERISTICS[kind].toString(16);
         try{
           const service=await server.getPrimaryService(BLE_FTMS);
@@ -276,9 +277,9 @@
           bleMachineLink.characteristic=characteristic;
           characteristic.addEventListener("characteristicvaluechanged",bleMachineNotify);
           await characteristic.startNotifications();connected=true;bleTrace("FTMS notifications OK");
-        }catch(error){bleTrace(stage+" : "+bleErrorText(error));try{bleMachineLink.characteristic?.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}bleMachineLink.characteristic=null;throw error;}
+        }catch(error){bleTrace(stage+" : "+bleErrorText(error));try{bleMachineLink.characteristic?.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}bleMachineLink.characteristic=null;if(!universal||!isPm5||kind!=="bike")throw error;}
       }
-      if(!connected&&kind==="bike"&&isPm5&&nativeMode){
+      if(!connected&&kind==="bike"&&isPm5&&(nativeMode||universal)){
         stage="Concept2 natif";bleMachineProtocol="PM5 natif";
         let progress=false;
         for(const id of [0x31,0x32,0x36]){
@@ -286,29 +287,24 @@
           catch(error){bleTrace("PM5 "+id.toString(16)+" : "+bleErrorText(error));}
         }
         connected=progress;
+        if(!connected&&universal){try{const service=await server.getPrimaryService(BLE_FTMS);const characteristic=await service.getCharacteristic(FTMS_CHARACTERISTICS[kind]);bleMachineLink.characteristic=characteristic;characteristic.addEventListener("characteristicvaluechanged",bleMachineNotify);await characteristic.startNotifications();bleMachineProtocol="FTMS";connected=true;}catch(error){bleTrace("FTMS secours : "+bleErrorText(error));}}
 
       }
       if(cyclingMode){stage=mode.toUpperCase();bleMachineProtocol="PM5 "+stage;await bleSubscribeBike(server,mode==="csc"?BLE_CSC:BLE_POWER,mode==="csc"?BLE_CSC_MEAS:BLE_POWER_MEAS,event=>bleBikeNotify(event,mode.toUpperCase()));connected=true;}
       if(!connected)throw Error("Aucun service de mesure compatible");
-      if(bleMachineState!=="live")bleMachineState="connected";bleStatusRefresh();
+      if(bleMachineState!=="live")bleMachineState="connected";bleStatusRefresh();bleBackgroundKeep(device);
     }catch(e){bleTrace(stage+" : "+bleErrorText(e));await bleMachineDisconnect();bleMachineState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")
-      alert("Machine BLE — "+stage+" : "+(String(e)==="2"?"Bluefy a annulé ou refusé la sélection (code 2).":bleErrorText(e))+" Ouvrir Diagnostic vélo. Essayer une autre méthode de recherche PM5.");}
+      alert("Machine BLE — "+stage+" : "+(String(e)==="2"?"Le navigateur a annulé ou refusé la sélection (code 2).":bleErrorText(e))+" Ouvrir Diagnostic vélo. Essayer une autre méthode de recherche PM5.");}
   }
 
   function bluefyHelpPanel(){
     const appUrl=location.href.split("#")[0].split("?")[0];
     return `${sourceManager(true)}<details class="panel" id="bluefyHelp">
-      <summary aria-label="Informations pour connecter les capteurs avec Bluefy">ⓘ Utiliser Bluefy sur iPhone — mode d'emploi</summary>
-      <p><strong>Bluefy est un navigateur BLE</strong> : il faut ouvrir ResurGo directement DANS Bluefy, pas dans la PWA installée depuis Safari. Les deux navigateurs ont leurs propres données locales ; pour retrouver les profils, utiliser la synchronisation NAS ou la sauvegarde chiffrée.</p>
-      <ol>
-        <li>Sur l’iPhone, activer le Bluetooth et allumer la ceinture, la montre en mode diffusion cardio ou la machine FTMS.</li>
-        <li><a href="https://apps.apple.com/fr/app/bluefy-web-ble-browser/id1492822055" target="_blank" rel="noopener noreferrer">Installer / ouvrir Bluefy sur l’App Store</a>.</li>
-        <li>Dans Bluefy, saisir l’adresse HTTPS de ResurGo : <code id="bluefyUrl">${esc(appUrl)}</code>. <button type="button" class="secondary" id="copyBluefyUrl">Copier l’adresse</button></li>
-        <li>Dans ResurGo ouvert dans Bluefy, aller à <strong>Réglages → Capteurs Bluetooth</strong>, choisir le type puis toucher <strong>Connecter</strong>. Autoriser l’appareil dans la fenêtre Bluetooth.</li>
-        <li>Attendre une <strong>mesure réelle</strong> et vérifiable. « Connecté » sans vitesse, distance ou mesure cardio fraîche ne signifie pas « prêt ».</li>
-        <li>Pour la montre Apple Watch, il faut une application de diffusion du cardio compatible BLE si elle ne diffuse pas directement. L'application ResurGo ne crée ni ne signe d'application watchOS.</li>
-      </ol>
-      <p><strong>Limites :</strong> Bluefy doit rester au premier plan pendant l'utilisation ; réception BLE, GPS et son en arrière-plan non garantis sur iPhone. Une machine « Bluetooth » n'est pas forcément FTMS. Une Apple Watch ne diffuse pas automatiquement son GPS ni son altitude au téléphone.</p>
+      <summary>ⓘ Bluetooth sur iPhone — Safari + beacio</summary>
+      <p>Installe l’extension gratuite <a href="https://apps.apple.com/fr/app/beacio/id6761301368" target="_blank" rel="noopener noreferrer">beacio (App Store)</a>, active-la dans Réglages → Apps → Safari → Extensions et autorise ce site. Ouvre ResurGo dans un onglet Safari, pas dans la PWA autonome. Sur Android, Chrome suffit.</p>
+      <p>Adresse : <code id="bluefyUrl">${esc(appUrl)}</code> <button type="button" class="secondary" id="copyBluefyUrl">Copier l’adresse</button></p>
+      <p>Les profils Safari et PWA autonome peuvent être distincts. Sauvegarde ou synchronise via NAS avant de changer. Le maintien BLE beacio ne garantit pas l’enregistrement des échantillons ni le GPS pendant la suspension de Safari.</p>
+      
     </details>
     <details class="bleAdvanced"><summary>Diagnostic avancé / autre machine</summary><div class="grid two">
       <label>Source de fréquence cardiaque
@@ -346,11 +342,27 @@
   }
   async function bluefyCopyAddress(){
     const address=location.href.split("#")[0].split("?")[0];
-    try{await navigator.clipboard.writeText(address);alert("Adresse HTTPS de ResurGo copiée. Colle-la dans Bluefy.");}
-    catch{const e=document.getElementById("bluefyUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Bluefy.");}
+    try{await navigator.clipboard.writeText(address);alert("Adresse HTTPS de ResurGo copiée. Colle-la dans Safari.");}
+    catch{const e=document.getElementById("bluefyUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Safari.");}
   }
 
   function sourceMachineKind(){return (typeof liveSelectedMachine==="function"?liveSelectedMachine():null)||document.getElementById("liveIndoorKind")?.value||"bike";}
-  function bleConnectForSession(){const k=sourceMachineKind();return bleMachineConnect(k==="bike"?"pm5":"standard",k);}
+  function bleConnectForSession(){const k=sourceMachineKind();return bleMachineConnect(navigator.beacio?"universal":k==="bike"?"pm5":"standard",k);}
   function sourceRow(role,title,button){return '<div class="sourceRow"><label><input type="checkbox" data-source-toggle="'+role+'" '+(bleSourceEnabled[role]!==false?"checked":"")+'><span><strong>'+title+'</strong><small id="sourceStatus_'+role+'">Non connectée</small></span></label><button class="secondary" id="'+button+'">Connecter</button></div>';}
-  function sourceManager(includeMachine=true){return '<div class="sourceManager"><h3>Sources de données</h3>'+(includeMachine?sourceRow("fitness_machine","Machine de sport","liveConnectMachine"):"")+sourceRow("watch","Montre · cardio","liveConnectWatch")+sourceRow("chest_strap","Ceinture cardio","liveConnectStrap")+'<div class="sourceRow"><span>Chronomètre</span><small>Toujours actif</small></div><p class="muted">Sources facultatives. La meilleure mesure fraîche est retenue automatiquement.</p></div>';}
+  function sourceManager(includeMachine=true){return '<div class="sourceManager"><h3>Sources de données</h3>'+(includeMachine?sourceRow("fitness_machine","Machine de sport","liveConnectMachine"):"")+sourceRow("watch","Montre · cardio","liveConnectWatch")+sourceRow("chest_strap","Ceinture cardio","liveConnectStrap")+'<div class="sourceRow"><span>Chronomètre</span><small>Toujours actif</small></div><p class="muted">Sources facultatives. La meilleure mesure fraîche est retenue automatiquement.</p><small id="bleBackgroundStatus"></small></div>';}
+
+  const bleBackgroundHandles=new Map(),bleBackgroundPending=new Map();
+  let bleBackgroundGeneration=0,bleBackgroundError="";
+  function bleBackgroundStatus(){const x=document.getElementById("bleBackgroundStatus");if(x)x.textContent=!navigator.beacio?.backgroundSync?"Arrière-plan BLE : indisponible":bleBackgroundError?"Arrière-plan BLE : "+bleBackgroundError:"Arrière-plan BLE : "+bleBackgroundHandles.size+" connexion(s) maintenue(s) · enregistrement continu non garanti";}
+  async function bleBackgroundKeep(device){
+    const api=navigator.beacio?.backgroundSync,id=device?.id;
+    if(!id||!api?.requestBackgroundConnection||typeof state==="undefined"||!state.liveSession||bleBackgroundHandles.has(id)||bleBackgroundPending.has(id))return;
+    const generation=bleBackgroundGeneration,token={};bleBackgroundPending.set(id,token);
+    try{const handle=await api.requestBackgroundConnection({deviceId:id});
+      if(generation!==bleBackgroundGeneration||bleBackgroundPending.get(id)!==token||!state.liveSession){if(handle?.unregister)await handle.unregister();else if(handle?.id)await api.unregister(handle.id);return;}
+      if(handle?.id||handle?.unregister)bleBackgroundHandles.set(id,handle);bleBackgroundError="";
+    }catch(e){bleBackgroundError=bleErrorText(e);}finally{if(bleBackgroundPending.get(id)===token)bleBackgroundPending.delete(id);bleBackgroundStatus();}
+  }
+  function bleBackgroundStart(){for(const link of bleHeartLinks.values())if(bleSourceEnabled[link.role]!==false)bleBackgroundKeep(link.device);if(bleSourceEnabled.fitness_machine!==false&&bleMachineLink)bleBackgroundKeep(bleMachineLink.device);}
+  async function bleBackgroundRelease(id){bleBackgroundPending.delete(id);const h=bleBackgroundHandles.get(id);bleBackgroundHandles.delete(id);try{if(h?.unregister)await h.unregister();else if(h?.id)await navigator.beacio?.backgroundSync?.unregister(h.id);}catch(e){bleBackgroundError=bleErrorText(e);}bleBackgroundStatus();}
+  function bleBackgroundStop(){bleBackgroundGeneration++;bleBackgroundPending.clear();for(const id of [...bleBackgroundHandles.keys()])bleBackgroundRelease(id);}

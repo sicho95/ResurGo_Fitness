@@ -62,19 +62,19 @@
       (indoor&&!k?'<label>Activité intérieure<select id="liveIndoorKind"><option value="bike">Vélo</option><option value="treadmill">Tapis</option><option value="elliptical">Elliptique</option></select></label>':'')+
       sourceManager(indoor)+(indoor&&(!expected||expected==="bike")?'<label>Programme<select id="liveBikeProgram"><option value="free">Libre guidé</option><option value="endurance35">Endurance progressive · 35 min</option></select></label>':'')+
       '<div class="liveStartActions">'+(indoor?'<button class="primary" id="liveStartIndoor">Démarrer'+(outRun||outBike?" en intérieur":"")+'</button>':'')+(outRun?'<button class="primary" id="liveRun">Démarrer la course extérieure</button>':'')+(outBike?'<button class="primary" id="liveBike">Démarrer le vélo extérieur</button>':'')+
-      '</div><details><summary>Autre machine / aide Bluetooth</summary><p>Bluefy doit rester au premier plan.</p><button class="secondary" id="liveConnectStandard">Autre machine Bluetooth</button><button class="secondary" id="openBluefyHelp">Diagnostic avancé</button></details></article></section>';
+      '</div><details><summary>Autre machine / aide Bluetooth</summary><p>Sur iPhone, utilise Safari avec beacio. En arrière-plan, l’enregistrement complet des mesures n’est pas garanti.</p><button class="secondary" id="liveConnectStandard">Autre machine Bluetooth</button><button class="secondary" id="openBluefyHelp">Diagnostic avancé</button></details></article></section>';
     }
     const title=s.machineKind?({bike:"Vélo intérieur",treadmill:"Course intérieure",elliptical:"Elliptique"})[s.machineKind]:(s.sport==="run"?"Course extérieure":"Vélo extérieur");
     return '<section class="grid liveScreen"><div class="liveTitle"><h1>'+esc(title)+'</h1><small>'+ (s.pausedAt?"En pause":"En cours")+'</small></div><article class="panel liveDashboard"><div class="liveTimer"><span>Temps actif</span><strong id="liveTime">'+liveClock(liveSeconds(s))+'</strong></div><div class="liveMetrics">'+
     liveTile("Distance","liveDistance",s.hasDistance||s.distanceM>0?(s.distanceM/1000).toFixed(2)+" km":"—")+liveTile("Cardio","liveHeartRate")+liveTile(s.sport==="run"?"Allure":"Vitesse","liveSpeed")+
     (s.sport==="bike"?liveTile("Puissance","livePower")+liveTile("Cadence","liveCadence")+liveTile("Puiss. moyenne","liveAveragePower"):!s.machineKind?liveTile("Dénivelé","liveGain"):liveTile("Cadence","liveCadence"))+
-    '</div><div class="liveCompactStatus"><p id="liveHeartSource"></p>'+(s.machineKind==="bike"?'<p id="liveBikePhase"></p>':!s.machineKind?'<p id="liveTerrain"></p>':'')+'<p id="liveSignal">'+esc(s.signal||"")+'</p></div><div class="liveControls">'+
+    '</div><div class="liveCompactStatus"><p id="liveHeartSource"></p>'+(s.machineKind==="bike"?'<p id="liveBikePhase"></p>':!s.machineKind?'<p id="liveTerrain"></p>':'')+'<p id="liveSignal">'+esc(s.signal||"")+'</p><p id="liveGap"></p></div><div class="liveControls">'+
     (s.pausedAt?'<button class="primary" id="liveResume">Reprendre</button>':'<button class="secondary" id="livePause">Pause</button>')+'<button class="secondary" id="liveEncourage">Coach vocal</button><button class="danger liveEnd" id="liveFinish">Terminer et enregistrer</button></div><details><summary>Gérer les sources</summary>'+sourceManager(!!s.machineKind)+'<button class="secondary" id="liveConnectStandard">Autre machine Bluetooth</button></details></article></section>';
   }
   function liveUpdate(){
     const s=state.liveSession;if(!s){bleStatusRefresh();return;}
     const m=bleMachineSnapshot(),known=s.hasDistance||s.distanceM>0, speedKnown=s.machineKind?m.available&&m.kind===s.machineKind&&Number.isFinite(m.speedKmh):s.sampleCount>0&&s.signal?.startsWith("précision");
-    const o={liveTime:liveClock(liveSeconds(s)),liveDistance:known?(s.distanceM/1000).toFixed(2)+" km":"—",liveSpeed:speedKnown?(s.sport==="run"?livePace(s.speedMps):(s.speedMps*3.6).toFixed(1)+" km/h"):"—",liveGain:s.sampleCount>0?Math.round(s.gainM)+" m":"—",liveTerrain:"Terrain : "+s.terrain,liveSignal:s.signal};
+    const o={liveTime:liveClock(liveSeconds(s)),liveDistance:known?(s.distanceM/1000).toFixed(2)+" km":"—",liveSpeed:speedKnown?(s.sport==="run"?livePace(s.speedMps):(s.speedMps*3.6).toFixed(1)+" km/h"):"—",liveGain:s.sampleCount>0?Math.round(s.gainM)+" m":"—",liveTerrain:"Terrain : "+s.terrain,liveSignal:s.signal,liveGap:s.measurementGapCount?"Mesures interrompues : "+s.measurementGapSeconds+" s · Garmin pourra compléter":""};
     for(const [id,value] of Object.entries(o)){const field=el(id);if(field)field.textContent=value;}
     const avg=el("liveAveragePower");if(avg)avg.textContent=s.powerSamples?Math.round(s.powerSum/s.powerSamples)+" W":"—";
     const phase=el("liveBikePhase");if(phase)phase.textContent=liveBikePhase(s).label;bleStatusRefresh();
@@ -86,13 +86,14 @@
   }
   function liveTick(){
     const s=state.liveSession;if(!s||s.pausedAt)return;
+    const now=Date.now();if(s.lastTickAt&&now-s.lastTickAt>12000){s.measurementGapSeconds=(s.measurementGapSeconds||0)+Math.round((now-s.lastTickAt)/1000);s.measurementGapCount=(s.measurementGapCount||0)+1;s.lastMachineTimestamp=null;s.rawDistanceM=null;s.previous=null;}s.lastTickAt=now;
     const hr=bleHrSnapshot();if(hr.available)liveSample(s,"heart",hr.bpm,hr.source);
     if(s.machineKind)liveIndoorTick();
     if(s.bikeProgram==="endurance35"&&s.machineKind==="bike")liveBikeCoach(s,bleMachineSnapshot());else liveFreeCue(s);
     if((s.tickCount=(s.tickCount||0)+1)%5===0)put("app",state).catch(()=>{});
     liveUpdate();
   }
-  function liveBeginTimer(){if(!liveInterval)liveInterval=setInterval(liveTick,1000);liveIndoorWake();}
+  function liveBeginTimer(){if(state.liveSession)state.liveSession.lastTickAt=Date.now();if(!liveInterval)liveInterval=setInterval(liveTick,1000);liveIndoorWake();bleBackgroundStart();}
   function liveBikePhase(s){
     if(s.bikeProgram!=="endurance35")return {id:"free",label:"Libre · effort confortable",cue:"steady"};
     const t=liveSeconds(s);
@@ -232,14 +233,14 @@
     const s=state.liveSession;if(!s)return;
     if(!confirm("Terminer et conserver cette séance dans l'historique ?"))return;
     const durationSeconds=liveSeconds(s),distanceKm=s.hasDistance||s.distanceM>0?Math.round(s.distanceM)/1000:null;
-    liveTrackStop();
+    liveTrackStop();bleBackgroundStop();
     const planned=state.plans.find(p=>p.id===s.plannedSessionId&&p.profileId===s.profileId&&!p.completedAt);
     const completedPlan=planned&&durationSeconds>=Math.max(60,(planned.minutes||0)*60*.8);
     if(completedPlan)planned.completedAt=new Date().toISOString();
     state.activities.push({id:s.id,plannedSessionId:completedPlan?planned.id:null,profileId:s.profileId,type:s.sport,
       source:s.machineKind?(s.machineProtocol?(s.machineProtocol.startsWith("PM5")?"resurgo_pm5_ble":"resurgo_ftms_ble"):"resurgo_indoor_timer"):(distanceKm!==null?"resurgo_gps_phone":"resurgo_outdoor_timer"),machineKind:s.machineKind||null,startedAt:s.startedAt,
       averagePowerW:s.powerSamples?Math.round(s.powerSum/s.powerSamples):null,maxPowerW:s.powerMax??null,averageCadenceRpm:s.cadenceSamples?Math.round(s.cadenceSum/s.cadenceSamples):null,averageHeartRate:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,maxHeartRate:s.heartMax??null,
-      completedAt:new Date().toISOString(),durationSeconds,distanceKm,estimatedDistance:!!s.estimatedDistance,liveMetricSources:s.liveMetricSources||{},bikeProgram:s.bikeProgram||null,hrAvg:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,hrMax:s.heartMax??null,
+      completedAt:new Date().toISOString(),durationSeconds,distanceKm,estimatedDistance:!!s.estimatedDistance,liveMetricSources:s.liveMetricSources||{},measurementGapSeconds:s.measurementGapSeconds||0,measurementGapCount:s.measurementGapCount||0,bikeProgram:s.bikeProgram||null,hrAvg:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,hrMax:s.heartMax??null,
       elevationGainM:!s.machineKind&&s.sampleCount>0?Math.round(s.gainM):null,
       status:durationSeconds>30?"completed":"stopped_early",
       notes:s.machineKind?(s.machineProtocol?"Mesures Bluetooth disponibles ; distance estimée si vitesse seule.":"Chronomètre ; mesures absentes non renseignées."):"GPS téléphone si disponible ; cardio BLE facultatif"});

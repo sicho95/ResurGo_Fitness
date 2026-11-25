@@ -14,17 +14,26 @@
       }).finally(()=>{coachVoiceLoading=null;});
     return coachVoiceLoading;
   }
+  function coachAudioMode(){
+    const type=state.settings?.tts?.audioMode==="transient"?"transient":"ambient";
+    try{if(navigator.audioSession)navigator.audioSession.type=type;}catch{}
+    return type;
+  }
+  function coachReleaseAudio(audio){if(!audio)return;try{audio.pause();audio.removeAttribute("src");audio.load();}catch{}if(coachVoiceAudio===audio)coachVoiceAudio=null;}
   async function voiceSpeakId(id,voiceKind=null){
     const kind=voiceKind||state.settings?.tts?.pregeneratedVoice||"feminine";
     const manifest=await voiceGetManifest();
     const file=manifest.files[kind+"/"+id];
     if(!file?.src)return false;
     const fileUrl=voicePackBase+file.src;
-    if(coachVoiceAudio)coachVoiceAudio.pause();
-    coachVoiceAudio=new Audio(fileUrl);
+    coachAudioMode();
+    if(coachVoiceAudio)coachReleaseAudio(coachVoiceAudio);
+    const audio=new Audio(fileUrl);coachVoiceAudio=audio;
+    audio.addEventListener("ended",()=>coachReleaseAudio(audio),{once:true});
+    audio.addEventListener("error",()=>coachReleaseAudio(audio),{once:true});
     coachVoiceAudio.preload="auto";
     coachVoiceAudio.volume=Math.max(0,Math.min(1,Number(state.settings?.tts?.volume??1)));
-    await coachVoiceAudio.play();
+    try{await audio.play();}catch(e){coachReleaseAudio(audio);throw e;}
     return true;
   }
   async function voicePreview(kind){
