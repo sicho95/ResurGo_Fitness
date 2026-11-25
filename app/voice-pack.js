@@ -14,27 +14,48 @@
       }).finally(()=>{coachVoiceLoading=null;});
     return coachVoiceLoading;
   }
-  function coachAudioMode(){
-    const type=state.settings?.tts?.audioMode==="transient"?"transient":"ambient";
+  let coachAudioStatus="Prêt",coachAudioSequence=0;
+  function coachVoiceStatus(message){coachAudioStatus=message;for(const id of ["coachAudioStatus","liveAudioStatus"]){const node=el(id);if(node)node.textContent=message;}}
+  function coachSelectedAudioMode(){return state.settings?.tts?.audioModeRevision===2?state.settings.tts.audioMode||"playback":"playback";}
+  function coachAudioMode(force=null){
+    const mode=force||coachSelectedAudioMode(),type=["ambient","transient","playback","auto"].includes(mode)?mode:"playback";
     try{if(navigator.audioSession)navigator.audioSession.type=type;}catch{}
     return type;
   }
-  function coachReleaseAudio(audio){if(!audio)return;try{audio.pause();audio.removeAttribute("src");audio.load();}catch{}if(coachVoiceAudio===audio)coachVoiceAudio=null;}
-  async function voiceSpeakId(id,voiceKind=null){
+  function coachReleaseAudio(audio){
+    if(!audio||coachVoiceAudio!==audio)return;
+    // Keep the same media element, as iOS grants playback on an element basis.
+    try{audio.pause();}catch{}
+    try{if(navigator.audioSession)navigator.audioSession.type="auto";}catch{}
+  }
+  function voiceSpeakId(id,voiceKind=null){
     const kind=voiceKind||state.settings?.tts?.pregeneratedVoice||"feminine";
-    const manifest=await voiceGetManifest();
-    const file=manifest.files[kind+"/"+id];
-    if(!file?.src)return false;
-    const fileUrl=voicePackBase+file.src;
+    if(!["feminine","masculine"].includes(kind)||!/^phrase_0(?:[0-7][0-9]|80)$/.test(id))return Promise.resolve(false);
+    // Known local pack paths: no manifest await before play, preserving the tap gesture.
+    const fileUrl=voicePackBase+kind+"/"+id+".mp3";
+    const token=++coachAudioSequence;
+    const audio=coachVoiceAudio||(coachVoiceAudio=new Audio());
+    audio.pause();
     coachAudioMode();
-    if(coachVoiceAudio)coachReleaseAudio(coachVoiceAudio);
-    const audio=new Audio(fileUrl);coachVoiceAudio=audio;
-    audio.addEventListener("ended",()=>coachReleaseAudio(audio),{once:true});
-    audio.addEventListener("error",()=>coachReleaseAudio(audio),{once:true});
-    coachVoiceAudio.preload="auto";
-    coachVoiceAudio.volume=Math.max(0,Math.min(1,Number(state.settings?.tts?.volume??1)));
-    try{await audio.play();}catch(e){coachReleaseAudio(audio);throw e;}
-    return true;
+    audio.preload="auto";audio.muted=false;
+    const volume=Number(state.settings?.tts?.volume??1);
+    audio.volume=Number.isFinite(volume)?Math.max(0,Math.min(1,volume)):1;
+    audio.playbackRate=1;
+    audio.onplaying=()=>{if(token===coachAudioSequence)coachVoiceStatus("Lecture du coach en cours.");};
+    audio.onended=()=>{if(token===coachAudioSequence){coachReleaseAudio(audio);coachVoiceStatus("Message terminé · vérifier le son à l’oreille.");}};
+    audio.onerror=()=>{if(token===coachAudioSequence){coachReleaseAudio(audio);coachVoiceStatus("Erreur de lecture audio "+(audio.error?.code||"inconnue")+". Relancer le test vocal.");}};
+    audio.src=fileUrl;
+    coachVoiceStatus("Lecture demandée…");
+    const play=()=>{try{return Promise.resolve(audio.play());}catch(err){return Promise.reject(err);}};
+    return play().then(()=>true).catch(err=>{
+      if(token!==coachAudioSequence)return false;
+      coachReleaseAudio(audio);coachVoiceStatus("Lecture refusée : "+(err?.name||"erreur")+". Toucher Tester la voix.");
+      throw err;
+    });
+  }
+  async function coachTestVoice(){
+    try{const ok=await voiceSpeakId("phrase_010");if(!ok)throw Error("Fichier vocal indisponible");}
+    catch(err){alert("Test vocal : "+(err?.message||String(err))+". Vérifier le volume multimédia et le mode audio. Si Safari reste silencieux, fermer l’onglet puis rouvrir ResurGo.");}
   }
   async function voicePreview(kind){
     try{

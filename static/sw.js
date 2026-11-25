@@ -69,10 +69,27 @@ self.addEventListener("notificationclick",event=>{
   })());
 });
 
+async function coachAudioResponse(request){
+  const cached=await caches.match(request.url);
+  if(cached&&cached.status===200&&/audio\/|octet-stream/i.test(cached.headers.get("Content-Type")||"")){
+    const range=request.headers.get("Range");
+    if(!range)return cached;
+    const match=/^bytes=(\d*)-(\d*)$/.exec(range);
+    if(match&&(match[1]||match[2])){
+      const bytes=await cached.arrayBuffer(),size=bytes.byteLength;
+      const start=match[1]?Number(match[1]):Math.max(0,size-Number(match[2]));
+      const end=match[1]&&match[2]?Math.min(size-1,Number(match[2])):size-1;
+      if(start>=size||start>end)return new Response(null,{status:416,headers:{"Content-Range":"bytes */"+size}});
+      return new Response(bytes.slice(start,end+1),{status:206,headers:{"Content-Type":cached.headers.get("Content-Type")||"audio/mpeg","Content-Range":"bytes "+start+"-"+end+"/"+size,"Content-Length":String(end-start+1),"Accept-Ranges":"bytes"}});
+    }
+  }
+  return fetch(request);
+}
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+  if(url.pathname.includes("/voice/")&&url.pathname.endsWith(".mp3")){event.respondWith(coachAudioResponse(event.request));return;}
   const onlineFirst = event.request.mode === "navigate" || url.pathname.endsWith("/force-update.html") || ["/", "/index.html", "/app.js", "/styles.css", "/manifest.webmanifest", "/version.json"].some(path => url.pathname.endsWith(path));
   if (onlineFirst) {
     event.respondWith(fetch(event.request, { cache: "no-store" }).then(response => {

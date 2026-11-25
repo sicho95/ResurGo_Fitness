@@ -68,7 +68,7 @@
     return '<section class="grid liveScreen"><div class="liveTitle"><h1>'+esc(title)+'</h1><small>'+ (s.pausedAt?"En pause":"En cours")+'</small></div><article class="panel liveDashboard"><div class="liveTimer"><span>Temps actif</span><strong id="liveTime">'+liveClock(liveSeconds(s))+'</strong></div><div class="liveMetrics">'+
     liveTile("Distance","liveDistance",s.hasDistance||s.distanceM>0?(s.distanceM/1000).toFixed(2)+" km":"—")+liveTile("Cardio","liveHeartRate")+liveTile(s.sport==="run"?"Allure":"Vitesse","liveSpeed")+
     (s.sport==="bike"?liveTile("Puissance","livePower")+liveTile("Cadence","liveCadence")+liveTile("Puiss. moyenne","liveAveragePower"):!s.machineKind?liveTile("Dénivelé","liveGain"):liveTile("Cadence","liveCadence"))+
-    '</div><div class="liveCompactStatus"><p id="liveHeartSource"></p>'+(s.machineKind==="bike"?'<p id="liveBikePhase"></p>':!s.machineKind?'<p id="liveTerrain"></p>':'')+'<p id="liveSignal">'+esc(s.signal||"")+'</p><p id="liveGap"></p></div><div class="liveControls">'+
+    '</div><div class="liveCompactStatus"><p id="liveHeartSource"></p>'+(s.machineKind==="bike"?'<p id="liveBikePhase"></p>':!s.machineKind?'<p id="liveTerrain"></p>':'')+'<p id="liveSignal">'+esc(s.signal||"")+'</p><p id="liveGap"></p><p id="liveAudioStatus"></p></div><div class="liveControls">'+
     (s.pausedAt?'<button class="primary" id="liveResume">Reprendre</button>':'<button class="secondary" id="livePause">Pause</button>')+'<button class="secondary" id="liveEncourage">Coach vocal</button><button class="danger liveEnd" id="liveFinish">Terminer et enregistrer</button></div><details><summary>Gérer les sources</summary>'+sourceManager(!!s.machineKind)+'<button class="secondary" id="liveConnectStandard">Autre machine Bluetooth</button></details></article></section>';
   }
   function liveUpdate(){
@@ -184,7 +184,7 @@
       distanceM:0,gainM:0,speedMps:0,altWindow:[],terrain:"Indéterminé",
       candidate:null,confirms:0,recoveryUntil:null,lastSpeech:Date.now(),nextCueSeconds:600,nextCueDistance:5000,
       signal:"en attente du premier point GPS",sampleCount:0};
-    state.ui.view="coachLive";await save();render();await liveTrackStart();liveSpeech("start");
+    state.ui.view="coachLive";liveSpeech("start");await save();render();await liveTrackStart();
   }
   function liveIndoorTick(){
     const s=state.liveSession;if(!s?.machineKind||s.pausedAt)return;
@@ -213,7 +213,7 @@
     state.liveSession={id:uid("activity"),profileId:profile().id,sport,plannedSessionId:garminPlannedLiveId(sport),bikeProgram,machineProtocol:connected?m.protocol:null,bikePhase:bikeProgram==="endurance35"?"warmup":"free",
     machineKind:kind,startedAt:new Date().toISOString(),pausedAt:null,pausedMs:0,distanceM:0,gainM:0,speedMps:0,rawDistanceM:connected&&Number.isFinite(m.distanceM)?m.distanceM:null,lastMachineTimestamp:connected?bleMachineReading?.timestamp||null:null,estimatedDistance:false,hadMachine:connected,hasDistance:connected,
     terrain:"Intérieur",signal:connected?"Machine connectée":"Chronomètre · capteurs facultatifs",sampleCount:0,lastSpeech:Date.now(),nextCueSeconds:600,nextCueDistance:5000};
-    state.ui.view="coachLive";await save();render();liveBeginTimer();liveSpeech("start");
+    state.ui.view="coachLive";liveSpeech("start");await save();render();liveBeginTimer();
   }
   async function livePause(){
     const s=state.liveSession;if(!s||s.pausedAt)return;
