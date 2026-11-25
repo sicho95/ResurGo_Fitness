@@ -299,10 +299,10 @@
 
   function bluefyHelpPanel(){
     const appUrl=location.href.split("#")[0].split("?")[0];
-    return `${sourceManager(true)}<details class="panel" id="bluefyHelp">
+    return `${sourceManager(true)}<details class="panel" id="bleHelp">
       <summary>ⓘ Bluetooth sur iPhone — Safari + beacio</summary>
       <p>Installe l’extension gratuite <a href="https://apps.apple.com/fr/app/beacio/id6761301368" target="_blank" rel="noopener noreferrer">beacio (App Store)</a>, active-la dans Réglages → Apps → Safari → Extensions et autorise ce site. Ouvre ResurGo dans un onglet Safari, pas dans la PWA autonome. Sur Android, Chrome suffit.</p>
-      <p>Adresse : <code id="bluefyUrl">${esc(appUrl)}</code> <button type="button" class="secondary" id="copyBluefyUrl">Copier l’adresse</button></p>
+      <p>Adresse : <code id="bleHelpUrl">${esc(appUrl)}</code> <button type="button" class="secondary" id="copyBleUrl">Copier l’adresse</button></p>
       <p>Les profils Safari et PWA autonome peuvent être distincts. Sauvegarde ou synchronise via NAS avant de changer. Le maintien BLE beacio ne garantit pas l’enregistrement des échantillons ni le GPS pendant la suspension de Safari.</p>
       
     </details>
@@ -343,7 +343,7 @@
   async function bluefyCopyAddress(){
     const address=location.href.split("#")[0].split("?")[0];
     try{await navigator.clipboard.writeText(address);alert("Adresse HTTPS de ResurGo copiée. Colle-la dans Safari.");}
-    catch{const e=document.getElementById("bluefyUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Safari.");}
+    catch{const e=document.getElementById("bleHelpUrl");if(e){const range=document.createRange();range.selectNodeContents(e);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}alert("Sélectionne et copie l'adresse ResurGo affichée, puis colle-la dans Safari.");}
   }
 
   function sourceMachineKind(){return (typeof liveSelectedMachine==="function"?liveSelectedMachine():null)||document.getElementById("liveIndoorKind")?.value||"bike";}

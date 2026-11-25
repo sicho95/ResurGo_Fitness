@@ -142,10 +142,10 @@
     if(el("sourceStatus_watch")||el("liveHeartRate"))bleStatusRefresh();
     on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",()=>bleHrDisconnect());
     on("bleMachineConnect",()=>bleMachineConnect()); on("blePm5Connect",()=>bleMachineConnect("pm5")); on("blePm5Scan",()=>bleMachineConnect("pm5scan")); on("blePm5Data",()=>bleMachineConnect("pm5data")); on("copyBleDiagnostic",copyBleDiagnostic); on("bleCscConnect",()=>bleMachineConnect("csc")); on("bleCpsConnect",()=>bleMachineConnect("cps")); on("bleMachineDisconnect",bleMachineDisconnect);
-    on("copyBluefyUrl",bluefyCopyAddress);
+    on("copyBleUrl",bluefyCopyAddress);
     on("liveStartIndoor",liveStartIndoor);
-    on("openBluefyHelp",()=>{state.ui.view="settings";save().then(()=>{render();
-      const info=el("bluefyHelp");const fold=info?.closest(".settingsFold");
+    on("openBleHelp",()=>{state.ui.view="settings";save().then(()=>{render();
+      const info=el("bleHelp");const fold=info?.closest(".settingsFold");
       if(fold)fold.open=true;if(info){info.open=true;info.scrollIntoView?.({behavior:"smooth",block:"start"});}
     });});
     $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
