@@ -224,5 +224,20 @@
   }
   function openPersonalLive(kind){
     if(run()||state.liveSession)return;
-    state.ui.personalLiveKind=kind;state.ui.view="coachLive";save().then(render);
+    state.ui.personalPlannedId=null;state.ui.personalLiveKind=kind;state.ui.view="coachLive";save().then(render);
+  }
+
+  function launchPlannedSession(s){
+    if(run()||state.liveSession)return;
+    const kind=(s.exerciseIds||[]).includes("easy_bike")?"bike":
+      (s.exerciseIds||[]).some(id=>["easy_run","run_walk"].includes(id))?"run":null;
+    if(s.type!=="cardio"||!kind){start(s.id);return;}
+    state.ui.personalPlannedId=s.id;state.ui.personalLiveKind=kind==="bike"?"plannedbike":"plannedrun";
+    state.ui.view="coachLive";save().then(render);
+  }
+  function garminPlannedLiveId(sport){
+    const id=state.ui.personalPlannedId,planned=state.plans.find(p=>p.id===id&&p.profileId===profile()?.id&&!p.completedAt);
+    if(!planned)return null;
+    const kind=(planned.exerciseIds||[]).includes("easy_bike")?"bike":"run";
+    return kind===sport?id:null;
   }

@@ -40,12 +40,12 @@
   function liveCoachView(){
     const s=state.liveSession;
     if(!s)return `<section class="grid"><h1>Coach en direct</h1><article class="panel">
-      <h2>${({run:"Course extérieure",bike:"Vélo extérieur",indoorbike:"Vélo intérieur",treadmill:"Course intérieure",elliptical:"Elliptique"})[state.ui.personalLiveKind]||"Nouvelle séance"}</h2><p>Le GPS de l'iPhone suffit dehors. Capteurs optionnels.</p>
+      <h2>${({run:"Course extérieure",bike:"Vélo extérieur",indoorbike:"Vélo intérieur",treadmill:"Course intérieure",elliptical:"Elliptique",plannedbike:"Séance du jour · vélo",plannedrun:"Séance du jour · course"})[state.ui.personalLiveKind]||"Nouvelle séance"}</h2><p>Le GPS de l'iPhone suffit dehors. Capteurs optionnels.</p>
       <div class="actions"><button class="secondary" id="openBluefyHelp">ⓘ Comment connecter un capteur dans Bluefy</button></div>
-      <div class="actions"><button class="primary" id="liveRun" ${state.ui.personalLiveKind&&state.ui.personalLiveKind!=="run"?"hidden":""}>Course extérieure</button>
-      <button class="secondary" id="liveBike" ${state.ui.personalLiveKind&&state.ui.personalLiveKind!=="bike"?"hidden":""}>Vélo extérieur</button></div>
+      <div class="actions"><button class="primary" id="liveRun" ${state.ui.personalLiveKind&&!["run","plannedrun"].includes(state.ui.personalLiveKind)?"hidden":""}>Course extérieure</button>
+      <button class="secondary" id="liveBike" ${state.ui.personalLiveKind&&!["bike","plannedbike"].includes(state.ui.personalLiveKind)?"hidden":""}>Vélo extérieur</button></div>
       <p><strong>Intérieur FTMS (Bluefy)</strong> : connecter d’abord la machine dans Réglages → Capteurs Bluetooth ⓘ, puis démarrer si ResurGo reçoit réellement vitesse ou distance.</p>
-      <label ${state.ui.personalLiveKind&&state.ui.personalLiveKind!=="indoorbike"?"hidden":""}>Programme vélo intérieur<select id="liveBikeProgram"><option value="free">Libre guidé</option><option value="endurance35">Endurance progressive · 35 min</option></select></label>
+      <label ${state.ui.personalLiveKind&&!["indoorbike","plannedbike"].includes(state.ui.personalLiveKind)?"hidden":""}>Programme vélo intérieur<select id="liveBikeProgram"><option value="free">Libre guidé</option><option value="endurance35">Endurance progressive · 35 min</option></select></label>
       <div class="actions" ${["run","bike"].includes(state.ui.personalLiveKind)?"hidden":""}><button class="secondary" id="liveStartIndoor">Démarrer avec machine connectée</button></div>
       <p class="muted">Un cardio seul ne suffit pas pour le guidage intérieur. En cas de coupure de la machine, les conseils de progression sont suspendus. Connexion Bluetooth non garantie sur Safari standard.</p>
       <p class="muted">Pendant une séance, garder la PWA au premier plan : le suivi GPS n'est pas garanti si l'iPhone est verrouillé.</p>
@@ -169,7 +169,7 @@
     if(!profile())return alert("Créer un profil pour enregistrer une séance.");
     if(!navigator.geolocation)return alert("GPS indisponible dans ce navigateur.");
     if(state.liveSession||run())return alert("Une séance est déjà en cours.");
-    state.liveSession={id:uid("activity"),profileId:profile().id,sport,
+    state.liveSession={id:uid("activity"),profileId:profile().id,sport,plannedSessionId:garminPlannedLiveId(sport),
       startedAt:new Date().toISOString(),pausedAt:null,pausedMs:0,previous:null,
       distanceM:0,gainM:0,speedMps:0,altWindow:[],terrain:"Indéterminé",
       candidate:null,confirms:0,recoveryUntil:null,lastSpeech:Date.now(),
@@ -214,11 +214,11 @@
     if(!profile())return alert("Créer un profil avant la séance.");
     if(state.liveSession||run())return alert("Une séance est déjà active.");
     const m=bleMachineSnapshot();
-    const expected={indoorbike:"bike",treadmill:"treadmill",elliptical:"elliptical"}[state.ui.personalLiveKind];
+    const expected={indoorbike:"bike",plannedbike:"bike",treadmill:"treadmill",plannedrun:"treadmill",elliptical:"elliptical"}[state.ui.personalLiveKind];
     if(expected&&m.kind!==expected)return alert("Connecter la machine correspondant à cette séance.");
     if(!m.available)return alert("Impossible de démarrer : connecter une machine FTMS qui transmet une vitesse ou une distance fraîche. Le cardio seul ne suffit pas.");
     const bikeProgram=el("liveBikeProgram")?.value==="endurance35"?"endurance35":"free";
-    state.liveSession={id:uid("activity"),profileId:profile().id,sport:m.kind==="bike"?"bike":"run",bikeProgram,machineProtocol:m.protocol||"FTMS",bikePhase:bikeProgram==="endurance35"?"warmup":"free",
+    state.liveSession={id:uid("activity"),profileId:profile().id,sport:m.kind==="bike"?"bike":"run",plannedSessionId:garminPlannedLiveId(m.kind==="bike"?"bike":"run"),bikeProgram,machineProtocol:m.protocol||"FTMS",bikePhase:bikeProgram==="endurance35"?"warmup":"free",
       machineKind:m.kind,startedAt:new Date().toISOString(),pausedAt:null,pausedMs:0,
       distanceM:0,gainM:0,speedMps:0,rawDistanceM:Number.isFinite(m.distanceM)?m.distanceM:null,
       lastMachineTimestamp:bleMachineReading?.timestamp||null,estimatedDistance:false,
@@ -249,14 +249,17 @@
     if(!confirm("Terminer et conserver cette séance dans l'historique ?"))return;
     const durationSeconds=liveSeconds(s),distanceKm=Math.round(s.distanceM)/1000;
     liveTrackStop();
-    state.activities.push({id:s.id,profileId:s.profileId,type:s.sport,
+    const planned=state.plans.find(p=>p.id===s.plannedSessionId&&p.profileId===s.profileId&&!p.completedAt);
+    const completedPlan=planned&&distanceKm>.05&&durationSeconds>=Math.max(60,(planned.minutes||0)*60*.8);
+    if(completedPlan)planned.completedAt=new Date().toISOString();
+    state.activities.push({id:s.id,plannedSessionId:completedPlan?planned.id:null,profileId:s.profileId,type:s.sport,
       source:s.machineKind?(s.machineProtocol==="PM5 CSC/CPS"?"resurgo_pm5_ble":"resurgo_ftms_ble"):"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
       averagePowerW:s.powerSamples?Math.round(s.powerSum/s.powerSamples):null,maxPowerW:s.powerMax??null,averageCadenceRpm:s.cadenceSamples?Math.round(s.cadenceSum/s.cadenceSamples):null,averageHeartRate:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,maxHeartRate:s.heartMax??null,
       completedAt:new Date().toISOString(),durationSeconds,distanceKm,estimatedDistance:!!s.estimatedDistance,hrAvg:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,hrMax:s.heartMax??null,
       elevationGainM:Math.round(s.gainM),
       status:distanceKm>.05&&durationSeconds>30?"completed":"stopped_early",
       notes:s.machineKind?"Progression mesurée via Bluetooth (distance estimée si vitesse seule). Moyennes des échantillons disponibles, non pondérées. Relecture automatique hors ligne non garantie.":"GPS téléphone ; cardio optionnel BLE selon navigateur ; PWA non garantie en arrière-plan"});
-    state.liveSession=null;state.ui.view="session";garminReconcile(s.profileId);refreshPlanAfterActivity(s.profileId);await save();render();
+    state.liveSession=null;state.ui.personalPlannedId=null;state.ui.personalLiveKind=null;state.ui.view="session";garminReconcile(s.profileId);refreshPlanAfterActivity(s.profileId);await save();render();
     liveSpeech(distanceKm>.05?"finish":"stop");
   }
   function liveRecoverAfterReload(){

@@ -203,7 +203,9 @@
       if(s.type==="strength") v+=5;
       return v;
     };
-    const picked=[...open].sort((a,b)=>score(b)-score(a))[0];
+    const candidates=garminRest.light&&!protect?open.filter(s=>s.intensity==="light"||s.type==="mobility"):open;
+    if(!candidates.length)return {session:null,rest:true,title:"Récupération conseillée",reason:"Garmin : "+garminRest.reasons.join(", ")+". Les séances prévues sont conservées."};
+    const picked=[...candidates].sort((a,b)=>score(b)-score(a))[0];
     const reason=garminRest.light&&!protect&&!knee?"Récupération Garmin : "+garminRest.reasons.join(", ")+". Privilégier un effort facile ou du repos.":knee?"Genou fragile: le coach évite squats, fentes, step et pliométrie, mais garde marche-course ou course très facile sur plat.":protect?"Protection prioritaire: le coach choisit la séance la plus récupératrice utile.":overdue.length?`Rattrapage: ${overdue.length} séance(s) en retard, le coach choisit la plus utile aujourd'hui.`:pressure?`Planning serré: ${open.length} séance(s) pour ${remainingDays} jour(s), le coach évite de perdre le fil.`:"Séance la plus utile pour équilibrer la semaine.";
     return {session:picked,rest:false,title:picked?.date===TODAY?"Séance du jour":"Séance conseillée par le coach",reason};
   }
@@ -362,7 +364,7 @@
       strength1,runEasy,mobility,strength2,bikeEasy,recovery,activeRecovery
     ]:agendas[focus]).slice(0,days);
     const weekEnd=weekEndDate(anchor,windowDays);
-    const extraActivities=next||staleWeek?[]:garminVisibleActivities(pid).filter(a=>!a.sessionRunId).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
+    const extraActivities=next||staleWeek?[]:garminVisibleActivities(pid).filter(a=>!a.sessionRunId&&!completed.some(s=>s.id===a.plannedSessionId)).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
     const doneTypes=completed.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},extraActivities.reduce((a,x)=>{ const type=activityPlanType(x); if(type) a[type]=(a[type]||0)+1; return a; },{}));
     const remainingSets=sets.filter(s=>{ if(doneTypes[s.type]>0){ doneTypes[s.type]--; return false; } return true; });
     const slotPlan=planSessionDates(remainingSets,remainingWeekDates(anchor,completed,windowDays));

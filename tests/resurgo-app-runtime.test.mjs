@@ -18,7 +18,7 @@ test("the built webapp exposes all new modules in render() lexical scope",()=>{
     "voiceInstallOffline","nasSyncStart","nasSyncNow","nasSyncResolveConflicts",
     "nasCreateProfile","nasPairWithCode","exportEncryptedBackup",
     "pushInboxOpen","pushInboxView","pushEnableFromSettings","pushTestFromSettings",
-    "restoreEncryptedBackup","sensorAccept","chooseSensorMetric",
+    "restoreEncryptedBackup","sensorAccept","chooseSensorMetric","sessionLauncher","openPersonalLive","launchPlannedSession","garminAutoStart","garminReconcile",
   ];
   const report=names.map(name=>name+':typeof '+name).join(",");
   const replacement="  output.scope={"+report+"};\n})();";
@@ -39,12 +39,14 @@ test("bottom navigation handlers remain bound when push controls are present",()
   const safeSource=source.replace(initCall,"  output.bind=bind;\n})();");
   const bottomTab={dataset:{view:"plan"}};
   const inboxButton={};
+  const personalButton={dataset:{personalLive:"bike"}};
   const pushRow={dataset:{openPush:"push_123"}};
   const sessionRow={dataset:{pushSession:"session_123"}};
   const documentStub={
     getElementById:id=>id==="pushInboxButton"?inboxButton:null,
     querySelectorAll:selector=>({
       "[data-view]":[bottomTab],
+      "[data-personal-live]":[personalButton],
       "[data-open-push]":[pushRow],
       "[data-push-session]":[sessionRow]
     }[selector]||[]),
@@ -56,6 +58,7 @@ test("bottom navigation handlers remain bound when push controls are present",()
     windowStub,documentStub,{}, {},output);
   assert.equal(typeof output.bind,"function");
   assert.doesNotThrow(()=>output.bind(),"Binding must not abort before bottom tabs.");
+  assert.equal(typeof personalButton.onclick,"function");
   for(const [label,button] of Object.entries({bottomTab,inboxButton,pushRow,sessionRow}))
     assert.equal(typeof button.onclick,"function",label+" is not interactive");
 });

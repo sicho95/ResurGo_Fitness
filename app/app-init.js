@@ -121,9 +121,9 @@
       state.ui.view="plan";
       save().then(render);
     });
-    on("openLiveCoach",()=>{state.ui.personalLiveKind=null;state.ui.view="coachLive";save().then(render);});
+    on("openLiveCoach",()=>{state.ui.personalPlannedId=null;state.ui.personalLiveKind=null;state.ui.view="coachLive";save().then(render);});
     on("personalStrength",personalStrength);
-    $("[data-personal-live]").forEach(b=>b.onclick=()=>openPersonalLive(b.dataset.personalLive));
+    $$("[data-personal-live]").forEach(b=>b.onclick=()=>openPersonalLive(b.dataset.personalLive));
     on("garminConfigure",garminConfigure);on("garminCheck",garminCheck);on("garminDisconnect",garminDisconnect);
     on("garminSync",()=>{const pid=profile()?.id;if(pid)garminSyncProfile(pid,Number(el("garminDays")?.value)||30,true);});
     on("liveRun",()=>liveStart("run")); on("liveBike",()=>liveStart("bike"));
@@ -139,7 +139,7 @@
       if(fold)fold.open=true;if(info){info.open=true;info.scrollIntoView?.({behavior:"smooth",block:"start"});}
     });});
     $$("[data-view]").forEach(b=>b.onclick=()=>{state.ui.view=b.dataset.view; save().then(render);}); $$("[data-start]").forEach(b=>b.onclick=()=>start(b.dataset.start)); $$("[data-profile]").forEach(b=>b.onclick=()=>{state.activeProfileId=b.dataset.profile; save("Profil actif changé.").then(render);});
-    on("createProfile",createProfile); on("startToday",()=>{const p=profile(), s=p?coachPickToday(p).session:null; if(s) start(s.id);}); on("goPlan",()=>{state.ui.view="plan"; save().then(render);}); on("nextWeek",()=>{const p=profile(); if(p){makeWeek(p.id,false,true); save("Semaine suivante générée.").then(render);}}); on("regenPlan",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan recalculé.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); refreshPlanAfterActivity(p.id); save("Repos actif enregistré et plan recalculé.").then(render);}});
+    on("createProfile",createProfile); on("startToday",()=>{const p=profile(), s=p?coachPickToday(p).session:null; if(s) launchPlannedSession(s);}); on("goPlan",()=>{state.ui.view="plan"; save().then(render);}); on("nextWeek",()=>{const p=profile(); if(p){makeWeek(p.id,false,true); save("Semaine suivante générée.").then(render);}}); on("regenPlan",()=>{const p=profile(); if(p){makeWeek(p.id); save("Plan recalculé.").then(render);}}); on("activeRest",()=>{const p=profile(); if(p){state.activities.push({id:uid("activity"),profileId:p.id,source:"manual",type:"walk",startedAt:new Date().toISOString(),durationSeconds:1200}); refreshPlanAfterActivity(p.id); save("Repos actif enregistré et plan recalculé.").then(render);}});
     on("installPwa",installPwa); on("dismissPwa",()=>{state.settings.hideInstallPrompt=true; save().then(render);});
     $$("[data-rate-target]").forEach(b=>b.onclick=()=>{const input=el(b.dataset.rateTarget), val=Number(b.dataset.rateValue), m=mood[val]; if(!input||!m) return; input.value=val; const field=b.closest(".smileyField"), summary=field?.querySelector("summary"), details=field?.querySelector("details"); field?.classList.remove("empty","bad","warn","ok","good","great"); field?.classList.add(m.tone); field?.querySelectorAll("[data-rate-target]").forEach(x=>x.classList.toggle("selected",x===b)); if(summary) summary.innerHTML=`<b>${m.face}</b><small>${val}/5</small>`; if(details) details.open=false; if(["quickBack","quickKnee","quickFatigue"].includes(b.dataset.rateTarget)) saveQuickCheck(true); if(["profileBack","profileKnee","profileFatigue"].includes(b.dataset.rateTarget)) saveProfileFields(); updateAppBadge();});
     $$("[data-week-window-target]").forEach(b=>b.onclick=()=>{const input=el(b.dataset.weekWindowTarget); if(!input) return; input.value=Number(b.dataset.weekWindowValue)===7?"7":"5"; setSegmentedActive(b); if(input.id==="availabilityDays") saveProfileFields({regen:true,msg:`Plan recalculé sur ${input.value} jours.`});});
