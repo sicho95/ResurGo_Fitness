@@ -21,7 +21,7 @@ function appContext({supported=false,device=null}={}){
     alert:m=>notices.push(m),esc:s=>s
   });
   context.globalThis=context;
-  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
+  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleParsePm5,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
   return {ctx:context,api:context.__test,notices,buttons,connections};
 }
 const packet=bytes=>new DataView(Uint8Array.from(bytes).buffer);
@@ -133,4 +133,28 @@ test("Garmin merge is profile scoped, non-destructive, idempotent and prefers me
  assert.equal(ctx.api.garminVisibleActivities("b").length,1);
  assert.equal(ctx.api.garminUpsertActivities("a",[g]),false);
  assert.equal(state.activities.length,3);
+});
+
+test("PM5 native status decodes distance, speed, cadence, HR and power",()=>{
+ const {api}=appContext();
+ assert.equal(api.bleParsePm5(0x31,packet([0,0,0,0x10,0x27,0])).distanceM,1000);
+ const a=api.bleParsePm5(0x32,packet([0,0,0,0x88,0x13,80,135]));
+ assert.equal(a.speedKmh,18);assert.equal(a.cadenceRpm,80);assert.equal(a.heartRate,135);
+ assert.equal(api.bleParsePm5(0x36,packet([0,0,0,150,0])).powerW,150);
+ assert.equal(api.bleParsePm5(0x32,packet([0,0,0,0,0,0,255])).heartRate,undefined);
+});
+test("Bike chooser uses single FTMS filter without mixed name filters",async()=>{
+ const m=mockMachine(),{api,buttons,connections}=appContext({supported:true,device:m.device});
+ buttons.bleMachineKind.value="bike";await api.bleMachineConnect();
+ assert.equal(connections[0].filters.length,1);assert.equal(connections[0].filters[0].services[0],0x1826);
+ assert.ok(connections[0].optionalServices.includes("ce060030-43e5-11e4-916c-0800200c9a66"));
+});
+test("PM5 direct chooser subscribes to native data and exposes real distance",async()=>{
+ const handlers={},service={getCharacteristic:async id=>({addEventListener:(n,fn)=>{handlers[id]=fn},startNotifications:async()=>{},removeEventListener(){}})};
+ const device={name:"PM5 test",id:"pm5",addEventListener(){},removeEventListener(){},gatt:{connected:true,connect:async()=>({getPrimaryService:async id=>{assert.equal(id,"ce060030-43e5-11e4-916c-0800200c9a66");return service}}),disconnect(){}}};
+ const {api,connections}=appContext({supported:true,device});
+ await api.bleMachineConnect("pm5");
+ assert.equal(connections[0].acceptAllDevices,true);
+ handlers["ce060031-43e5-11e4-916c-0800200c9a66"]({target:{value:packet([0,0,0,0x10,0x27,0])}});
+ assert.equal(api.bleMachineSnapshot().distanceM,1000);assert.equal(api.bleMachineSnapshot().protocol,"PM5 natif");
 });

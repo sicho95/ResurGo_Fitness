@@ -131,7 +131,7 @@
     on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
     on("liveEncourage",()=>liveSpeech("positive"));
     on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",bleHrDisconnect);
-    on("bleMachineConnect",bleMachineConnect); on("bleMachineDisconnect",bleMachineDisconnect);
+    on("bleMachineConnect",()=>bleMachineConnect()); on("blePm5Connect",()=>bleMachineConnect("pm5")); on("bleMachineDisconnect",bleMachineDisconnect);
     on("copyBluefyUrl",bluefyCopyAddress);
     on("liveStartIndoor",liveStartIndoor);
     on("openBluefyHelp",()=>{state.ui.view="settings";save().then(()=>{render();

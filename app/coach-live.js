@@ -253,7 +253,7 @@
     const completedPlan=planned&&distanceKm>.05&&durationSeconds>=Math.max(60,(planned.minutes||0)*60*.8);
     if(completedPlan)planned.completedAt=new Date().toISOString();
     state.activities.push({id:s.id,plannedSessionId:completedPlan?planned.id:null,profileId:s.profileId,type:s.sport,
-      source:s.machineKind?(s.machineProtocol==="PM5 CSC/CPS"?"resurgo_pm5_ble":"resurgo_ftms_ble"):"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
+      source:s.machineKind?(s.machineProtocol?.startsWith("PM5")?"resurgo_pm5_ble":"resurgo_ftms_ble"):"resurgo_gps_phone",machineKind:s.machineKind||null,startedAt:s.startedAt,
       averagePowerW:s.powerSamples?Math.round(s.powerSum/s.powerSamples):null,maxPowerW:s.powerMax??null,averageCadenceRpm:s.cadenceSamples?Math.round(s.cadenceSum/s.cadenceSamples):null,averageHeartRate:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,maxHeartRate:s.heartMax??null,
       completedAt:new Date().toISOString(),durationSeconds,distanceKm,estimatedDistance:!!s.estimatedDistance,hrAvg:s.heartSamples?Math.round(s.heartSum/s.heartSamples):null,hrMax:s.heartMax??null,
       elevationGainM:Math.round(s.gainM),
