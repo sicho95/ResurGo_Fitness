@@ -118,3 +118,19 @@ test("PM5 cycling services decode and event counter rollover",()=>{
  assert.equal(api.bleCyclingPowerPacket(packet([0,0,150,0])).powerW,150);
  assert.throws(()=>api.bleCscPacket(packet([1,0])),/tronquée/);
 });
+
+test("Garmin merge is profile scoped, non-destructive, idempotent and prefers measured values",()=>{
+ const state={activities:[],metrics:[]};
+ const ctx=vm.createContext({state,Date,Number,Math});
+ const garmin=fs.readFileSync(path.join(root,"app/garmin-personal.js"),"utf8");
+ vm.runInContext(garmin+"\n globalThis.api={garminUpsertActivities,garminVisibleActivities,garminReconcile};",ctx);
+ const local={id:"local",profileId:"a",source:"resurgo_ftms_ble",type:"bike",startedAt:"2026-11-25T11:00:00Z",durationSeconds:1200,distanceKm:4,estimatedDistance:false,averagePowerW:140,notes:"coach"};
+ state.activities.push(local,{...local,id:"other",profileId:"b"});
+ const g={garminActivityId:"42",type:"bike",startedAt:"2026-11-25T11:01:00Z",durationSeconds:1210,distanceKm:5,hrAvg:130,averagePowerW:145};
+ assert.equal(ctx.api.garminUpsertActivities("a",[g]),true);
+ assert.equal(ctx.api.garminVisibleActivities("a").length,1);
+ assert.equal(local.distanceKm,4);assert.equal(local.hrAvg,130);assert.equal(local.averagePowerW,145);assert.equal(local.notes,"coach");
+ assert.equal(ctx.api.garminVisibleActivities("b").length,1);
+ assert.equal(ctx.api.garminUpsertActivities("a",[g]),false);
+ assert.equal(state.activities.length,3);
+});

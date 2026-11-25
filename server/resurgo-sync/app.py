@@ -5,6 +5,15 @@ Candidate implementation; not deployed or approved for real health data.
 from __future__ import annotations
 
 import fcntl
+import base64
+import math
+import urllib.request
+import urllib.error
+import urllib.parse
+from datetime import date, datetime, timezone, timedelta
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives import hashes
 import hashlib
 import hmac
 import json
@@ -24,7 +33,7 @@ from pydantic import BaseModel, Field
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 import push_service
 
-VERSION = "0.1.0-candidate"
+VERSION = "0.2.0-garmin"
 DB_PATH = Path(os.environ.get("RS_DB_PATH", "/data/resurgo.sqlite3"))
 ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 ENTITY_TYPES = {"profile_settings", "plan", "activity", "measurement",
@@ -104,6 +113,11 @@ def _init_db_locked() -> None:
         CREATE INDEX IF NOT EXISTS idx_signups_origin ON profile_signups(origin_hash,created_at);
         """)
         push_service.ensure_schema(c)
+        c.execute("""CREATE TABLE IF NOT EXISTS garmin_credentials (
+            account_id TEXT NOT NULL REFERENCES profiles(id),
+            local_profile_id TEXT NOT NULL, nonce BLOB NOT NULL, ciphertext BLOB NOT NULL,
+            updated_at INTEGER NOT NULL, PRIMARY KEY(account_id,local_profile_id))""")
+        c.commit()
 
 
 @contextmanager
@@ -593,3 +607,241 @@ def pull(cursor: int = Query(default=0, ge=0),
         event["deleted"] = bool(event["deleted"])
     return {"events": events, "nextCursor": events[-1]["sequence"] if events else cursor,
             "hasMore": more}
+
+
+# Garmin Personal API, read-only. No credentials in synced entities or responses.
+GARMIN_BASE = "https://personal.connectapi.garmin.com"
+GARMIN_TOKEN_PATH = "/personalapitoken-service/personal-api/personal-api-key/token"
+_garmin_tokens = {}  # process-local only, keyed by credential digest; bounded below
+
+def garmin_scope(user, pid):
+    if not isinstance(pid, str) or not 1 <= len(pid) <= 120:
+        raise HTTPException(400, "invalid_profile")
+    with closing(connect()) as c:
+        row = c.execute("SELECT payload FROM entity_heads WHERE profile_id=? AND kind='profile_settings' AND entity_id=? AND deleted=0",
+                        (user["profile_id"], pid)).fetchone()
+    if not row:
+        raise HTTPException(404, "sync_profile_first")
+    return user["profile_id"], pid
+
+def garmin_cipher():
+    secret = os.environ.get("RS_GARMIN_MASTER_KEY") or os.environ.get("RS_PAIR_PEPPER", "")
+    if len(secret) < 32:
+        raise HTTPException(503, "garmin_not_configured")
+    key = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=b"resurgo/garmin/v1").derive(secret.encode())
+    return AESGCM(key)
+
+def garmin_aad(scope):
+    return json.dumps(scope, separators=(",", ":")).encode()
+
+class _NoGarminRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+def garmin_http(path, auth, method="GET"):
+    req = urllib.request.Request(GARMIN_BASE + path, method=method,
+                                 headers={"Authorization": auth, "Accept": "*/*", "User-Agent": "ResurGo/2.0.3"})
+    try:
+        with urllib.request.build_opener(_NoGarminRedirect()).open(req, timeout=8) as res:
+            data = res.read(4_000_001)
+            if len(data) > 4_000_000:
+                raise HTTPException(502, "garmin_response_too_large")
+            return data
+    except urllib.error.HTTPError as exc:
+        if exc.code in (401, 403):
+            raise HTTPException(422, "garmin_key_rejected")
+        if exc.code == 429:
+            raise HTTPException(429, "garmin_rate_limit")
+        raise HTTPException(502, "garmin_upstream_error")
+    except (urllib.error.URLError, TimeoutError, OSError):
+        raise HTTPException(502, "garmin_network_error")
+
+def garmin_token(key):
+    fingerprint = digest(key)
+    cached = _garmin_tokens.get(fingerprint)
+    if cached and cached[1] > time.time() + 60:
+        return cached[0]
+    raw = garmin_http(GARMIN_TOKEN_PATH, "ApiKey " + key, "POST").decode().strip()
+    try:
+        token = raw if not raw.startswith("{") else json.loads(raw)["access_token"]
+        part = token.split(".")[1]
+        expires = int(json.loads(base64.urlsafe_b64decode(part + "=" * (-len(part) % 4)))["exp"])
+        if expires <= time.time():
+            raise ValueError()
+    except (ValueError, KeyError, IndexError, TypeError):
+        raise HTTPException(502, "garmin_invalid_token")
+    if len(_garmin_tokens) >= 64:
+        _garmin_tokens.clear()
+    _garmin_tokens[fingerprint] = (token, expires)
+    return token
+
+def garmin_json(token, path, params=None):
+    if params:
+        path += "?" + urllib.parse.urlencode(params)
+    raw = garmin_http(path, "Bearer " + token)
+    try:
+        return json.loads(raw) if raw else None
+    except ValueError:
+        raise HTTPException(502, "garmin_invalid_json")
+
+def garmin_read_key(scope):
+    with closing(connect()) as c:
+        row = c.execute("SELECT nonce,ciphertext FROM garmin_credentials WHERE account_id=? AND local_profile_id=?", scope).fetchone()
+    if not row:
+        raise HTTPException(404, "garmin_not_linked")
+    try:
+        return garmin_cipher().decrypt(row["nonce"], row["ciphertext"], garmin_aad(scope)).decode()
+    except Exception:
+        raise HTTPException(503, "garmin_key_unavailable")
+
+def garmin_num(value, low=0, high=1e12):
+    return value if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and low <= value <= high else None
+
+def garmin_normalize_activity(row):
+    if not isinstance(row, dict):
+        return None
+    aid = str(row.get("activityId", ""))
+    if not aid.isdecimal() or len(aid)>24:
+        return None
+    key = str((row.get("activityType") or {}).get("typeKey", "")) if isinstance(row.get("activityType"), dict) else ""
+    kind = ("bike" if any(x in key for x in ("cycling", "biking", "bike")) else
+            "run" if any(x in key for x in ("running", "treadmill")) else
+            "walk" if any(x in key for x in ("walking", "hiking")) else
+            "strength" if "strength" in key else "mobility" if any(x in key for x in ("yoga","pilates","mobility")) else "cardio" if any(x in key for x in ("fitness","elliptical","rowing","swimming","cardio")) else "other")
+    try:
+        start = datetime.fromisoformat(str(row.get("startTimeGMT", "")).replace("Z", "+00:00"))
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+    duration = garmin_num(row.get("duration"), 1, 172800)
+    elapsed = garmin_num(row.get("elapsedDuration"), 1, 172800)
+    if duration is None:
+        duration = elapsed
+    if duration is None:
+        return None
+    obj = {"garminActivityId": aid, "source":"garmin_personal", "type":kind,
+           "garminType":key, "startedAt":start.astimezone(timezone.utc).isoformat(),
+           "durationSeconds":round(duration), "elapsedSeconds":round(elapsed or duration),
+           "sessionTitle":str(row.get("activityName") or key or "Activité Garmin")[:160]}
+    if any(x in key for x in ("indoor","treadmill","virtual")):
+        obj["machineKind"] = "bike" if kind=="bike" else "treadmill" if kind=="run" else "elliptical" if "elliptical" in key else None
+    for dst, names, lo, hi, factor in [
+        ("distanceKm",["distance"],0,2e6,.001),("elevationGainM",["elevationGain"],0,30000,1),
+        ("hrAvg",["averageHR"],25,245,1),("hrMax",["maxHR"],25,245,1),
+        ("averagePowerW",["avgPower","averagePower"],0,3000,1),("maxPowerW",["maxPower"],0,5000,1),
+        ("averageCadenceRpm",["averageBikingCadenceInRevPerMinute","averageBikeCadence"],0,250,1),
+        ("avgSpeedKmh",["averageSpeed"],0,100,3.6),("calories",["calories"],0,20000,1)]:
+        for name in names:
+            value=garmin_num(row.get(name),lo,hi)
+            if value is not None:
+                obj[dst]=round(value*factor,3)
+                break
+    return obj
+
+def garmin_normalize_health(dataset, data):
+    if isinstance(data, dict):
+        data = data.get("hrvSummaries" if dataset=="hrv" else "data" if dataset=="daily" else "dailyWeightSummaries", [])
+    if not isinstance(data,list):
+        return []
+    result=[]
+    for r in data:
+        if not isinstance(r,dict):
+            continue
+        day=r.get("calendarDate") or r.get("date")
+        try:
+            day=date.fromisoformat(str(day)[:10]).isoformat()
+        except ValueError:
+            continue
+        m={"date":day}
+        if dataset=="sleep":
+            mapping=[("sleepSeconds","sleepTimeSeconds",1,86400,1)]
+        elif dataset=="daily":
+            mapping=[("restingHeartRate","restingHeartRate",25,245,1),("steps","totalSteps",0,100000,1),("stressAvg","averageStressLevel",0,100,1),("bodyBatteryHigh","bodyBatteryHighestValue",0,100,1)]
+        elif dataset=="hrv":
+            mapping=[("hrvMs","lastNightAvg",1,300,1),("hrvWeeklyMs","weeklyAvg",1,300,1)]
+        else:
+            mapping=[("weightKg","weight",20000,500000,.001),("bodyFatPct","bodyFat",0,100,1),("waterPct","bodyWater",0,100,1),("bmi","bmi",5,100,1)]
+        for dest,source,lo,hi,factor in mapping:
+            value=garmin_num(r.get(source),lo,hi)
+            if value is not None:
+                m[dest]=round(value*factor,3)
+        if dataset=="hrv" and isinstance(r.get("status"),str):
+            m["hrvStatus"]=r["status"][:32]
+        if len(m)>1:
+            result.append(m)
+    return result
+
+@public.get("/api/v1/garmin/{pid}/status")
+def garmin_status(pid: str, user: dict = Depends(current_device)):
+    scope=garmin_scope(user,pid)
+    with closing(connect()) as c:
+        row=c.execute("SELECT updated_at FROM garmin_credentials WHERE account_id=? AND local_profile_id=?",scope).fetchone()
+    return {"configured":bool(row),"updatedAt":row["updated_at"] if row else None}
+
+@public.post("/api/v1/garmin/{pid}/configure")
+def garmin_configure(pid: str, body: dict, user: dict = Depends(current_device)):
+    scope=garmin_scope(user,pid)
+    with transaction() as c:
+        throttle(c,"garmin-config:"+scope[0],5)
+    key=body.get("apiKey")
+    if not isinstance(key,str) or not 16<=len(key.strip())<=4096 or any(ord(ch)<33 or ord(ch)>126 for ch in key.strip()):
+        raise HTTPException(400,"invalid_garmin_key")
+    key=key.strip()
+    token=garmin_token(key)
+    # Check that data access is really available before replacing prior key.
+    garmin_json(token,"/userprofile-service/userprofile/settings")
+    nonce=os.urandom(12)
+    encrypted=garmin_cipher().encrypt(nonce,key.encode(),garmin_aad(scope))
+    with transaction() as c:
+        c.execute("INSERT INTO garmin_credentials VALUES(?,?,?,?,?) ON CONFLICT(account_id,local_profile_id) DO UPDATE SET nonce=excluded.nonce,ciphertext=excluded.ciphertext,updated_at=excluded.updated_at",
+                  (*scope,nonce,encrypted,int(time.time())))
+    return {"configured":True}
+
+@public.post("/api/v1/garmin/{pid}/disconnect")
+def garmin_disconnect(pid: str, user: dict = Depends(current_device)):
+    scope=garmin_scope(user,pid)
+    with transaction() as c:
+        c.execute("DELETE FROM garmin_credentials WHERE account_id=? AND local_profile_id=?",scope)
+    _garmin_tokens.clear()
+    return {"configured":False}
+
+def garmin_dates(start,end,max_days):
+    try:
+        a,b=date.fromisoformat(start),date.fromisoformat(end)
+        if not 0<=(b-a).days<=max_days or b>date.today()+timedelta(days=1):
+            raise ValueError()
+    except ValueError:
+        raise HTTPException(400,"invalid_date_range")
+    return a.isoformat(),b.isoformat()
+
+@public.get("/api/v1/garmin/{pid}/activities")
+def garmin_activities(pid: str, startDate: str, endDate: str, offset: int=Query(0,ge=0,le=100000), user: dict=Depends(current_device)):
+    scope=garmin_scope(user,pid)
+    start,end=garmin_dates(startDate,endDate,366)
+    with transaction() as c:
+        throttle(c,"garmin-pull:"+scope[0],60)
+    token=garmin_token(garmin_read_key(scope))
+    rows=garmin_json(token,"/activitylist-service/activities/search/activities",{"start":offset,"limit":50,"startDate":start,"endDate":end,"excludeChildren":"true"})
+    if rows is None:
+        rows=[]
+    if not isinstance(rows,list):
+        raise HTTPException(502,"garmin_unexpected_activities")
+    return {"activities":[x for r in rows if (x:=garmin_normalize_activity(r)) is not None],"hasMore":len(rows)>=50,"nextOffset":offset+len(rows)}
+
+@public.get("/api/v1/garmin/{pid}/health")
+def garmin_health(pid: str, dataset: str, startDate: str, endDate: str, user: dict=Depends(current_device)):
+    scope=garmin_scope(user,pid)
+    start,end=garmin_dates(startDate,endDate,30)
+    with transaction() as c:
+        throttle(c,"garmin-pull:"+scope[0],60)
+    paths={
+        "sleep":("/sleep-service/sleep/dailySleepSummariesByDate",{"startDate":start,"endDate":end}),
+        "daily":("/usersummary-service/v2/dailysummaries",{"startDate":start,"endDate":end}),
+        "hrv":(f"/hrv-service/hrv/daily/{start}/{end}",None),
+        "weight":(f"/weight-service/weight/all/{start}/{end}",None)}
+    if dataset not in paths:
+        raise HTTPException(400,"invalid_dataset")
+    token=garmin_token(garmin_read_key(scope))
+    path,params=paths[dataset]
+    return {"measurements":garmin_normalize_health(dataset,garmin_json(token,path,params))}

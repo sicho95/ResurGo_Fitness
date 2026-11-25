@@ -235,3 +235,40 @@ def test_public_profile_creation_is_limited_without_admin(clients,monkeypatch):
     blocked=api.post("/api/v1/profiles/create",json={"profileName":"Overflow", "deviceName":"Other"})
     assert blocked.status_code==429
     assert api.get("/admin/profiles").status_code==404
+
+
+def test_garmin_credentials_are_encrypted_scoped_and_never_returned(clients, monkeypatch):
+    _, api=clients
+    a=enrolled(clients,"A")
+    b=enrolled(clients,"B")
+    auth=headers(a)
+    local="sport-profile-a"
+    op=operation(entity=local,payload={"profile":{"id":local,"name":"A"}})
+    op["entityType"]="profile_settings"
+    assert api.post("/api/v1/sync/push",headers=auth,json={"operations":[op]}).status_code==200
+    path="/api/v1/garmin/"+local
+    key="personal-key-not-a-real-secret-123"
+    monkeypatch.setattr(sync,"garmin_token",lambda k: "fake-token")
+    monkeypatch.setattr(sync,"garmin_json",lambda *a,**kw: {"displayName":"A"})
+    assert api.get(path+"/status").status_code==401
+    assert api.get(path+"/status",headers=headers(b)).status_code==404
+    r=api.post(path+"/configure",headers=auth,json={"apiKey":key})
+    assert r.status_code==200 and key not in r.text
+    with sync.closing(sync.connect()) as c:
+        row=c.execute("SELECT * FROM garmin_credentials").fetchone()
+        assert key.encode() not in row["ciphertext"]
+    assert sync.garmin_read_key((a["profileId"],local))==key
+    assert api.get(path+"/status",headers=auth).json()["configured"] is True
+    assert api.post(path+"/disconnect",headers=auth,json={}).status_code==200
+    assert api.get(path+"/status",headers=auth).json()["configured"] is False
+
+def test_garmin_activity_units_and_missing_values():
+    a=sync.garmin_normalize_activity({"activityId":42,"activityType":{"typeKey":"indoor_cycling"},"startTimeGMT":"2026-11-25 11:00:00","duration":1200,"distance":5000,"averageHR":120,"avgPower":145})
+    assert a["type"]=="bike" and a["machineKind"]=="bike"
+    assert a["distanceKm"]==5 and a["hrAvg"]==120 and a["averagePowerW"]==145
+    assert "hrMax" not in a
+    assert a["startedAt"].endswith("+00:00")
+
+def test_garmin_health_units_and_no_fabrication():
+    assert sync.garmin_normalize_health("weight",[{"calendarDate":"2026-11-25","weight":95000}])==[{"date":"2026-11-25","weightKg":95}]
+    assert sync.garmin_normalize_health("sleep",[{"calendarDate":"2026-11-25","sleepTimeSeconds":21600}])==[{"date":"2026-11-25","sleepSeconds":21600}]

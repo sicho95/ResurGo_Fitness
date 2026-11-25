@@ -121,9 +121,13 @@
       state.ui.view="plan";
       save().then(render);
     });
-    on("openLiveCoach",()=>{state.ui.view="coachLive";save().then(render);});
+    on("openLiveCoach",()=>{state.ui.personalLiveKind=null;state.ui.view="coachLive";save().then(render);});
+    on("personalStrength",personalStrength);
+    $("[data-personal-live]").forEach(b=>b.onclick=()=>openPersonalLive(b.dataset.personalLive));
+    on("garminConfigure",garminConfigure);on("garminCheck",garminCheck);on("garminDisconnect",garminDisconnect);
+    on("garminSync",()=>{const pid=profile()?.id;if(pid)garminSyncProfile(pid,Number(el("garminDays")?.value)||30,true);});
     on("liveRun",()=>liveStart("run")); on("liveBike",()=>liveStart("bike"));
-    on("liveBack",()=>{state.ui.view="today";save().then(render);});
+    on("liveBack",()=>{state.ui.view="session";save().then(render);});
     on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
     on("liveEncourage",()=>liveSpeech("positive"));
     on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",bleHrDisconnect);
@@ -168,6 +172,6 @@
     const imp=el("restoreEncryptedJson"); if(imp) imp.onchange=e=>e.target.files[0]&&restoreEncryptedBackup(e.target.files[0]); const sf=el("exerciseSearchForm"); if(sf) sf.onsubmit=e=>{e.preventDefault(); state.ui.search=text("searchDraft"); state.ui.searchDraft=state.ui.search; save().then(render);}; const sd=el("searchDraft"); if(sd) sd.oninput=e=>{state.ui.searchDraft=e.target.value; if(!e.target.value){state.ui.search=""; save().then(render);}}; const f=el("familyFilter"); if(f) f.onchange=e=>{state.ui.filter=e.target.value; save().then(render);};
   }
   async function loadBodyMaps(){ await Promise.all(Object.keys(bodyMapAssets).map(async k=>{ try{ bodyMapSvg[k]=await fetch(bodyMapAssets[k],{cache:"force-cache"}).then(r=>r.ok?r.text():""); }catch{} })); }
-  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); const pushId=new URLSearchParams(location.search).get("notification"); if(pushId&&/^[a-zA-Z0-9_-]{1,128}$/.test(pushId)){state.ui.view="pushInbox";state.ui.selectedPushId=pushId;} render(); if(state.ui.view==="pushInbox")pushInboxOpen(pushId||"").catch(()=>{}); else pushInboxLoad().catch(()=>{}); nasSyncStart(); liveRecoverAfterReload(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
+  async function init(){ registerPwaEvents(); state=(await get("app"))||clone(empty); state={...clone(empty),...state,settings:{...empty.settings,...(state.settings||{}),notifications:{...empty.settings.notifications,...(state.settings?.notifications||{})},tts:{...empty.settings.tts,...(state.settings?.tts||{})}},ui:{...empty.ui,...(state.ui||{})}}; if(location.hash==="#today") state.ui.view="today"; state.ui.message=""; if(state.activeProfileId) ensurePlanCurrent(state.activeProfileId); await loadBodyMaps(); const pushId=new URLSearchParams(location.search).get("notification"); if(pushId&&/^[a-zA-Z0-9_-]{1,128}$/.test(pushId)){state.ui.view="pushInbox";state.ui.selectedPushId=pushId;} render(); if(state.ui.view==="pushInbox")pushInboxOpen(pushId||"").catch(()=>{}); else pushInboxLoad().catch(()=>{}); nasSyncStart(); garminAutoStart(); liveRecoverAfterReload(); registerServiceWorker(); scheduleSessionReminder(); window.addEventListener("online",checkOnlineVersion); document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ if(state.activeProfileId&&ensurePlanCurrent(state.activeProfileId)) save("Plan réajusté selon les jours passés.").then(render); updateAppBadge(); scheduleSessionReminder(); } }); }
   init();
 })();

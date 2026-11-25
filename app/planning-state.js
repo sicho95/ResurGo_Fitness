@@ -108,7 +108,7 @@
   }
   function recentActivityAnchor(pid,windowDays){
     const floor=windowDays===7?addDaysIso(TODAY,-6):mondayOfWeek(TODAY);
-    const dates=state.activities.filter(a=>a.profileId===pid).map(a=>isoDatePart(a.startedAt||a.date||a.createdAt)).filter(date=>date&&date>=floor&&date<=TODAY).sort();
+    const dates=garminVisibleActivities(pid).map(a=>isoDatePart(a.startedAt||a.date||a.createdAt)).filter(date=>date&&date>=floor&&date<=TODAY).sort();
     return dates[0]||TODAY;
   }
   function planSessionDates(sets,availableDates){
@@ -186,7 +186,8 @@
     const open=plan(); if(!open.length) return {session:null,rest:true,title:"Semaine terminée",reason:"Toutes les séances prévues sont faites. Repos ou marche douce."};
     const anchor=weekAnchor(), end=weekEndDate(anchor,weekWindowDays(p)), remainingDays=Math.max(1,dateDiffDays(TODAY,end)+1), today=todayPlannedSession(), overdue=open.filter(s=>(s.date||TODAY)<TODAY), pressure=open.length>=remainingDays;
     const pain=Math.max(p.health.backPain||0,p.health.kneePain||0,p.health.tendonPain||0), fatigue=p.health.fatigue||0, protect=protectionMode(p), knee=kneeCare(p);
-    if(today&&!protect) return {session:today,rest:false,title:"Séance du jour",reason:"Elle est prévue aujourd'hui dans la semaine."};
+    const garminRest=garminRecovery(p.id);
+    if(today&&!protect&&!garminRest.light) return {session:today,rest:false,title:"Séance du jour",reason:"Elle est prévue aujourd'hui dans la semaine."};
     if(!today&&!overdue.length&&!pressure) return {session:null,rest:true,title:"Repos planifié",reason:`Il reste ${remainingDays} jours pour ${open.length} séance(s). Le repos garde la semaine équilibrée.`};
     const typeDone=weekPlan().filter(s=>s.completedAt).reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},{});
     const typeNeed={strength:0,cardio:0,mobility:0}; weekPlan().forEach(s=>{ if(typeNeed[s.type]!=null) typeNeed[s.type]++; });
@@ -197,13 +198,13 @@
       if(typeNeed[s.type]!=null) v+=(typeNeed[s.type]-(typeDone[s.type]||0))*8;
       if(knee&&s.title.toLowerCase().includes("genou")) v+=30;
       if(protect){ v+=s.type==="mobility"?35:s.type==="cardio"?8:-8; }
-      else if(fatigue>=4){ v+=s.type==="mobility"?20:s.type==="strength"?-6:4; }
+      else if(fatigue>=4||garminRest.light){ v+=s.type==="mobility"?20:s.type==="strength"?-6:4; }
       else if(pain>=2){ v+=s.type==="mobility"?14:s.type==="cardio"?3:0; }
       if(s.type==="strength") v+=5;
       return v;
     };
     const picked=[...open].sort((a,b)=>score(b)-score(a))[0];
-    const reason=knee?"Genou fragile: le coach évite squats, fentes, step et pliométrie, mais garde marche-course ou course très facile sur plat.":protect?"Protection prioritaire: le coach choisit la séance la plus récupératrice utile.":overdue.length?`Rattrapage: ${overdue.length} séance(s) en retard, le coach choisit la plus utile aujourd'hui.`:pressure?`Planning serré: ${open.length} séance(s) pour ${remainingDays} jour(s), le coach évite de perdre le fil.`:"Séance la plus utile pour équilibrer la semaine.";
+    const reason=garminRest.light&&!protect&&!knee?"Récupération Garmin : "+garminRest.reasons.join(", ")+". Privilégier un effort facile ou du repos.":knee?"Genou fragile: le coach évite squats, fentes, step et pliométrie, mais garde marche-course ou course très facile sur plat.":protect?"Protection prioritaire: le coach choisit la séance la plus récupératrice utile.":overdue.length?`Rattrapage: ${overdue.length} séance(s) en retard, le coach choisit la plus utile aujourd'hui.`:pressure?`Planning serré: ${open.length} séance(s) pour ${remainingDays} jour(s), le coach évite de perdre le fil.`:"Séance la plus utile pour équilibrer la semaine.";
     return {session:picked,rest:false,title:picked?.date===TODAY?"Séance du jour":"Séance conseillée par le coach",reason};
   }
   function notificationPermission(){ return "Notification" in window ? Notification.permission : "unsupported"; }
@@ -361,7 +362,7 @@
       strength1,runEasy,mobility,strength2,bikeEasy,recovery,activeRecovery
     ]:agendas[focus]).slice(0,days);
     const weekEnd=weekEndDate(anchor,windowDays);
-    const extraActivities=next||staleWeek?[]:state.activities.filter(a=>a.profileId===pid&&!a.sessionRunId).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
+    const extraActivities=next||staleWeek?[]:garminVisibleActivities(pid).filter(a=>!a.sessionRunId).filter(a=>{ const date=isoDatePart(a.startedAt||a.date||a.createdAt); return date>=anchor&&date<=weekEnd&&date<=TODAY; });
     const doneTypes=completed.reduce((a,s)=>{a[s.type]=(a[s.type]||0)+1; return a;},extraActivities.reduce((a,x)=>{ const type=activityPlanType(x); if(type) a[type]=(a[type]||0)+1; return a; },{}));
     const remainingSets=sets.filter(s=>{ if(doneTypes[s.type]>0){ doneTypes[s.type]--; return false; } return true; });
     const slotPlan=planSessionDates(remainingSets,remainingWeekDates(anchor,completed,windowDays));
@@ -390,7 +391,7 @@
     if(adh>=.65&&pain<=2&&fatigue<=3) return ["green","Progression","Semaine stable avec progression légère quand la récupération reste bonne."];
     return ["blue","Maintien","Répéter proprement sans chercher la performance."];
   }
-  function start(id){ const s=state.plans.find(x=>x.id===id); if(!s) return; state.sessionRuns=state.sessionRuns.filter(x=>x.completedAt||x.abortedAt); state.sessionRuns.push({id:uid("run"),profileId:s.profileId,sessionId:s.id,exerciseIndex:0,setIndex:0,mode:"work",logs:[],safetyAlerts:[],startedAt:new Date().toISOString(),completedAt:null,abortedAt:null}); state.ui.view="session"; speakExerciseGuide(currentEx(),"Prochain exercice."); save("Séance lancée.").then(render); }
+  function start(id){ const s=state.plans.find(x=>x.id===id); if(!s||run()||state.liveSession) return; state.sessionRuns=state.sessionRuns.filter(x=>x.completedAt||x.abortedAt); state.sessionRuns.push({id:uid("run"),profileId:s.profileId,sessionId:s.id,exerciseIndex:0,setIndex:0,mode:"work",logs:[],safetyAlerts:[],startedAt:new Date().toISOString(),completedAt:null,abortedAt:null}); state.ui.view="session"; speakExerciseGuide(currentEx(),"Prochain exercice."); save("Séance lancée.").then(render); }
   function log(success,pain,difficulty){
     stopTimer(); const r=run(), s=state.plans.find(x=>x.id===r?.sessionId), x=currentEx(); if(!r||!s||!x) return;
     r.logs.push({exerciseId:x.id,set:r.setIndex+1,success,pain,difficulty,at:new Date().toISOString()});
@@ -399,7 +400,8 @@
     if(doneEx&&r.exerciseIndex+1>=s.exerciseIds.length){
       r.completedAt=s.completedAt=new Date().toISOString(); r.mode="done";
       const activityId=uid("activity");
-      state.activities.push({id:activityId,profileId:r.profileId,source:"session",type:s.type,startedAt:r.startedAt,durationSeconds:s.minutes*60,sessionRunId:r.id,plannedSessionId:s.id,sessionTitle:s.title,sessionEaseScore:null,quickBackScore:null,quickKneeScore:null,quickFatigueScore:null});
+      state.activities.push({id:activityId,profileId:r.profileId,source:"session",type:s.type,startedAt:r.startedAt,durationSeconds:Math.max(1,Math.round((Date.parse(r.completedAt)-Date.parse(r.startedAt))/1000)),sessionRunId:r.id,plannedSessionId:s.id,sessionTitle:s.title,sessionEaseScore:null,quickBackScore:null,quickKneeScore:null,quickFatigueScore:null});
+      garminReconcile(r.profileId);
       state.ui.sessionFeedback={runId:r.id,activityId,profileId:r.profileId};
       state.ui.view="stats";
       state.ui.modal="sessionFeedback";

@@ -157,7 +157,7 @@
       await put("nasSyncMeta",meta);
       if(!batch.hasMore)break;
     }
-    if(dirty){await put("app",state);render();}
+    if(dirty){if(typeof garminReconcile==="function")for(const p of state.profiles||[])garminReconcile(p.id);await put("app",state);render();}
   }
   async function nasSyncNow(){
     if(nasSyncBusy||document.visibilityState==="hidden")return;

@@ -36,7 +36,8 @@ const newModules = [
   "voice-pack.js",
   "sensor-fusion.js",
   "ble-bluefy.js",
-  "coach-live.js"
+  "coach-live.js",
+  "garmin-personal.js"
 ];
 const initInsertionPoint = "  function render(){";
 
