@@ -184,3 +184,5 @@ test("partial indoor session merges with full Garmin recording without preferrin
 });
 
 test("beacio setup replaces old user guidance",()=>{const {api}=appContext();assert.match(api.bluefyHelpPanel(),/Safari \+ beacio/);assert.doesNotMatch(api.bluefyHelpPanel(),/Bluefy/);});
+
+test("Garmin distance wins if local recording has a measurement gap",()=>{const state={activities:[],metrics:[]},ctx=vm.createContext({state,Date,Number,Math});vm.runInContext(fs.readFileSync(path.join(root,"app/garmin-personal.js"),"utf8")+"\n globalThis.api={garminUpsertActivities};",ctx);const local={id:"local",profileId:"a",source:"resurgo_pm5_ble",machineKind:"bike",type:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:1200,distanceKm:5,estimatedDistance:false,measurementGapSeconds:90};state.activities.push(local);ctx.api.garminUpsertActivities("a",[{garminActivityId:"1",type:"bike",machineKind:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:1200,distanceKm:6}]);assert.equal(local.distanceKm,6);assert.equal(local.garminLocalMetrics.distanceKm,5);});

@@ -232,6 +232,7 @@
   async function liveFinish(){
     const s=state.liveSession;if(!s)return;
     if(!confirm("Terminer et conserver cette séance dans l'historique ?"))return;
+    if(!s.pausedAt&&s.lastTickAt&&Date.now()-s.lastTickAt>12000){s.measurementGapSeconds=(s.measurementGapSeconds||0)+Math.round((Date.now()-s.lastTickAt)/1000);s.measurementGapCount=(s.measurementGapCount||0)+1;}
     const durationSeconds=liveSeconds(s),distanceKm=s.hasDistance||s.distanceM>0?Math.round(s.distanceM)/1000:null;
     liveTrackStop();bleBackgroundStop();
     const planned=state.plans.find(p=>p.id===s.plannedSessionId&&p.profileId===s.profileId&&!p.completedAt);

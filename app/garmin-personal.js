@@ -36,7 +36,7 @@
       // Direct PM5 measurement wins only if the distance is not estimated.
       const direct=["resurgo_pm5_ble","resurgo_ftms_ble"].includes(source);
       const indoorMetric=["distanceKm","averagePowerW","maxPowerW","averageCadenceRpm","avgSpeedKmh"].includes(k);
-      const preferLocal=!partial&&direct&&indoorMetric&&!(k==="distanceKm"&&(local.estimatedDistance!==false))&&
+      const preferLocal=!partial&&!(local.measurementGapSeconds>0)&&direct&&indoorMetric&&!(k==="distanceKm"&&(local.estimatedDistance!==false))&&
         !(k==="avgSpeedKmh"&&local.estimatedDistance!==false)&&!(k==="averagePowerW"||k==="averageCadenceRpm");
       if(garminPresent(a)&&(preferLocal||!garminPresent(b))){if(partial&&["distanceKm","durationSeconds","elevationGainM","hrAvg","averagePowerW","averageCadenceRpm","avgSpeedKmh","calories"].includes(k)&&!garminPresent(b)){metrics[k]=null;chosen[k]="partial_local_only";}else{metrics[k]=a;chosen[k]=source;}}
       else if(garminPresent(b)){metrics[k]=b;chosen[k]="garmin_personal";}
