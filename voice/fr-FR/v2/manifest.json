@@ -1,0 +1,3015 @@
+{
+  "format": "resurgo-pregenerated-voice-pack",
+  "packId": "fr-FR-v2-edge",
+  "locale": "fr-FR",
+  "engine": "edge-tts",
+  "identitySource": "sicho95/histoire/config/voice-direction.json",
+  "qualityStatus": "candidate-awaiting-user-audition",
+  "voiceIdentityLocked": true,
+  "voices": {
+    "feminine": {
+      "voiceId": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "engine": "edge-tts",
+      "locale": "fr-FR",
+      "format": "mp3",
+      "source": "Histoire project voice identity"
+    },
+    "masculine": {
+      "voiceId": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "engine": "edge-tts",
+      "locale": "fr-FR",
+      "format": "mp3",
+      "source": "Histoire project voice identity"
+    }
+  },
+  "phrases": [
+    {
+      "number": 1,
+      "id": "phrase_001",
+      "text": "C'est parti. Prends le temps de trouver ton rythme."
+    },
+    {
+      "number": 2,
+      "id": "phrase_002",
+      "text": "On commence tranquillement. Tu as toute la séance devant toi."
+    },
+    {
+      "number": 3,
+      "id": "phrase_003",
+      "text": "Voilà, installe-toi dans une allure confortable."
+    },
+    {
+      "number": 4,
+      "id": "phrase_004",
+      "text": "Laisse le souffle se mettre en place progressivement."
+    },
+    {
+      "number": 5,
+      "id": "phrase_005",
+      "text": "Prends tes repères, inutile de partir trop vite."
+    },
+    {
+      "number": 6,
+      "id": "phrase_006",
+      "text": "Très bien, profite des premières minutes pour te mettre en route."
+    },
+    {
+      "number": 7,
+      "id": "phrase_007",
+      "text": "Garde une foulée souple, ton rythme viendra naturellement."
+    },
+    {
+      "number": 8,
+      "id": "phrase_008",
+      "text": "On avance à ton rythme, un pas après l'autre.",
+      "criticalNegation": true
+    },
+    {
+      "number": 9,
+      "id": "phrase_009",
+      "text": "C'est bien, le rythme est régulier."
+    },
+    {
+      "number": 10,
+      "id": "phrase_010",
+      "text": "Tu gères ton effort, continue comme ça."
+    },
+    {
+      "number": 11,
+      "id": "phrase_011",
+      "text": "Rien à forcer pour le moment, garde cette facilité.",
+      "criticalNegation": true
+    },
+    {
+      "number": 12,
+      "id": "phrase_012",
+      "text": "La régularité d'aujourd'hui construit les progrès de demain."
+    },
+    {
+      "number": 13,
+      "id": "phrase_013",
+      "text": "Prends plaisir à cette allure, elle a toute son utilité."
+    },
+    {
+      "number": 14,
+      "id": "phrase_014",
+      "text": "Une sortie facile compte vraiment dans ta progression."
+    },
+    {
+      "number": 15,
+      "id": "phrase_015",
+      "text": "Reste détendu, c'est une belle séance de travail."
+    },
+    {
+      "number": 16,
+      "id": "phrase_016",
+      "text": "Très bien, laisse les kilomètres défiler naturellement."
+    },
+    {
+      "number": 17,
+      "id": "phrase_017",
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat.",
+      "criticalNegation": true
+    },
+    {
+      "number": 18,
+      "id": "phrase_018",
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre."
+    },
+    {
+      "number": 19,
+      "id": "phrase_019",
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement.",
+      "criticalNegation": true
+    },
+    {
+      "number": 20,
+      "id": "phrase_020",
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable.",
+      "criticalNegation": true
+    },
+    {
+      "number": 21,
+      "id": "phrase_021",
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle."
+    },
+    {
+      "number": 22,
+      "id": "phrase_022",
+      "text": "Tu avances, c'est ce qui compte dans cette montée."
+    },
+    {
+      "number": 23,
+      "id": "phrase_023",
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui.",
+      "criticalNegation": true
+    },
+    {
+      "number": 24,
+      "id": "phrase_024",
+      "text": "Reste relâché autant que possible, on progresse pas à pas.",
+      "criticalNegation": true
+    },
+    {
+      "number": 25,
+      "id": "phrase_025",
+      "text": "La montée est passée. Prends quelques instants pour souffler."
+    },
+    {
+      "number": 26,
+      "id": "phrase_026",
+      "text": "Profite du plat pour retrouver un effort confortable."
+    },
+    {
+      "number": 27,
+      "id": "phrase_027",
+      "text": "Pas besoin de rattraper le temps perdu tout de suite.",
+      "criticalNegation": true
+    },
+    {
+      "number": 28,
+      "id": "phrase_028",
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas.",
+      "criticalNegation": true
+    },
+    {
+      "number": 29,
+      "id": "phrase_029",
+      "text": "Laisse ta foulée revenir sans forcer."
+    },
+    {
+      "number": 30,
+      "id": "phrase_030",
+      "text": "Bien joué pour cette côte, prends le temps de récupérer."
+    },
+    {
+      "number": 31,
+      "id": "phrase_031",
+      "text": "Relâche les épaules, retrouve progressivement tes sensations."
+    },
+    {
+      "number": 32,
+      "id": "phrase_032",
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement."
+    },
+    {
+      "number": 33,
+      "id": "phrase_033",
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied."
+    },
+    {
+      "number": 34,
+      "id": "phrase_034",
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance.",
+      "criticalNegation": true
+    },
+    {
+      "number": 35,
+      "id": "phrase_035",
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort."
+    },
+    {
+      "number": 36,
+      "id": "phrase_036",
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup.",
+      "criticalNegation": true
+    },
+    {
+      "number": 37,
+      "id": "phrase_037",
+      "text": "Prends quelques respirations naturelles et retrouve ton confort."
+    },
+    {
+      "number": 38,
+      "id": "phrase_038",
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner."
+    },
+    {
+      "number": 39,
+      "id": "phrase_039",
+      "text": "Un passage difficile ne résume pas toute ta course.",
+      "criticalNegation": true
+    },
+    {
+      "number": 40,
+      "id": "phrase_040",
+      "text": "Garde le mouvement le plus confortable possible.",
+      "criticalNegation": true
+    },
+    {
+      "number": 41,
+      "id": "phrase_041",
+      "text": "Le prochain effort approche. Prépare-toi progressivement."
+    },
+    {
+      "number": 42,
+      "id": "phrase_042",
+      "text": "Encore quelques instants, garde le contrôle de ton allure."
+    },
+    {
+      "number": 43,
+      "id": "phrase_043",
+      "text": "Fin de répétition. On passe en récupération."
+    },
+    {
+      "number": 44,
+      "id": "phrase_044",
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos.",
+      "criticalNegation": true
+    },
+    {
+      "number": 45,
+      "id": "phrase_045",
+      "text": "Tu peux prolonger la récupération si tu en as besoin."
+    },
+    {
+      "number": 46,
+      "id": "phrase_046",
+      "text": "Très bien, cette répétition est terminée."
+    },
+    {
+      "number": 47,
+      "id": "phrase_047",
+      "text": "La prochaine séquence commence dans quelques instants."
+    },
+    {
+      "number": 48,
+      "id": "phrase_048",
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue."
+    },
+    {
+      "number": 49,
+      "id": "phrase_049",
+      "text": "Un ravitaillement approche, décide selon tes besoins."
+    },
+    {
+      "number": 50,
+      "id": "phrase_050",
+      "text": "Tu connais ce point d'eau, il arrive bientôt."
+    },
+    {
+      "number": 51,
+      "id": "phrase_051",
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono.",
+      "criticalNegation": true
+    },
+    {
+      "number": 52,
+      "id": "phrase_052",
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite."
+    },
+    {
+      "number": 53,
+      "id": "phrase_053",
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations."
+    },
+    {
+      "number": 54,
+      "id": "phrase_054",
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan."
+    },
+    {
+      "number": 55,
+      "id": "phrase_055",
+      "text": "La fin approche, garde un effort contrôlé."
+    },
+    {
+      "number": 56,
+      "id": "phrase_056",
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité."
+    },
+    {
+      "number": 57,
+      "id": "phrase_057",
+      "text": "Tu prends du temps pour toi, et c'est précieux."
+    },
+    {
+      "number": 58,
+      "id": "phrase_058",
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite."
+    },
+    {
+      "number": 59,
+      "id": "phrase_059",
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité.",
+      "criticalNegation": true
+    },
+    {
+      "number": 60,
+      "id": "phrase_060",
+      "text": "Tu fais du bon travail, même sans courir plus vite.",
+      "criticalNegation": true
+    },
+    {
+      "number": 61,
+      "id": "phrase_061",
+      "text": "Très bien, profite simplement de ce moment."
+    },
+    {
+      "number": 62,
+      "id": "phrase_062",
+      "text": "Tu peux être fier de la constance que tu construis."
+    },
+    {
+      "number": 63,
+      "id": "phrase_063",
+      "text": "Chaque séance a sa place dans ton parcours."
+    },
+    {
+      "number": 64,
+      "id": "phrase_064",
+      "text": "Ce n'est pas une compétition contre les autres.",
+      "criticalNegation": true
+    },
+    {
+      "number": 65,
+      "id": "phrase_065",
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !"
+    },
+    {
+      "number": 66,
+      "id": "phrase_066",
+      "text": "Félicitations, quelle belle régularité aujourd'hui."
+    },
+    {
+      "number": 67,
+      "id": "phrase_067",
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort."
+    },
+    {
+      "number": 68,
+      "id": "phrase_068",
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat."
+    },
+    {
+      "number": 69,
+      "id": "phrase_069",
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo.",
+      "criticalNegation": true
+    },
+    {
+      "number": 70,
+      "id": "phrase_070",
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations.",
+      "criticalNegation": true
+    },
+    {
+      "number": 71,
+      "id": "phrase_071",
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi.",
+      "criticalNegation": true
+    },
+    {
+      "number": 72,
+      "id": "phrase_072",
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement."
+    },
+    {
+      "number": 73,
+      "id": "phrase_073",
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait.",
+      "criticalNegation": true
+    },
+    {
+      "number": 74,
+      "id": "phrase_074",
+      "text": "Prends le temps de récupérer et de savourer ce moment."
+    },
+    {
+      "number": 75,
+      "id": "phrase_075",
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement."
+    },
+    {
+      "number": 76,
+      "id": "phrase_076",
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée.",
+      "criticalNegation": true
+    },
+    {
+      "number": 77,
+      "id": "phrase_077",
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude."
+    },
+    {
+      "number": 78,
+      "id": "phrase_078",
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps."
+    },
+    {
+      "number": 79,
+      "id": "phrase_079",
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas.",
+      "criticalNegation": true
+    },
+    {
+      "number": 80,
+      "id": "phrase_080",
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur."
+    }
+  ],
+  "files": {
+    "feminine/phrase_001": {
+      "src": "feminine/phrase_001.mp3",
+      "bytes": 18720,
+      "sha256": "f7e61432c5ad5d71d163684edea21b17b24fa1843dd44efc07640672fe75980d",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "C'est parti. Prends le temps de trouver ton rythme.",
+      "textSha256": "be800a34baa97fa5898ac439b75eaf1b8a691db602384065d8d91146b0c23866",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_002": {
+      "src": "feminine/phrase_002.mp3",
+      "bytes": 22176,
+      "sha256": "f26526781230214444a87ffb20f9be68ad3e228b6b694ad878b83e0ebda7ce3c",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "On commence tranquillement. Tu as toute la séance devant toi.",
+      "textSha256": "9fdf3ee4d581b53b41b4655b8a44d4f02c8e92fa2327aafc10a32ea2170006f2",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_003": {
+      "src": "feminine/phrase_003.mp3",
+      "bytes": 20160,
+      "sha256": "83fbf0ae0003b9553d55d7051f504edff2fbc44f7a0e8d5c1dd826382a244601",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Voilà, installe-toi dans une allure confortable.",
+      "textSha256": "509ae4d646c4ae5a4ea85844458fcecb7d1dc8fe040ebd2aadbc67f20657e36c",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_004": {
+      "src": "feminine/phrase_004.mp3",
+      "bytes": 16272,
+      "sha256": "da9c1a29b95d235dd6c940d51662aa86630ac95269e0bbe57a31f1d7ee34504a",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Laisse le souffle se mettre en place progressivement.",
+      "textSha256": "53fecb6ed34d1b23fbf6f63dc9a712474b4bad23e31155b8fd11a3e5eec56065",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_005": {
+      "src": "feminine/phrase_005.mp3",
+      "bytes": 19152,
+      "sha256": "dc5401971a54bb8131d95226653e8e9c22cd2ed066b12ca5189741cab7e8c340",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Prends tes repères, inutile de partir trop vite.",
+      "textSha256": "90fa8c9636296a2d92ff5fc3be1dd6e7828009b39f792f2b35bf92a276ac670d",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_006": {
+      "src": "feminine/phrase_006.mp3",
+      "bytes": 21456,
+      "sha256": "3d57f54f15624d454760a593734ccfb9d84d853708f11bc5a613bb2c8f08a106",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Très bien, profite des premières minutes pour te mettre en route.",
+      "textSha256": "2d4b32fec7227d799b907ab310435d47e76b973a99aabd72e345aef98a927f48",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_007": {
+      "src": "feminine/phrase_007.mp3",
+      "bytes": 21024,
+      "sha256": "79d7b44ea9d4505a1d874a44b8fa54ec5d0466cfb6328099e818a7a019ae1ee2",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Garde une foulée souple, ton rythme viendra naturellement.",
+      "textSha256": "9f681da0ea3e3cd1cdba81bad50ad19b5d24eda15747b0c75e20da58e759cf00",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_008": {
+      "src": "feminine/phrase_008.mp3",
+      "bytes": 17136,
+      "sha256": "beae476954f3bb0e3acbc17a933ccbeef510125894aa2ba05d95a8b0a1070988",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "On avance à ton rythme, un pas après l'autre.",
+      "textSha256": "135e9b41a1343a7c873f2e24149630e393ec2c3c07a892c692cfcc0ef35a9621",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_009": {
+      "src": "feminine/phrase_009.mp3",
+      "bytes": 13968,
+      "sha256": "025c335adf4c4d93bffb67bcbe08f03f235ca7597710048886fa6fb1356e4e2d",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "C'est bien, le rythme est régulier.",
+      "textSha256": "7cf13894a41d9b47a23d22663af8b07b18001ac97ba136aa6944b8539dfb2545",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_010": {
+      "src": "feminine/phrase_010.mp3",
+      "bytes": 15696,
+      "sha256": "797c4c7220e5c3dc46f253e983e79c47c0b9fe92bada49958a382a1f3fab139f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu gères ton effort, continue comme ça.",
+      "textSha256": "d0ce4c36c8b320250aab46206221dfcfa3d0219f90140e367dca6351e67f685e",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_011": {
+      "src": "feminine/phrase_011.mp3",
+      "bytes": 20304,
+      "sha256": "5af8ab2ad5088f80e58809c635eb1b66e6db57c59e6060a7c4aaa9011d3ca2a1",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Rien à forcer pour le moment, garde cette facilité.",
+      "textSha256": "d3fa8676f6944ef537a77751b314fdbca5ba338d274d1a20cfc606b41bb6a0c6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_012": {
+      "src": "feminine/phrase_012.mp3",
+      "bytes": 19440,
+      "sha256": "c36f85507250a11fc735060373d81600f4d271724772df13a9a09a75c754daf6",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La régularité d'aujourd'hui construit les progrès de demain.",
+      "textSha256": "0967762c370adb2edb5c89c247fe423a2fd92388608b8fc00ec677824913ef34",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_013": {
+      "src": "feminine/phrase_013.mp3",
+      "bytes": 19008,
+      "sha256": "ee23f40dbf561c2eb800fcb9542f7984e11cce9136d04e20e82d04f83ed44115",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Prends plaisir à cette allure, elle a toute son utilité.",
+      "textSha256": "dc65e68f637124080ee1bd54cef4d2abce2299d7e510d62c557fb987ccc9dad4",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_014": {
+      "src": "feminine/phrase_014.mp3",
+      "bytes": 18720,
+      "sha256": "10f3edda1244c0ff4975855d6789a4ac8d221ec550af4648115cebd508d809e6",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Une sortie facile compte vraiment dans ta progression.",
+      "textSha256": "05ce64a61f12a38abbbcbe7717c3a9e5740407ffe594e226f3e728f169a8bfa6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_015": {
+      "src": "feminine/phrase_015.mp3",
+      "bytes": 20304,
+      "sha256": "d0cec31f9694f5af5613a4b9ad73edecbdfd4329335b461fdd2729683b204282",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Reste détendu, c'est une belle séance de travail.",
+      "textSha256": "18b7b85164b8013f9bec8965aa5c1112fcfa8a8cdf004b62ebdc341baec4f710",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_016": {
+      "src": "feminine/phrase_016.mp3",
+      "bytes": 19872,
+      "sha256": "59128ebf71c18807419eebf62684a846d3e95d29483092e1dc830fa4fdc908ba",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Très bien, laisse les kilomètres défiler naturellement.",
+      "textSha256": "c46a677081036508bef8af0c20ee69eaca372a326b60698584d4fb3cab3ee4ff",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_017": {
+      "src": "feminine/phrase_017.mp3",
+      "bytes": 31104,
+      "sha256": "612cb93b8a482a4712eb683d5288df969055d1fa57d39e5866af0225236872d5",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat.",
+      "textSha256": "379bb4c9d862dbe76865350a63c4eba9de7f7d9ce16eb079e20d8ea43866dd28",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_018": {
+      "src": "feminine/phrase_018.mp3",
+      "bytes": 24624,
+      "sha256": "3365167f0d5b77a059a33f7b2f7923f00f3ceeeffbb23e9a40808c613b4e4ecb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre.",
+      "textSha256": "19eae6b4e0eec74a31b0e3fbc01d7956154ee058d9b3c9a822cdd52e0014e9de",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_019": {
+      "src": "feminine/phrase_019.mp3",
+      "bytes": 20592,
+      "sha256": "593153d098d6aab2864f938ae45004238ee4caf8bfdaa394b333b51ae8df82a1",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement.",
+      "textSha256": "9ea58b7500cba8f2f392b4675b01020e085be0ee3b9a0153fcd20cbc6b7865cc",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_020": {
+      "src": "feminine/phrase_020.mp3",
+      "bytes": 20448,
+      "sha256": "f58332e8fd3ade4a3f74858d16982cca9413279c1e7613e63e153c6d6a985014",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable.",
+      "textSha256": "d55fc2569d6fceb213f42c44f4533c3fb890d1f0394c1cd8dffa84a04b8eaad0",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_021": {
+      "src": "feminine/phrase_021.mp3",
+      "bytes": 19152,
+      "sha256": "94d49634ed09612c8546d4a0c352e4066bc1d9dd066ee3e919e86e4560e4c5f2",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle.",
+      "textSha256": "27460d7635a246e779d9f3661ed1938570d9536bf11ac7bd17b9b5e7ee9e5ac9",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_022": {
+      "src": "feminine/phrase_022.mp3",
+      "bytes": 18144,
+      "sha256": "2bf2d8455ce3f935bb586353dbfcfb788f72a8465aef131c3a715423270a5e56",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu avances, c'est ce qui compte dans cette montée.",
+      "textSha256": "446954283e7fdbaed80d5ae537e8aef7e43643017b949449f1c2f99cb179d30c",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_023": {
+      "src": "feminine/phrase_023.mp3",
+      "bytes": 19872,
+      "sha256": "3d02b0b0ac9d83b7f44cfa526bf001c7be590ec7e44f0fb25860c449c0130cda",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui.",
+      "textSha256": "a1e67acfb7b6e233d584729861b4b0f94eb3b584f6abf5f90237d9500a790925",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_024": {
+      "src": "feminine/phrase_024.mp3",
+      "bytes": 21888,
+      "sha256": "db3e710657f9b139c00a53d95081344b1abb3adce03b32d133267a6e8b008dd0",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Reste relâché autant que possible, on progresse pas à pas.",
+      "textSha256": "8ce96fbe5c5a20b5a6f76145a4e7dd4177f70481eaefb75e5bbadae094be6bd7",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_025": {
+      "src": "feminine/phrase_025.mp3",
+      "bytes": 22464,
+      "sha256": "7dc339fa2be5948bd4abd26f01b1d949ae39ff0021fc796990e2ba9f1e9f1451",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La montée est passée. Prends quelques instants pour souffler.",
+      "textSha256": "c3cb99e34f48185052edb8ee89709f7e373bc5320b98743d4f23e09725f098c4",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_026": {
+      "src": "feminine/phrase_026.mp3",
+      "bytes": 19296,
+      "sha256": "b144ec32bdad6be46a3c0a62aedfb15418d2b1cd87cc534fd8d8a0b98c65fef0",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Profite du plat pour retrouver un effort confortable.",
+      "textSha256": "e6cedd777375fd854cdcd467616488000dab088cee09ae33b5cc03b9c6bbd25a",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_027": {
+      "src": "feminine/phrase_027.mp3",
+      "bytes": 17280,
+      "sha256": "fbe815d684df89706cdba16ec276742ee3751ec18171f2c1973d9c24bb65d0ac",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Pas besoin de rattraper le temps perdu tout de suite.",
+      "textSha256": "b77a89a674b6386410b087b9ceeffeb13869aaa2cf481073dcf888192319296c",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_028": {
+      "src": "feminine/phrase_028.mp3",
+      "bytes": 22320,
+      "sha256": "b37314c1b597b69fe04220b0283d9753314d82dc2e9a86121b8747f95b9bf05b",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas.",
+      "textSha256": "90aa04e8819dfd000e86341a4a46dfaedfe0dff19485141509a2e4b1df157abf",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_029": {
+      "src": "feminine/phrase_029.mp3",
+      "bytes": 14544,
+      "sha256": "0fea1d91be6ab60f5bae1568ebf131b24c9b29fd3737c0a6858fe4a92a2bc89e",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Laisse ta foulée revenir sans forcer.",
+      "textSha256": "4beffbd36475125112081afdc82a390d6515386e2f5b470f498f076eefe1e6fd",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_030": {
+      "src": "feminine/phrase_030.mp3",
+      "bytes": 19584,
+      "sha256": "84591f7df0a94c2b3037e29013e7aefb411c6b025adb161a6a60def69b1f1b6f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Bien joué pour cette côte, prends le temps de récupérer.",
+      "textSha256": "f6cc423bc7cc87415d766dee5ba014f6463b73533aa3d051c5d23a20ff7878c1",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_031": {
+      "src": "feminine/phrase_031.mp3",
+      "bytes": 23040,
+      "sha256": "ffb3203a2f055368b688ae72887bb1c83056b65bece35f09e23ef3265a3b4817",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Relâche les épaules, retrouve progressivement tes sensations.",
+      "textSha256": "1fb222fcb882240776d59fa33eb582ef490a8cd4b9e25f2be9899e8d739ed44a",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_032": {
+      "src": "feminine/phrase_032.mp3",
+      "bytes": 25344,
+      "sha256": "bd862af55e8e2e5b478ca7ec24036c9721fa49e693e8629d2616cbb13a14994f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement.",
+      "textSha256": "890609591f5fc0eceffc3fe6c0cfc957f5b76fd9959e82b2b0411f4a0fadec3e",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_033": {
+      "src": "feminine/phrase_033.mp3",
+      "bytes": 22320,
+      "sha256": "97c446dfdb0122f925f0b8fef4bed92e5c783c6c8ddf6ed9f65ef26dd922e40c",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied.",
+      "textSha256": "beb9fb598d44456263520ffbf1f7a9ba42cdad9d55e4a89bd6f65c587360b2fc",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_034": {
+      "src": "feminine/phrase_034.mp3",
+      "bytes": 27072,
+      "sha256": "726cb7d10423dd4ac0e5d4c6c372efc65d9a8474e141e21382e8bb5fadd4a083",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance.",
+      "textSha256": "79f2b13b56cf7c98e958e81d88ccb31142f1ac2ed0dfd74fccbf4e3d9ae21000",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_035": {
+      "src": "feminine/phrase_035.mp3",
+      "bytes": 22032,
+      "sha256": "0ced31be2fa28b4b010a53c8e4f6f1a9f88bbfa064260eaa1fb4622fb24cc697",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort.",
+      "textSha256": "b169dbc2fca1a948403e0838372215d0b7e3f8806a462f524cd1d6e80b2f9ae7",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_036": {
+      "src": "feminine/phrase_036.mp3",
+      "bytes": 21744,
+      "sha256": "dd58c3c472c3b7ccf9441d1b167ce9ba4bbc526989002fe5c20208f93fa830bb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup.",
+      "textSha256": "0f1e4ed8a219a45165a53f54e416e6bcda7f7db9fd505193a0d916b24e34603b",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_037": {
+      "src": "feminine/phrase_037.mp3",
+      "bytes": 21168,
+      "sha256": "d7e4cc8d4b4bcfa20ae6a013e157950b908eeb8b2a4a4a57966502070e83a45c",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Prends quelques respirations naturelles et retrouve ton confort.",
+      "textSha256": "c082438bb523d79b8026a50cde5f25b56d991091ed657b11f93e42a77662a276",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_038": {
+      "src": "feminine/phrase_038.mp3",
+      "bytes": 22608,
+      "sha256": "471bdd9cf30353afa505f4ed06725131b7c4ef67b541c4141ba1a8c4afae74a3",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner.",
+      "textSha256": "2e5ded2dc14875c64a1c6c7601b770ec1ad55c9b0e4c13be74bb0b49fe88ed22",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_039": {
+      "src": "feminine/phrase_039.mp3",
+      "bytes": 18720,
+      "sha256": "8ef1ae613a523b4f95ab9aeae333e8f0348672911acaedace7c339c144314836",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Un passage difficile ne résume pas toute ta course.",
+      "textSha256": "07e369c67412ab9ea942389d885f7a4cc72b98f8affa12966e5870b403cd6f2f",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_040": {
+      "src": "feminine/phrase_040.mp3",
+      "bytes": 17712,
+      "sha256": "072afabdbc0012686a1da59ae6fafba97ae8c8adbbd0896e19eaade49dd59b12",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Garde le mouvement le plus confortable possible.",
+      "textSha256": "bc66cda4c0d49d807745a819c1bf2bad39e104d212f32f32de70009b72e8c340",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_041": {
+      "src": "feminine/phrase_041.mp3",
+      "bytes": 23328,
+      "sha256": "70ac872194d56278923fa77819fcac8cb7b0cb06b83b686b084406084ea8d6bb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Le prochain effort approche. Prépare-toi progressivement.",
+      "textSha256": "6ee76c98e634dc7d90444539c8e3174b16b8f5eed812ea715ecef3af79e6140f",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_042": {
+      "src": "feminine/phrase_042.mp3",
+      "bytes": 21456,
+      "sha256": "9882ec9641ba5101d442dce625f07390296d138d99e51ddcdca80ea3ab284a91",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Encore quelques instants, garde le contrôle de ton allure.",
+      "textSha256": "9093de087ffe885f8ed835a2c24455e016166dbb1659b580b88d2944e0fd7146",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_043": {
+      "src": "feminine/phrase_043.mp3",
+      "bytes": 20736,
+      "sha256": "116076d6951f5f8d9306b8e92e19c3a347286ff687ac51b14d429951371475b1",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Fin de répétition. On passe en récupération.",
+      "textSha256": "842c8d2ef7f5a30bcf9dd483fd89a48c63ef1639df894964cb509b3e7567dfab",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_044": {
+      "src": "feminine/phrase_044.mp3",
+      "bytes": 20592,
+      "sha256": "1d07d14eaaa326f4fe6b786bf14e50081ef378929f10f6b97f02aad32d8f28aa",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos.",
+      "textSha256": "69898104958adecf5e8b45e99550d137d7aa9e48dbf855a7a338037515e7d0dd",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_045": {
+      "src": "feminine/phrase_045.mp3",
+      "bytes": 18144,
+      "sha256": "c6138c60b87e877cb4026749ab13d38dc345893109c736dd4db846e09191a227",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux prolonger la récupération si tu en as besoin.",
+      "textSha256": "b46868f44fdb7365a522573c1609a4d2d3a3aee4cbfe6ba584da7ddd1edcea85",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_046": {
+      "src": "feminine/phrase_046.mp3",
+      "bytes": 16272,
+      "sha256": "2188294c6994e3dfc5b316d39c5bf6f3e1acecd029c648671d0278462bfa3ba6",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Très bien, cette répétition est terminée.",
+      "textSha256": "23db830424534dd6dc5e7869f0611574f35fa8cf312faf54325f79e5189bea94",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_047": {
+      "src": "feminine/phrase_047.mp3",
+      "bytes": 17712,
+      "sha256": "01984d3bc3c9f42b6bb4123135566ce9164152edbf921e0e4d2edf1b8fbecfd2",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La prochaine séquence commence dans quelques instants.",
+      "textSha256": "725f55fa9fb49a71a0b199a2a7e2fbc6bee2cdb1336651be688eca06faa719fe",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_048": {
+      "src": "feminine/phrase_048.mp3",
+      "bytes": 22320,
+      "sha256": "71fe504e575f36b321fd36f4217671273fea5642a0c83ec44ec9c3256a4e30bc",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue.",
+      "textSha256": "a398018e35b5978fd070747efe07e7dde2d4ea0d60a49bdba14184097ebe2eb0",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_049": {
+      "src": "feminine/phrase_049.mp3",
+      "bytes": 20448,
+      "sha256": "c69c5ed0385d70e8afe8b24f9b443132da86dffb016b4280fed6eeea3d635cbb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Un ravitaillement approche, décide selon tes besoins.",
+      "textSha256": "e0fd1913c2e8ac2b0e1433b6fac39db0f941625a01491e93de36702114e10954",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_050": {
+      "src": "feminine/phrase_050.mp3",
+      "bytes": 16272,
+      "sha256": "76501b1aa697bc2fae8b37b0fafc0fb01d7695af697d6bc5f212abfcd695b191",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu connais ce point d'eau, il arrive bientôt.",
+      "textSha256": "a1bc6f5549dd70d93892adcf61b8a0cc1dc87eac27ca0adcf3da9aafe041b8ac",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_051": {
+      "src": "feminine/phrase_051.mp3",
+      "bytes": 22320,
+      "sha256": "3927ec2ac2c284241dfaed6dbffd4ae2cf0a07fc77889dca3aa7a06f24019dcb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono.",
+      "textSha256": "c6ff8021c6a7a87d6478d3a01edf4cd9062f637e27089a0d7d8dc518d50b3360",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_052": {
+      "src": "feminine/phrase_052.mp3",
+      "bytes": 22896,
+      "sha256": "2627e99237151665fa0de404f6c088b69019851fdb65ceaa40f1f31a88538efb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite.",
+      "textSha256": "e11c3de857172a6fe11c584b6244b843b267a207875172233bc2fff7e429bded",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_053": {
+      "src": "feminine/phrase_053.mp3",
+      "bytes": 20592,
+      "sha256": "6147ef317f114d71d63607f008e046acdd7c255d3684a6a92fe70566c8dda2c4",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations.",
+      "textSha256": "bb85cc44365570816e474cf408b1b7b9b5c6f31832eaeb4130e9ea6353f71539",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_054": {
+      "src": "feminine/phrase_054.mp3",
+      "bytes": 23616,
+      "sha256": "b8048cb648dd0155baf520ebc975e38bb58ff7b201b3bb842b21792da547e908",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan.",
+      "textSha256": "4866945e71ee66f15b439338b42782f5235a77bd30c3aba38c15b36f1cd70471",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_055": {
+      "src": "feminine/phrase_055.mp3",
+      "bytes": 18720,
+      "sha256": "316234cb06f42bd93746189571be8784fdd4d4ac036ef49a47127abacbc65ddc",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "La fin approche, garde un effort contrôlé.",
+      "textSha256": "429d7e8d0038ffdc0dcf6b5d639371728c6a52ff998fa4c67a556435643723c8",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_056": {
+      "src": "feminine/phrase_056.mp3",
+      "bytes": 24048,
+      "sha256": "c7d6305873f8fbaf129bc81e3239b1e8c156cffc20f0ddf5a23e7a07068a4d76",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité.",
+      "textSha256": "d38a5dd544b9471a27783586f22232601b8c2e7d5b32553d61a7b06e0ba812bc",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_057": {
+      "src": "feminine/phrase_057.mp3",
+      "bytes": 15696,
+      "sha256": "ec79be4724b76931373b024d715c487def1978b3c0e786562bb7c04b4bd0868c",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu prends du temps pour toi, et c'est précieux.",
+      "textSha256": "ac95b60a7d4b2efa098d77564ac7a9658f7cba3085bd9f8a090cb0476ba548d1",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_058": {
+      "src": "feminine/phrase_058.mp3",
+      "bytes": 19584,
+      "sha256": "8f3e886ad9582c1778016bd5970d50fc9b33f4ce75bce28b88f4800fd76b803f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite.",
+      "textSha256": "01e6d479c400dbb7a36575f5af03711bf0d391a9da981aa1ad515b318d5a90b0",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_059": {
+      "src": "feminine/phrase_059.mp3",
+      "bytes": 20736,
+      "sha256": "6230e7e67c451f43b1a38e22ca4e78240e2766371fbeb116ad14be35d2b94167",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité.",
+      "textSha256": "424e4d8c7415472ef3d18f5d63931a7097f4c53fac327fa1bcb842d204055dd2",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_060": {
+      "src": "feminine/phrase_060.mp3",
+      "bytes": 19008,
+      "sha256": "3e83376cae43e926fec64a04e36b634f2384e5107eb6f755f4d7cee75b0bfc6b",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu fais du bon travail, même sans courir plus vite.",
+      "textSha256": "b2692c009d59f62cc007ca9df85b2fed732f594a7a762bcfabda9e932ae0c7ca",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_061": {
+      "src": "feminine/phrase_061.mp3",
+      "bytes": 16560,
+      "sha256": "f34579f20936f1f20e574e3f4cf1dc01521f47a47cdbc28e4da554b08fe448a8",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Très bien, profite simplement de ce moment.",
+      "textSha256": "ce88e999f510728e1faefa2b0df18a7ae7b73955e6783e022164355517e58bc6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_062": {
+      "src": "feminine/phrase_062.mp3",
+      "bytes": 16560,
+      "sha256": "3968b3a9b2d50417f8403fe30d2ef7d11bda0fca91c734a94d820c6cc7562ddb",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux être fier de la constance que tu construis.",
+      "textSha256": "b37822a87b83eeda2c0b602f47f6c0a3d34e801852206b8783afd6ffa8cd39c4",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_063": {
+      "src": "feminine/phrase_063.mp3",
+      "bytes": 15840,
+      "sha256": "7f10aef449bb9075888366f75f14554186daa304d9397b1761012ab8f5ac0b81",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Chaque séance a sa place dans ton parcours.",
+      "textSha256": "bcfe651a43a9625b22fd4f60c1e4b2c91060f3f51035f0a7ff5c02753a8a2451",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_064": {
+      "src": "feminine/phrase_064.mp3",
+      "bytes": 15552,
+      "sha256": "3ad828efc5d804204f21ce57a131e94a6503da99432d94884a621bc408243a1b",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Ce n'est pas une compétition contre les autres.",
+      "textSha256": "76c4804955d292be55382bea4d7e45595b8d1a4ba87a03f0c9e9f4735ae4dd00",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_065": {
+      "src": "feminine/phrase_065.mp3",
+      "bytes": 24048,
+      "sha256": "fa207ba4de8200df4b8c49b4233c55f766568b75a60df8f8685e196dfcb41552",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !",
+      "textSha256": "80cb1f52cff0d02fdcbb091da69e94e5bdcad60cad56f4409308760711aab56c",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_066": {
+      "src": "feminine/phrase_066.mp3",
+      "bytes": 19296,
+      "sha256": "f41bdb1b6663e832d604ffa006c1262793fba22e6ab73ba34f9d584b82b2cc16",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Félicitations, quelle belle régularité aujourd'hui.",
+      "textSha256": "1fca892376b31f2fd09849fc040ebc0d33a09ae2eb48873ae0a1fb0f047650db",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_067": {
+      "src": "feminine/phrase_067.mp3",
+      "bytes": 22464,
+      "sha256": "077f5fd40a8dcf3a1ebb1d2fe333b64799dbe6e17c3155e9c9f5374d0b8566bc",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort.",
+      "textSha256": "1bd324d2bfe703eb3b2ea26bb2c7dd0282b0765a594517df95804d7c429bd433",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_068": {
+      "src": "feminine/phrase_068.mp3",
+      "bytes": 25056,
+      "sha256": "ad81f566c292496520c74d7d13b440cdb36f3d685381d5f291f9b1e234bf4a09",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat.",
+      "textSha256": "25924b7cf191f1498094d528942563701957a7520c0c7c5ca78d4d6433103982",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_069": {
+      "src": "feminine/phrase_069.mp3",
+      "bytes": 25920,
+      "sha256": "12aede3db7b9b5005e33425f210cce67d901fe384cd96d478c262c7f5db206fc",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo.",
+      "textSha256": "64bca4bd76c07086af3fb9a11c303f8bb5235e05282706f42b8b07e98869fa0a",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_070": {
+      "src": "feminine/phrase_070.mp3",
+      "bytes": 25776,
+      "sha256": "fa0a8e2d65c417e48f51cf14b47647b43685686af8cb16118db7a7245814152b",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations.",
+      "textSha256": "2c4f79671039c6e2f046a1b92c77443bf5c86d4d1af665e611258f29e0cfe8b0",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_071": {
+      "src": "feminine/phrase_071.mp3",
+      "bytes": 28944,
+      "sha256": "59216ff968d7b38cabf617b506882b398558eeb3c6f30eaeeea17acc9b19d74b",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi.",
+      "textSha256": "f852da41695a33e9afb3ec937aa50ed7ed460246f73a0eaad3ed73fc4aef106e",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_072": {
+      "src": "feminine/phrase_072.mp3",
+      "bytes": 24624,
+      "sha256": "2db7e6c3b2412d6220b1eb6654db4cf1e411272ccf7b16d163b2d120a6b70aab",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement.",
+      "textSha256": "54d7f57c1ad08211d91f434a61f6cce358c9a712e32c10db1a051bca8c4a3535",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_073": {
+      "src": "feminine/phrase_073.mp3",
+      "bytes": 26928,
+      "sha256": "64fe2b3728a16edd00c01b14bc89ee3a9fc528ae5bd2a921d626f9db5119bd7f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait.",
+      "textSha256": "b59dd08cf0d433e4b3fc4de50853faae680e5da1dff8e0d0ab2adf1eafd1f442",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_074": {
+      "src": "feminine/phrase_074.mp3",
+      "bytes": 16416,
+      "sha256": "8c670a43827f74b0a24c9a27e8f9b33d863efecd7f5c56fe01df78be8a15a7b9",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Prends le temps de récupérer et de savourer ce moment.",
+      "textSha256": "5f362530a6afcfb8af326ba94a3125776c157a0ae1223c78a8918400a4eef944",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_075": {
+      "src": "feminine/phrase_075.mp3",
+      "bytes": 22032,
+      "sha256": "dc97955d8310413eb1c702f2c4c7924a0b60ac72461ae3051b48b014f87a7878",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement.",
+      "textSha256": "33cdf0bfc91cb09c47967dd57db7e091dd5c76da1c2093643911902c4e095d6e",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_076": {
+      "src": "feminine/phrase_076.mp3",
+      "bytes": 20304,
+      "sha256": "88967b91832e2401bbd47f38145322f03481494d11c320df387ad9edd348000f",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée.",
+      "textSha256": "0c4dc286ecd1a56fecc51a2e0aacc1ac6aaf195f6829fcb1d536593594bd73d2",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_077": {
+      "src": "feminine/phrase_077.mp3",
+      "bytes": 22896,
+      "sha256": "92f9d8b1dec1cc5f20cd97e6384e4ee538e4b391de778fa508a03f95c73fc8ee",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude.",
+      "textSha256": "f4888f86ea63688391bec319b36dc8d099aa0c03122e59c02290b3d63a5c4472",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_078": {
+      "src": "feminine/phrase_078.mp3",
+      "bytes": 22752,
+      "sha256": "f6d06b7fd7be2f3aab0d6072d2c8fee75803ee4fcbf2527a1922311ed29a8121",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps.",
+      "textSha256": "c697c37491236b31113abb090caff888e7b309cd98c875230d0f1c42b3f58e90",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "feminine/phrase_079": {
+      "src": "feminine/phrase_079.mp3",
+      "bytes": 25776,
+      "sha256": "cbe63726935bb2c669183193d078f17d9616837703e2499e818e9420064c9237",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas.",
+      "textSha256": "29c4292163458eb402a78a975fc6050845a9e622a426d2398dd26090d032bc0b",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "feminine/phrase_080": {
+      "src": "feminine/phrase_080.mp3",
+      "bytes": 18720,
+      "sha256": "3836cdb064a68d77f67566d38c40378bff2979a435427e539d132d3999073c15",
+      "speakerIdentity": "fr-FR-feminine-vivienne-v2",
+      "providerVoiceId": "fr-FR-VivienneMultilingualNeural",
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur.",
+      "textSha256": "6914e1c7733fafee8d29c6b1a1ad3d9b014e8e4501ad38291ebfc576f661d7be",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_001": {
+      "src": "masculine/phrase_001.mp3",
+      "bytes": 21312,
+      "sha256": "77f8b6f1b52464206196449b957d0225e12ca5dbba403d6a052e99d4688958a0",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "C'est parti. Prends le temps de trouver ton rythme.",
+      "textSha256": "be800a34baa97fa5898ac439b75eaf1b8a691db602384065d8d91146b0c23866",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_002": {
+      "src": "masculine/phrase_002.mp3",
+      "bytes": 24048,
+      "sha256": "ad83fc6884074a63c9bbe571a0e7d26d474430af8eaa11c4396353c5800cb4a3",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "On commence tranquillement. Tu as toute la séance devant toi.",
+      "textSha256": "9fdf3ee4d581b53b41b4655b8a44d4f02c8e92fa2327aafc10a32ea2170006f2",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_003": {
+      "src": "masculine/phrase_003.mp3",
+      "bytes": 20736,
+      "sha256": "91f5595b4f1ef15fda7200ca2c02e2af9c6ecc0e72a9b977a47e6159dcb6e549",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Voilà, installe-toi dans une allure confortable.",
+      "textSha256": "509ae4d646c4ae5a4ea85844458fcecb7d1dc8fe040ebd2aadbc67f20657e36c",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_004": {
+      "src": "masculine/phrase_004.mp3",
+      "bytes": 18576,
+      "sha256": "78cb7409ada4477d55436039e6237248056d4dd7af1790b1eb3196c52316dc9b",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Laisse le souffle se mettre en place progressivement.",
+      "textSha256": "53fecb6ed34d1b23fbf6f63dc9a712474b4bad23e31155b8fd11a3e5eec56065",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_005": {
+      "src": "masculine/phrase_005.mp3",
+      "bytes": 21168,
+      "sha256": "35e66c5edb08ddffbc86c73de064c8677f212fd15752bcf41baebc5297c6051b",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Prends tes repères, inutile de partir trop vite.",
+      "textSha256": "90fa8c9636296a2d92ff5fc3be1dd6e7828009b39f792f2b35bf92a276ac670d",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_006": {
+      "src": "masculine/phrase_006.mp3",
+      "bytes": 24336,
+      "sha256": "a7272db44a6d1de8ca6bffaaf9c2fb6bf7adf2dd464fc850991b6c06008bf71c",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Très bien, profite des premières minutes pour te mettre en route.",
+      "textSha256": "2d4b32fec7227d799b907ab310435d47e76b973a99aabd72e345aef98a927f48",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_007": {
+      "src": "masculine/phrase_007.mp3",
+      "bytes": 23184,
+      "sha256": "4122c9305db9069cd8d80e5e0c1c463f7de4e7d712bfd0a8fe5840f77622b202",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Garde une foulée souple, ton rythme viendra naturellement.",
+      "textSha256": "9f681da0ea3e3cd1cdba81bad50ad19b5d24eda15747b0c75e20da58e759cf00",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_008": {
+      "src": "masculine/phrase_008.mp3",
+      "bytes": 18144,
+      "sha256": "d101fe10e5a46bbe8a440bd0da1913622e6ad745f478527b5b1be7af80ec676f",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "On avance à ton rythme, un pas après l'autre.",
+      "textSha256": "135e9b41a1343a7c873f2e24149630e393ec2c3c07a892c692cfcc0ef35a9621",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_009": {
+      "src": "masculine/phrase_009.mp3",
+      "bytes": 15984,
+      "sha256": "3edd111885c338354d6bbe1b4b4b0535b5d946144767efcdb26dd01b2a47ea9e",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "C'est bien, le rythme est régulier.",
+      "textSha256": "7cf13894a41d9b47a23d22663af8b07b18001ac97ba136aa6944b8539dfb2545",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_010": {
+      "src": "masculine/phrase_010.mp3",
+      "bytes": 17712,
+      "sha256": "7d2fd07bdb0b8c88a94c4eac5e9872aa5a2063742f5424aaebdf05ded9581f7d",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu gères ton effort, continue comme ça.",
+      "textSha256": "d0ce4c36c8b320250aab46206221dfcfa3d0219f90140e367dca6351e67f685e",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_011": {
+      "src": "masculine/phrase_011.mp3",
+      "bytes": 22176,
+      "sha256": "c5b3f4f3752ea2e08dbb0809de2d3bc5cf2d08b6e3e11af1fe75ab7c3113771f",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Rien à forcer pour le moment, garde cette facilité.",
+      "textSha256": "d3fa8676f6944ef537a77751b314fdbca5ba338d274d1a20cfc606b41bb6a0c6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_012": {
+      "src": "masculine/phrase_012.mp3",
+      "bytes": 22608,
+      "sha256": "f043b7e7e0a17fa5b929b03e96cddcd3a62b713756c525a2c01600f0b51be530",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La régularité d'aujourd'hui construit les progrès de demain.",
+      "textSha256": "0967762c370adb2edb5c89c247fe423a2fd92388608b8fc00ec677824913ef34",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_013": {
+      "src": "masculine/phrase_013.mp3",
+      "bytes": 22032,
+      "sha256": "5804202f19bf322d190b1cdc32239ff936f4047dcaab1f18cea25c7c0150b1ed",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Prends plaisir à cette allure, elle a toute son utilité.",
+      "textSha256": "dc65e68f637124080ee1bd54cef4d2abce2299d7e510d62c557fb987ccc9dad4",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_014": {
+      "src": "masculine/phrase_014.mp3",
+      "bytes": 20304,
+      "sha256": "eaf4abac0d9cd2f6fc1d6add3d69a16f4cb07089d3e221c943168c5238b9ac9e",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Une sortie facile compte vraiment dans ta progression.",
+      "textSha256": "05ce64a61f12a38abbbcbe7717c3a9e5740407ffe594e226f3e728f169a8bfa6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_015": {
+      "src": "masculine/phrase_015.mp3",
+      "bytes": 22176,
+      "sha256": "f8dab8a3f4b4103c2784c2a8e4cd5c27ed211241751c9175c86c0b9cfc89f617",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Reste détendu, c'est une belle séance de travail.",
+      "textSha256": "18b7b85164b8013f9bec8965aa5c1112fcfa8a8cdf004b62ebdc341baec4f710",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_016": {
+      "src": "masculine/phrase_016.mp3",
+      "bytes": 22320,
+      "sha256": "42c1b282450be70646a00e7fc3a1481d0dc11e250354c777a1534ffcbd7eca01",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Très bien, laisse les kilomètres défiler naturellement.",
+      "textSha256": "c46a677081036508bef8af0c20ee69eaca372a326b60698584d4fb3cab3ee4ff",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_017": {
+      "src": "masculine/phrase_017.mp3",
+      "bytes": 34416,
+      "sha256": "00cf6ba39febefa0545a30b81b73816507e11d90f20eefd4c8eec842ec32997e",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La pente commence. Ajuste ton effort, pas besoin de garder l'allure du plat.",
+      "textSha256": "379bb4c9d862dbe76865350a63c4eba9de7f7d9ce16eb079e20d8ea43866dd28",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_018": {
+      "src": "masculine/phrase_018.mp3",
+      "bytes": 28224,
+      "sha256": "0cee8ade581cfbe02e0fa5608a09e143b29158848564b7af347ba2093e084485",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Regarde quelques mètres devant toi. Une foulée après l'autre.",
+      "textSha256": "19eae6b4e0eec74a31b0e3fbc01d7956154ee058d9b3c9a822cdd52e0014e9de",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_019": {
+      "src": "masculine/phrase_019.mp3",
+      "bytes": 23472,
+      "sha256": "2bbce29279ba4b0aefb475de5f742384c20614057354604443fd38a4c6b1edfe",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Ne cherche pas le sommet tout de suite, avance progressivement.",
+      "textSha256": "9ea58b7500cba8f2f392b4675b01020e085be0ee3b9a0153fcd20cbc6b7865cc",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_020": {
+      "src": "masculine/phrase_020.mp3",
+      "bytes": 24336,
+      "sha256": "529871a9014bf894c11bd7bde9cf7e4d6c00a774cfbd37a260cc9b7cfc7b98ad",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux raccourcir naturellement tes pas si c'est plus confortable.",
+      "textSha256": "d55fc2569d6fceb213f42c44f4533c3fb890d1f0394c1cd8dffa84a04b8eaad0",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_021": {
+      "src": "masculine/phrase_021.mp3",
+      "bytes": 21456,
+      "sha256": "07cf31466e3626a27818f2204b26ffc55f1f3fc67bf42e26cd3e21d4d86832ea",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Garde un rythme qui te permet de maîtriser ton souffle.",
+      "textSha256": "27460d7635a246e779d9f3661ed1938570d9536bf11ac7bd17b9b5e7ee9e5ac9",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_022": {
+      "src": "masculine/phrase_022.mp3",
+      "bytes": 20304,
+      "sha256": "4a202e1da5e3693632d1be2bf0910d24cc841d649eb0ac887105f13f591848a2",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu avances, c'est ce qui compte dans cette montée.",
+      "textSha256": "446954283e7fdbaed80d5ae537e8aef7e43643017b949449f1c2f99cb179d30c",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_023": {
+      "src": "masculine/phrase_023.mp3",
+      "bytes": 21312,
+      "sha256": "3679a586f1e67d9b83531768e190f6b01f53f1ae8c77377f269c3989862ee0eb",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Ne te bats pas contre le relief, adapte-toi à lui.",
+      "textSha256": "a1e67acfb7b6e233d584729861b4b0f94eb3b584f6abf5f90237d9500a790925",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_024": {
+      "src": "masculine/phrase_024.mp3",
+      "bytes": 23904,
+      "sha256": "6d918ea46444e08bce022b4281ac131aff4582c81c67e9a97fc3ad6dae0d7489",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Reste relâché autant que possible, on progresse pas à pas.",
+      "textSha256": "8ce96fbe5c5a20b5a6f76145a4e7dd4177f70481eaefb75e5bbadae094be6bd7",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_025": {
+      "src": "masculine/phrase_025.mp3",
+      "bytes": 26496,
+      "sha256": "c544e073677481885a6ae61c66be21c6426bf2355455fd0a01c149c7dd0d3d28",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La montée est passée. Prends quelques instants pour souffler.",
+      "textSha256": "c3cb99e34f48185052edb8ee89709f7e373bc5320b98743d4f23e09725f098c4",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_026": {
+      "src": "masculine/phrase_026.mp3",
+      "bytes": 21024,
+      "sha256": "ba2514d436104f087dc1c67109da84afe125f4b8b84570eadd93b31d3b580f23",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Profite du plat pour retrouver un effort confortable.",
+      "textSha256": "e6cedd777375fd854cdcd467616488000dab088cee09ae33b5cc03b9c6bbd25a",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_027": {
+      "src": "masculine/phrase_027.mp3",
+      "bytes": 19152,
+      "sha256": "67e6b76834422aa47a96ddd728638a3591055f94749f3e610ffc62cf55eefe68",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Pas besoin de rattraper le temps perdu tout de suite.",
+      "textSha256": "b77a89a674b6386410b087b9ceeffeb13869aaa2cf481073dcf888192319296c",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_028": {
+      "src": "masculine/phrase_028.mp3",
+      "bytes": 24624,
+      "sha256": "9af0b0776b1191fd6013e29084cfe50773c0abcf458c241452faff99e70e7126",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La descente t'aide déjà à avancer. N'en rajoute pas.",
+      "textSha256": "90aa04e8819dfd000e86341a4a46dfaedfe0dff19485141509a2e4b1df157abf",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_029": {
+      "src": "masculine/phrase_029.mp3",
+      "bytes": 16416,
+      "sha256": "9cd8dd61fdc84ee6c491d16bc1390840935a8806fa519a89cced542d043c08ef",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Laisse ta foulée revenir sans forcer.",
+      "textSha256": "4beffbd36475125112081afdc82a390d6515386e2f5b470f498f076eefe1e6fd",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_030": {
+      "src": "masculine/phrase_030.mp3",
+      "bytes": 22896,
+      "sha256": "1adcd36096ef0031eea33b7a6015576e8dc415ddadb8e4c8b1d05aae70aada5e",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Bien joué pour cette côte, prends le temps de récupérer.",
+      "textSha256": "f6cc423bc7cc87415d766dee5ba014f6463b73533aa3d051c5d23a20ff7878c1",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_031": {
+      "src": "masculine/phrase_031.mp3",
+      "bytes": 25200,
+      "sha256": "5d2450556ab8e8baf522d10175607782cb5912c4c8a011b492fa52e494797904",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Relâche les épaules, retrouve progressivement tes sensations.",
+      "textSha256": "1fb222fcb882240776d59fa33eb582ef490a8cd4b9e25f2be9899e8d739ed44a",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_032": {
+      "src": "masculine/phrase_032.mp3",
+      "bytes": 27504,
+      "sha256": "a1f6070ab88c73065d44c224770cbb075ed74ac1b8d6190aef9c746fb306d1e9",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Très bien, si l'effort se stabilise, on reprendra tranquillement.",
+      "textSha256": "890609591f5fc0eceffc3fe6c0cfc957f5b76fd9959e82b2b0411f4a0fadec3e",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_033": {
+      "src": "masculine/phrase_033.mp3",
+      "bytes": 24336,
+      "sha256": "4f3ccba51abee5b9c8e27ec0e56f7f7d7cac385bf94eb552b713fe0c6a9be4dc",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Si ce rythme devient trop dur, on peut lever légèrement le pied.",
+      "textSha256": "beb9fb598d44456263520ffbf1f7a9ba42cdad9d55e4a89bd6f65c587360b2fc",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_034": {
+      "src": "masculine/phrase_034.mp3",
+      "bytes": 30240,
+      "sha256": "6ac03aace0b9e7a575d86faf458e88a1de343d00e477cd45496026371eedbb27",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Concentre-toi sur le prochain petit objectif, pas sur toute la distance.",
+      "textSha256": "79f2b13b56cf7c98e958e81d88ccb31142f1ac2ed0dfd74fccbf4e3d9ae21000",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_035": {
+      "src": "masculine/phrase_035.mp3",
+      "bytes": 24912,
+      "sha256": "6e3d15a1032b5655c0e124dd0861e72bf9a1fc65d4039b623379ce52b25abd66",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux ralentir, l'important est de bien gérer ton effort.",
+      "textSha256": "b169dbc2fca1a948403e0838372215d0b7e3f8806a462f524cd1d6e80b2f9ae7",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_036": {
+      "src": "masculine/phrase_036.mp3",
+      "bytes": 24480,
+      "sha256": "0e23bad614945d5a106505d2c0dcbd90cb9a48c1db8135a09a3ad9065620201c",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "On reste patient, il n'y a rien à gagner à tout donner d'un coup.",
+      "textSha256": "0f1e4ed8a219a45165a53f54e416e6bcda7f7db9fd505193a0d916b24e34603b",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_037": {
+      "src": "masculine/phrase_037.mp3",
+      "bytes": 24192,
+      "sha256": "9d62fa2f302ce2772a989b31ba68cc0ae8ed1cab1f2826bf4ae48634406977d4",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Prends quelques respirations naturelles et retrouve ton confort.",
+      "textSha256": "c082438bb523d79b8026a50cde5f25b56d991091ed657b11f93e42a77662a276",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_038": {
+      "src": "masculine/phrase_038.mp3",
+      "bytes": 24192,
+      "sha256": "6452124e4f2ce5b104fe311f095a22067959a1a8e7e6af59699ff0879efc58a5",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu as le droit d'adapter ta séance, c'est aussi bien s'entraîner.",
+      "textSha256": "2e5ded2dc14875c64a1c6c7601b770ec1ad55c9b0e4c13be74bb0b49fe88ed22",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_039": {
+      "src": "masculine/phrase_039.mp3",
+      "bytes": 20448,
+      "sha256": "b9c864e3e3f31ead62dcae9ea208c50c43f67d6ab8b289468ccf49298d205d01",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Un passage difficile ne résume pas toute ta course.",
+      "textSha256": "07e369c67412ab9ea942389d885f7a4cc72b98f8affa12966e5870b403cd6f2f",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_040": {
+      "src": "masculine/phrase_040.mp3",
+      "bytes": 19008,
+      "sha256": "aa583fb94359ba098caec6e97368c52d6168013418e2af983ba0f9842b3bae0d",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Garde le mouvement le plus confortable possible.",
+      "textSha256": "bc66cda4c0d49d807745a819c1bf2bad39e104d212f32f32de70009b72e8c340",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_041": {
+      "src": "masculine/phrase_041.mp3",
+      "bytes": 25632,
+      "sha256": "346bab748ade444b34ffc7258d294f9ffb656bd15b2c2cf49bd2e526ccd0d3fe",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Le prochain effort approche. Prépare-toi progressivement.",
+      "textSha256": "6ee76c98e634dc7d90444539c8e3174b16b8f5eed812ea715ecef3af79e6140f",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_042": {
+      "src": "masculine/phrase_042.mp3",
+      "bytes": 22896,
+      "sha256": "908d2280a3a36d6350ed81c0b238470e7bbb200f65f9f518d98a8a6e93154c32",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Encore quelques instants, garde le contrôle de ton allure.",
+      "textSha256": "9093de087ffe885f8ed835a2c24455e016166dbb1659b580b88d2944e0fd7146",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_043": {
+      "src": "masculine/phrase_043.mp3",
+      "bytes": 23184,
+      "sha256": "1a676e4318bb392feccfa4f9545220ef0f5c9556f6dbfbbe95bcf69d0b5b192e",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Fin de répétition. On passe en récupération.",
+      "textSha256": "842c8d2ef7f5a30bcf9dd483fd89a48c63ef1639df894964cb509b3e7567dfab",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_044": {
+      "src": "masculine/phrase_044.mp3",
+      "bytes": 21312,
+      "sha256": "a2d684254ab808e28c62de0c8d396dd78f205c9e78caae2bc548a325c6cd7330",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Récupère à ton rythme, ne force pas l'allure de repos.",
+      "textSha256": "69898104958adecf5e8b45e99550d137d7aa9e48dbf855a7a338037515e7d0dd",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_045": {
+      "src": "masculine/phrase_045.mp3",
+      "bytes": 19872,
+      "sha256": "399ad45ac20e115d9dcbcad82613690faf21c8771fad795f10cc24dca7646d4c",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux prolonger la récupération si tu en as besoin.",
+      "textSha256": "b46868f44fdb7365a522573c1609a4d2d3a3aee4cbfe6ba584da7ddd1edcea85",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_046": {
+      "src": "masculine/phrase_046.mp3",
+      "bytes": 18576,
+      "sha256": "9dc8e580c1884938031f50b6e4e2d99b054c27ca1d18ec824b3461b8597370f7",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Très bien, cette répétition est terminée.",
+      "textSha256": "23db830424534dd6dc5e7869f0611574f35fa8cf312faf54325f79e5189bea94",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_047": {
+      "src": "masculine/phrase_047.mp3",
+      "bytes": 20160,
+      "sha256": "ddf69bf7d78889e843348c31ee737bbdc88951dc574c3128400c0e449cf8bbbe",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La prochaine séquence commence dans quelques instants.",
+      "textSha256": "725f55fa9fb49a71a0b199a2a7e2fbc6bee2cdb1336651be688eca06faa719fe",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_048": {
+      "src": "masculine/phrase_048.mp3",
+      "bytes": 24480,
+      "sha256": "a9a4be82cf26bd732a286becb134809474402bf2b63975a228c8e3add70c16d9",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "C'est reparti, retrouve progressivement l'intensité prévue.",
+      "textSha256": "a398018e35b5978fd070747efe07e7dde2d4ea0d60a49bdba14184097ebe2eb0",
+      "tuning": {
+        "rate": "-6%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "clear_brief"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_049": {
+      "src": "masculine/phrase_049.mp3",
+      "bytes": 22032,
+      "sha256": "dea0bfd1d98d92ae49b84f64ec05bdae49d81a42824af9c785c4d2c009048342",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Un ravitaillement approche, décide selon tes besoins.",
+      "textSha256": "e0fd1913c2e8ac2b0e1433b6fac39db0f941625a01491e93de36702114e10954",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_050": {
+      "src": "masculine/phrase_050.mp3",
+      "bytes": 17712,
+      "sha256": "d3e93e80f0737f5b16047516be0941ffa55566af0038e4369a0bf2ae39c93022",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu connais ce point d'eau, il arrive bientôt.",
+      "textSha256": "a1bc6f5549dd70d93892adcf61b8a0cc1dc87eac27ca0adcf3da9aafe041b8ac",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_051": {
+      "src": "masculine/phrase_051.mp3",
+      "bytes": 24336,
+      "sha256": "ae3cb702c5be548f805ccb36a9028cdbb5c6eb2f9d31ac26637b6476aedba68f",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Reste concentré sur ton effort, pas seulement sur le chrono.",
+      "textSha256": "c6ff8021c6a7a87d6478d3a01edf4cd9062f637e27089a0d7d8dc518d50b3360",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_052": {
+      "src": "masculine/phrase_052.mp3",
+      "bytes": 24480,
+      "sha256": "84ec59360d6c7f0fdad3987cadf61b6636ef2d7acf41d9466dc916227e7c8765",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Cette partie est exigeante, gère ton énergie pour la suite.",
+      "textSha256": "e11c3de857172a6fe11c584b6244b843b267a207875172233bc2fff7e429bded",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_053": {
+      "src": "masculine/phrase_053.mp3",
+      "bytes": 22608,
+      "sha256": "243cc65c398e741b65f19845b191cc6604bbfbcde84a3df18425c6b5f00c69d5",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu es à mi-parcours, continue de suivre tes sensations.",
+      "textSha256": "bb85cc44365570816e474cf408b1b7b9b5c6f31832eaeb4130e9ea6353f71539",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_054": {
+      "src": "masculine/phrase_054.mp3",
+      "bytes": 25056,
+      "sha256": "578cbe21d36205d195973fdce922947f06dfc45f4d574565278bfbf1485eea24",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Si tu as prévu un apport testé à l'entraînement, vérifie ton plan.",
+      "textSha256": "4866945e71ee66f15b439338b42782f5235a77bd30c3aba38c15b36f1cd70471",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_055": {
+      "src": "masculine/phrase_055.mp3",
+      "bytes": 20160,
+      "sha256": "9163b9ccb57e1fb294ea693738fcc4135f6ff71e6e9ed5fa4fd65c35fb1850ca",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "La fin approche, garde un effort contrôlé.",
+      "textSha256": "429d7e8d0038ffdc0dcf6b5d639371728c6a52ff998fa4c67a556435643723c8",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_056": {
+      "src": "masculine/phrase_056.mp3",
+      "bytes": 27648,
+      "sha256": "309ec59f02fa7e7061acf78a2883c6e577acefc817f39607f1cca558a9f36c81",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux ajuster l'objectif, l'essentiel est de finir en sécurité.",
+      "textSha256": "d38a5dd544b9471a27783586f22232601b8c2e7d5b32553d61a7b06e0ba812bc",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_057": {
+      "src": "masculine/phrase_057.mp3",
+      "bytes": 17856,
+      "sha256": "232865dafbb83d8a86101a122904a9b1f2d55e470dac0abe40c67c35f15827b5",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu prends du temps pour toi, et c'est précieux.",
+      "textSha256": "ac95b60a7d4b2efa098d77564ac7a9658f7cba3085bd9f8a090cb0476ba548d1",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_058": {
+      "src": "masculine/phrase_058.mp3",
+      "bytes": 21312,
+      "sha256": "a5405aa3a126b966afc43dabee0c9998c02b1607efa4f0e1ec9dfdd7c8597f60",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Aujourd'hui, tu construis quelque chose pour la suite.",
+      "textSha256": "01e6d479c400dbb7a36575f5af03711bf0d391a9da981aa1ad515b318d5a90b0",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_059": {
+      "src": "masculine/phrase_059.mp3",
+      "bytes": 23760,
+      "sha256": "934aec21eeb5b521da297a885668e8bd433f8ca728f8f84a071e75ea8f837c99",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Il n'y a pas de petit effort quand on avance avec régularité.",
+      "textSha256": "424e4d8c7415472ef3d18f5d63931a7097f4c53fac327fa1bcb842d204055dd2",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_060": {
+      "src": "masculine/phrase_060.mp3",
+      "bytes": 20736,
+      "sha256": "ae8cfd67a2483037f6417383930f31ee2848a2e8ec2d123a4f899314a11972ff",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu fais du bon travail, même sans courir plus vite.",
+      "textSha256": "b2692c009d59f62cc007ca9df85b2fed732f594a7a762bcfabda9e932ae0c7ca",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_061": {
+      "src": "masculine/phrase_061.mp3",
+      "bytes": 18144,
+      "sha256": "8eaa6fc61471b25e0fa57b1d4b133201de2edb87e888b0f7b796709d314ed6fc",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Très bien, profite simplement de ce moment.",
+      "textSha256": "ce88e999f510728e1faefa2b0df18a7ae7b73955e6783e022164355517e58bc6",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_062": {
+      "src": "masculine/phrase_062.mp3",
+      "bytes": 19584,
+      "sha256": "7d16653ee3db8832cf6550e6698b7525eb01803ec97aa15382612350af9cd334",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux être fier de la constance que tu construis.",
+      "textSha256": "b37822a87b83eeda2c0b602f47f6c0a3d34e801852206b8783afd6ffa8cd39c4",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_063": {
+      "src": "masculine/phrase_063.mp3",
+      "bytes": 17568,
+      "sha256": "bd1ebcdcdc1c8501954cc3ac6d2eb37dc28884b5b6abf1e79681f8f2dbcce897",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Chaque séance a sa place dans ton parcours.",
+      "textSha256": "bcfe651a43a9625b22fd4f60c1e4b2c91060f3f51035f0a7ff5c02753a8a2451",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_064": {
+      "src": "masculine/phrase_064.mp3",
+      "bytes": 17712,
+      "sha256": "d98c44328782ad12467dd6593968ebca821eb037647f14e170fc0549146af439",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Ce n'est pas une compétition contre les autres.",
+      "textSha256": "76c4804955d292be55382bea4d7e45595b8d1a4ba87a03f0c9e9f4735ae4dd00",
+      "tuning": {
+        "rate": "-7%",
+        "pitch": "+0Hz",
+        "volume": "+0%",
+        "tone": "warm_natural"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_065": {
+      "src": "masculine/phrase_065.mp3",
+      "bytes": 26496,
+      "sha256": "110947748ffa75c2749592bb2789f4a9986558ee6ec3e79557ecfc61be89d5e6",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Bravo, tu as terminé ta séance. Savoure cet instant !",
+      "textSha256": "80cb1f52cff0d02fdcbb091da69e94e5bdcad60cad56f4409308760711aab56c",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_066": {
+      "src": "masculine/phrase_066.mp3",
+      "bytes": 21168,
+      "sha256": "35d9cec26496b8972f3ae017a4317b67c749b875f3486e0805c8414fbbeafe12",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Félicitations, quelle belle régularité aujourd'hui.",
+      "textSha256": "1fca892376b31f2fd09849fc040ebc0d33a09ae2eb48873ae0a1fb0f047650db",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_067": {
+      "src": "masculine/phrase_067.mp3",
+      "bytes": 25056,
+      "sha256": "523b4c29ff45734b205cd0dff0f211642ddb7bc89246f84f7651489558f65066",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "C'est fini pour aujourd'hui. Tu peux être content de cet effort.",
+      "textSha256": "1bd324d2bfe703eb3b2ea26bb2c7dd0282b0765a594517df95804d7c429bd433",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_068": {
+      "src": "masculine/phrase_068.mp3",
+      "bytes": 28512,
+      "sha256": "4f6c3e26ae7c509fa3cce831f28cf231347c0deef4e9b5e69bb108f45d5f8a7d",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Nouveau record confirmé ! Bravo, profite de ce résultat.",
+      "textSha256": "25924b7cf191f1498094d528942563701957a7520c0c7c5ca78d4d6433103982",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_069": {
+      "src": "masculine/phrase_069.mp3",
+      "bytes": 28800,
+      "sha256": "bc477d3e474ab6a7a855a4eca59aabccf2200b06b949bbf2efaaca52d4f71dab",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu n'as pas atteint le chrono espéré, mais cet effort compte. Bravo.",
+      "textSha256": "64bca4bd76c07086af3fb9a11c303f8bb5235e05282706f42b8b07e98869fa0a",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_070": {
+      "src": "masculine/phrase_070.mp3",
+      "bytes": 28656,
+      "sha256": "6538b6ee40b298c3ee03cfcf2ccf8c406ca15a23249686e12c48916edc457394",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Aujourd'hui était plus difficile. Merci d'avoir écouté tes sensations.",
+      "textSha256": "2c4f79671039c6e2f046a1b92c77443bf5c86d4d1af665e611258f29e0cfe8b0",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_071": {
+      "src": "masculine/phrase_071.mp3",
+      "bytes": 32256,
+      "sha256": "0783dfbe0192ea661fda7801c2d3c0c049c50d49bd6aaa32c914653d2f6aa337",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu as préféré t'arrêter, et c'était peut-être le choix le plus prudent. Prends soin de toi.",
+      "textSha256": "f852da41695a33e9afb3ec937aa50ed7ed460246f73a0eaad3ed73fc4aef106e",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_072": {
+      "src": "masculine/phrase_072.mp3",
+      "bytes": 27072,
+      "sha256": "c8539cbd3af0a9c0c84d521757c4924a1a73f3b29355b44b6d7d4bca1975ba38",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Bravo pour ton engagement. On analysera le résultat tranquillement.",
+      "textSha256": "54d7f57c1ad08211d91f434a61f6cce358c9a712e32c10db1a051bca8c4a3535",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_073": {
+      "src": "masculine/phrase_073.mp3",
+      "bytes": 30096,
+      "sha256": "87bed073203d98ff93ee234e471b181393f02003503fc9e141809ceaf626f729",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Le chrono ne raconte pas toute la séance. Félicitations pour ce que tu as fait.",
+      "textSha256": "b59dd08cf0d433e4b3fc4de50853faae680e5da1dff8e0d0ab2adf1eafd1f442",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_074": {
+      "src": "masculine/phrase_074.mp3",
+      "bytes": 18000,
+      "sha256": "f01bdb625e55e7885e3d0db8d9ccacff26b2897164742ac6ed70edef4871172b",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Prends le temps de récupérer et de savourer ce moment.",
+      "textSha256": "5f362530a6afcfb8af326ba94a3125776c157a0ae1223c78a8918400a4eef944",
+      "tuning": {
+        "rate": "-3%",
+        "pitch": "+1Hz",
+        "volume": "+1%",
+        "tone": "congratulation"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_075": {
+      "src": "masculine/phrase_075.mp3",
+      "bytes": 24912,
+      "sha256": "967250eca2c82f84b8f4db7f82b29760382454195fe38b8b0d42d957acc2c43c",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Aujourd'hui, la récupération fait partie de ton entraînement.",
+      "textSha256": "33cdf0bfc91cb09c47967dd57db7e091dd5c76da1c2093643911902c4e095d6e",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_076": {
+      "src": "masculine/phrase_076.mp3",
+      "bytes": 23040,
+      "sha256": "3ebcd2195c319c3b0a5892081be1d48c75d48e4ca63595530e0a58fc7059e59b",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Une journée plus douce peut aussi faire progresser sur la durée.",
+      "textSha256": "0c4dc286ecd1a56fecc51a2e0aacc1ac6aaf195f6829fcb1d536593594bd73d2",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_077": {
+      "src": "masculine/phrase_077.mp3",
+      "bytes": 25056,
+      "sha256": "e588506d4bbfe449dc0385e7264147bebac39fa5d96cb90082b41b338f76dd3d",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Fais les mouvements tranquillement, sans chercher à forcer l'amplitude.",
+      "textSha256": "f4888f86ea63688391bec319b36dc8d099aa0c03122e59c02290b3d63a5c4472",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_078": {
+      "src": "masculine/phrase_078.mp3",
+      "bytes": 25632,
+      "sha256": "fa044bbf7c5f9dced8bc04e6d0f6b28332c96ef0fe7457210c89b79252f88b9b",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Respecte les sensations de ton corps, les progrès prennent du temps.",
+      "textSha256": "c697c37491236b31113abb090caff888e7b309cd98c875230d0f1c42b3f58e90",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    },
+    "masculine/phrase_079": {
+      "src": "masculine/phrase_079.mp3",
+      "bytes": 28656,
+      "sha256": "018f1b92f0269ec9944be561c10f199da6aaca310910176824c55da57bc6cbc2",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Tu peux choisir le repos complet si la récupération active ne te convient pas.",
+      "textSha256": "29c4292163458eb402a78a975fc6050845a9e622a426d2398dd26090d032bc0b",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": true
+    },
+    "masculine/phrase_080": {
+      "src": "masculine/phrase_080.mp3",
+      "bytes": 21168,
+      "sha256": "2bab9d1b021ef9aa69b7dac13081cb5b93b85c1554685ba2e5fc6b73d4fdb031",
+      "speakerIdentity": "fr-FR-masculine-remy-v2",
+      "providerVoiceId": "fr-FR-RemyMultilingualNeural",
+      "text": "Bien joué d'avoir pris ce temps pour bouger avec douceur.",
+      "textSha256": "6914e1c7733fafee8d29c6b1a1ad3d9b014e8e4501ad38291ebfc576f661d7be",
+      "tuning": {
+        "rate": "-10%",
+        "pitch": "-2Hz",
+        "volume": "+0%",
+        "tone": "gentle_reassurance"
+      },
+      "criticalNegation": false
+    }
+  }
+}

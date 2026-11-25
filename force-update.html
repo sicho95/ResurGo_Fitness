@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#12231f"><title>ResurGo — Hot Refresh</title>
+<style>body{background:#101b18;color:#f4f6f5;font:16px system-ui;margin:0;padding:24px}main{max-width:520px;margin:8vh auto;padding:20px;border:1px solid #426053;border-radius:16px}a,button{color:#b4df94}button{background:transparent;border:1px solid #b4df94;border-radius:10px;padding:12px;font:inherit}p{line-height:1.5}</style></head>
+<body><main><h1>Hot Refresh</h1><p id="status" role="status">Vérification de la dernière version…</p><p>Les données locales, les voix et les connexions NAS sont conservées.</p><button id="retry" hidden>Réessayer</button> <a href="./">Retour à ResurGo</a></main>
+<script>
+const status=document.getElementById("status"),retry=document.getElementById("retry");
+async function hotRefresh(){
+ retry.hidden=true;
+ try{
+  const stamp=Date.now();
+  const response=await fetch("./version.json?hot="+stamp,{cache:"no-store"});
+  if(!response.ok)throw Error("Version inaccessible");
+  const meta=await response.json();
+  if(!/^\d+\.\d+\.\d+$/.test(meta.version)||!(/^[a-zA-Z0-9.-]{3,120}$/.test(meta.buildId)))throw Error("Version invalide");
+  const entry="./bluefy-"+meta.version.replace(/\./g,"")+".html";
+  // Verify the new entry and asset names before removing stale static caches.
+  const page=await fetch(entry+"?hot="+stamp,{cache:"no-store"});
+  if(!page.ok||!(await page.text()).includes("app-"+meta.buildId+".js"))throw Error("La publication n’est pas encore complète.");
+  const js=await fetch("./app-"+meta.buildId+".js?hot="+stamp,{cache:"no-store"});
+  if(!js.ok||!(await js.text()).includes(meta.buildId))throw Error("Le nouveau code n’est pas accessible.");
+  status.textContent="Version "+meta.version+" disponible. Actualisation du cache applicatif…";
+  if("caches" in window){
+   try{for(const key of await caches.keys())if(key.startsWith("resurgo-fitness-static-")&&key!=="resurgo-fitness-static-"+meta.buildId)await caches.delete(key);}catch{}
+  }
+  // Keep service worker registration / Push subscription; do not touch IndexedDB.
+  if(navigator.serviceWorker?.getRegistration){
+   try{const reg=await navigator.serviceWorker.getRegistration("./");if(reg){reg.update().catch(()=>{});if(reg.waiting)reg.waiting.postMessage({type:"SKIP_WAITING"});}}catch{}
+  }
+  location.replace(entry+"?hot="+stamp);
+ }catch(e){status.textContent="Hot Refresh impossible : "+(e.message||String(e))+". Tes données restent conservées.";retry.hidden=false;}
+}
+retry.addEventListener("click",hotRefresh);hotRefresh();
+</script></body></html>
