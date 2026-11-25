@@ -1,7 +1,7 @@
   // ResurGo — voix neurales Edge françaises (Vivienne / Remy), mêmes identités que Histoire.
   // AUCUN réseau ni LLM nécessaire en course si le pack choisi est en cache.
   let coachVoiceManifest=null,coachVoiceLoading=null,coachVoiceAudio=null;
-  const voicePackBase="./voice/fr-FR/v2/";
+  const voicePackBase="./voice/fr-FR/v2-padded/";
   async function voiceGetManifest(){
     if(coachVoiceManifest)return coachVoiceManifest;
     if(coachVoiceLoading)return coachVoiceLoading;
@@ -31,7 +31,7 @@
   function voiceSpeakId(id,voiceKind=null){
     const kind=voiceKind||state.settings?.tts?.pregeneratedVoice||"feminine";
     if(!["feminine","masculine"].includes(kind)||!/^phrase_0(?:[0-7][0-9]|80)$/.test(id))return Promise.resolve(false);
-    // Known local pack paths: no manifest await before play, preserving the tap gesture.
+    // Padded MP3: one continuous stream, 1s silence before and after speech. No await before play.
     const fileUrl=voicePackBase+kind+"/"+id+".mp3";
     const token=++coachAudioSequence;
     const audio=coachVoiceAudio||(coachVoiceAudio=new Audio());

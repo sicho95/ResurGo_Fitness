@@ -83,7 +83,9 @@ async function coachAudioResponse(request){
       return new Response(bytes.slice(start,end+1),{status:206,headers:{"Content-Type":cached.headers.get("Content-Type")||"audio/mpeg","Content-Range":"bytes "+start+"-"+end+"/"+size,"Content-Length":String(end-start+1),"Accept-Ranges":"bytes"}});
     }
   }
-  return fetch(request);
+  try{const response=await fetch(request);if(response.ok)return response;if(!request.url.includes("/v2-padded/"))return response;}catch(error){if(!request.url.includes("/v2-padded/"))throw error;}
+  // An already-downloaded legacy pack remains audible offline until the new pack is downloaded.
+  return coachAudioResponse(new Request(request.url.replace("/v2-padded/","/v2/"),{headers:request.headers}));
 }
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;

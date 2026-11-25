@@ -338,7 +338,7 @@
       <summary>ⓘ Bluetooth sur iPhone — Safari + beacio</summary>
       <p>Installe l’extension gratuite <a href="https://apps.apple.com/fr/app/beacio/id6761301368" target="_blank" rel="noopener noreferrer">beacio (App Store)</a>, active-la dans Réglages → Apps → Safari → Extensions et autorise ce site. Ouvre ResurGo dans un onglet Safari, pas dans la PWA autonome. Sur Android, Chrome suffit.</p>
       <p>Adresse : <code id="bleHelpUrl">${esc(appUrl)}</code> <button type="button" class="secondary" id="copyBleUrl">Copier l’adresse</button></p>
-      <p>Les profils Safari et PWA autonome peuvent être distincts. Sauvegarde ou synchronise via NAS avant de changer. Le maintien BLE beacio ne garantit pas l’enregistrement des échantillons ni le GPS pendant la suspension de Safari.</p>
+      <p><strong>Apple Watch :</strong> la diffusion cardio BLE standard nécessite une app dédiée. Sur watchOS 26 ou ultérieur, essayer <a href="https://apps.apple.com/fr/app/hearttx-heart-rate-broadcast/id6825348767" target="_blank" rel="noopener noreferrer">HeartTX (gratuit)</a> directement sur la montre, puis connecter la source Montre dans ResurGo. Compatibilité réelle à vérifier. Garmin et les autres capteurs BLE standards restent compatibles.</p><p>Les profils Safari et PWA autonome peuvent être distincts. Sauvegarde ou synchronise via NAS avant de changer. Le maintien BLE beacio ne garantit pas l’enregistrement des échantillons ni le GPS pendant la suspension de Safari.</p>
       
     </details>
     <details class="bleAdvanced"><summary>Diagnostic avancé / autre machine</summary><div class="grid two">

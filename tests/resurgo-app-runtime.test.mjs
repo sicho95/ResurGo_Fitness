@@ -103,3 +103,10 @@ test("live dashboard and source controls are compiled",()=>{
 test("coach audio is non-exclusive and releases the clip; background gaps are recorded",()=>{const app=readFileSync(resolve(".webapp-build/app.js"),"utf8");assert.ok(app.includes('navigator.audioSession.type=type'));assert.ok(app.includes('audio.onended='));assert.ok(app.includes('requestBackgroundConnection({deviceId:id})'));assert.ok(app.includes("measurementGapSeconds"));});
 
 test("iOS coach uses an audible default, reuses media and preserves tap activation",()=>{const app=readFileSync(resolve(".webapp-build/app.js"),"utf8"),sw=readFileSync(resolve(".webapp-build/sw.js"),"utf8");assert.ok(app.includes('audioModeRevision===2'));assert.ok(app.includes('coachVoiceAudio||(coachVoiceAudio=new Audio())'));assert.ok(app.includes('audio.muted=false'));assert.ok(app.includes('state.ui.view="coachLive";liveSpeech("start");await save()'));assert.ok(sw.includes('status:206'));assert.ok(sw.includes('coachAudioResponse(event.request)'));});
+
+test("padded voice pack contains all original clips with one second either side",()=>{
+ const dir=resolve(".webapp-build/voice/fr-FR"),old=JSON.parse(readFileSync(resolve(dir,"v2/manifest.json"),"utf8")),padded=JSON.parse(readFileSync(resolve(dir,"v2-padded/manifest.json"),"utf8"));
+ assert.deepEqual(padded.paddingSeconds,{before:1,after:1});assert.notEqual(padded.packId,old.packId);
+ assert.deepEqual(Object.keys(padded.files),Object.keys(old.files));
+ for(const [key,file] of Object.entries(padded.files)){assert.equal(file.text,old.files[key].text);assert.equal(readFileSync(resolve(dir,"v2-padded",file.src)).length,file.bytes);assert.notEqual(file.sha256,old.files[key].sha256);}
+});

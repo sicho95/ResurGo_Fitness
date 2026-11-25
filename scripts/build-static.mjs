@@ -1,6 +1,7 @@
 // Construire l'artefact statique publiable à partir des sources de développement.
 // Le bundle final destiné à WebApp est généré ici, pas maintenu à la main.
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -121,6 +122,21 @@ async function copyStatic(outDir, meta) {
   }
 }
 
+// Keep the original pack intact for old clients and offline fallback.
+async function buildPaddedVoice(outDir){
+  const original=path.join(outDir,"voice","fr-FR","v2"),target=path.join(outDir,"voice","fr-FR","v2-padded");
+  const manifest=JSON.parse(await fs.readFile(path.join(original,"manifest.json"),"utf8"));
+  manifest.packId+=" - padded-1s".replaceAll(" ","");
+  manifest.paddingSeconds={before:1,after:1};
+  for(const item of Object.values(manifest.files)){
+    const source=path.join(original,item.src),dest=path.join(target,item.src);
+    await ensureDir(path.dirname(dest));
+    execFileSync("ffmpeg",["-nostdin","-v","error","-y","-i",source,"-af","adelay=1000:all=1,apad=pad_dur=1","-c:a","libmp3lame","-q:a","3",dest],{stdio:["ignore","ignore","inherit"]});
+    const bytes=await fs.readFile(dest);
+    item.bytes=bytes.length;item.sha256=createHash("sha256").update(bytes).digest("hex");
+  }
+  await fs.writeFile(path.join(target,"manifest.json"),JSON.stringify(manifest,null,2)+"\n");
+}
 async function main() {
   const outDir = path.resolve(root, argValue("--out", ".webapp-build"));
   const template = JSON.parse(await fs.readFile(path.join(staticDir, "version.json"), "utf8"));
@@ -139,6 +155,7 @@ async function main() {
   await ensureDir(outDir);
   await writeBundle(outDir, meta);
   await copyStatic(outDir, meta);
+  await buildPaddedVoice(outDir);
   // Unique resource URLs bypass stale HTTP caches in embedded iOS browsers.
   // The recovery entry is in the same directory and origin: IndexedDB is shared.
   await fs.copyFile(path.join(outDir,"app.js"),path.join(outDir,`app-${meta.buildId}.js`));
