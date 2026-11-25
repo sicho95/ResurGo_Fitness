@@ -9,19 +9,19 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const fusion=fs.readFileSync(path.join(root,"app/sensor-fusion.js"),"utf8");
 const ble=fs.readFileSync(path.join(root,"app/ble-bluefy.js"),"utf8");
 
-function appContext({supported=false,device=null}={}){
+function appContext({supported=false,device=null,ua="",standalone=false,beacio=null}={}){
   const buttons={bleHrSourceType:{value:"chest_strap"},bleMachineKind:{value:"treadmill"}};
   const notices=[], connections=[];
   const context=vm.createContext({
     DataView,Uint8Array,Date,Number,Math,isSecureContext:true,
-    navigator:{bluetooth:supported?{requestDevice:async(options)=>{connections.push(options);return device;}}:undefined},
+    navigator:{userAgent:ua,standalone,beacio,bluetooth:supported?{requestDevice:async(options)=>{connections.push(options);return device;}}:undefined},
     document:{getElementById:id=>buttons[id]||null,createRange:()=>({selectNodeContents(){}})},
     globalThis:null,location:{href:"https://example.org/resurgo/index.html"},
     window:{getSelection:()=>({removeAllRanges(){},addRange(){}})},
     alert:m=>notices.push(m),esc:s=>s
   });
   context.globalThis=context;
-  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleParsePm5,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleHrDisconnect,bleSourceEnabled,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel};",context);
+  vm.runInContext(fusion+"\n"+ble+"\n globalThis.__test={bleHeartPacket,bleParseFtms,bleParsePm5,bleCscPacket,bleCyclingPowerPacket,bleBikeDeltas,bleMetric,bleIngestMetric,bleMachineSnapshot,bleHrSnapshot,bleHrConnect,bleHrDisconnect,bleSourceEnabled,bleMachineConnect,bleMachineDisconnect,bleTextStatus,bluefyHelpPanel,bleCapabilities,bleCapabilityPanel};",context);
   return {ctx:context,api:context.__test,notices,buttons,connections};
 }
 const packet=bytes=>new DataView(Uint8Array.from(bytes).buffer);
@@ -68,7 +68,7 @@ test("priority chest > watch > machine, stale falls through",()=>{
 });
 test("Bluefy information and offline fallback visible to users",()=>{
  const {api}=appContext();
- assert.match(api.bleTextStatus(),/Safari avec l’extension beacio/);
+ assert.match(api.bleTextStatus(),/Web Bluetooth indisponible/);
  const ui=api.bluefyHelpPanel();
  for(const phrase of ["ⓘ","Copier l’adresse","beacio","FTMS","App Store","https:\/\/example.org\/resurgo\/index.html"])
    assert.ok(ui.includes(phrase),phrase);
@@ -186,3 +186,5 @@ test("partial indoor session merges with full Garmin recording without preferrin
 test("beacio setup replaces old user guidance",()=>{const {api}=appContext();assert.match(api.bluefyHelpPanel(),/Safari \+ beacio/);assert.doesNotMatch(api.bluefyHelpPanel(),/Bluefy/);});
 
 test("Garmin distance wins if local recording has a measurement gap",()=>{const state={activities:[],metrics:[]},ctx=vm.createContext({state,Date,Number,Math});vm.runInContext(fs.readFileSync(path.join(root,"app/garmin-personal.js"),"utf8")+"\n globalThis.api={garminUpsertActivities};",ctx);const local={id:"local",profileId:"a",source:"resurgo_pm5_ble",machineKind:"bike",type:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:1200,distanceKm:5,estimatedDistance:false,measurementGapSeconds:90};state.activities.push(local);ctx.api.garminUpsertActivities("a",[{garminActivityId:"1",type:"bike",machineKind:"bike",startedAt:"2026-11-25T12:20:00Z",durationSeconds:1200,distanceKm:6}]);assert.equal(local.distanceKm,6);assert.equal(local.garminLocalMetrics.distanceKm,5);});
+
+test("capability-first BLE: native Android, Safari without/with extension, standalone and future iOS browser",()=>{const ua="Mozilla/5.0 (iPhone) AppleWebKit/605.1.15 Version/26.2 Mobile Safari/604.1";const absent=appContext({ua}).api;assert.equal(absent.bleCapabilities().safari,true);assert.match(absent.bleCapabilityText?.()||absent.bleTextStatus(),/beacio non détecté/);assert.match(absent.bleCapabilityPanel(),/Installer beacio gratuitement/);const active=appContext({ua,supported:true,beacio:{}}).api;assert.equal(active.bleCapabilities().available,true);assert.match(active.bleTextStatus(),/beacio actif/);assert.match(active.bleCapabilityPanel(),/id="bleInstallHelp" hidden/);const android=appContext({ua:"Android Chrome",supported:true}).api;assert.match(android.bleTextStatus(),/aucun plugin requis/);const pwa=appContext({ua,standalone:true}).api;assert.match(pwa.bleTextStatus(),/PWA autonome/);const future=appContext({ua:"iPhone CriOS Safari",supported:true}).api;assert.equal(future.bleCapabilities().available,true);assert.match(future.bleCapabilityPanel(),/id="bleInstallHelp" hidden/);});

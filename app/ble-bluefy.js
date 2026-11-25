@@ -94,8 +94,43 @@
   let bleHrLink=null,bleMachineLink=null,bleHrState="unavailable",bleMachineState="unavailable";
   let bleHrReading=null,bleMachineReading=null,bleHrKind="chest_strap",bleMachineKind=null;
   const bleAvailable=()=>Boolean(globalThis.isSecureContext&&navigator.bluetooth?.requestDevice);
+  let bleBeacioReady=false;
+  function bleCapabilities(){
+    const ua=navigator.userAgent||"",ios=/iPhone|iPad|iPod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+    const standalone=!!navigator.standalone||(typeof matchMedia==="function"&&matchMedia("(display-mode: standalone)").matches);
+    const safari=ios&&/Safari/i.test(ua)&&!/CriOS|FxiOS|EdgiOS|OPiOS|Bluefy/i.test(ua)&&!standalone;
+    return {ios,safari,standalone,secure:!!globalThis.isSecureContext,available:bleAvailable(),beacio:bleBeacioReady||!!navigator.beacio,background:typeof navigator.beacio?.backgroundSync?.requestBackgroundConnection==="function"};
+  }
+  function bleCapabilityText(){
+    const c=bleCapabilities();
+    if(!c.secure)return "Bluetooth : contexte HTTPS requis.";
+    if(c.available)return c.beacio?"beacio actif sur cette page · Bluetooth disponible":"Web Bluetooth disponible · aucun plugin requis";
+    if(c.ios&&c.standalone)return "Bluetooth indisponible dans cette PWA autonome. Ouvrir cette adresse dans Safari avec beacio.";
+    if(c.safari)return "Safari : beacio non détecté sur cette page. Installer, activer ou autoriser l’extension.";
+    if(c.ios)return "Bluetooth indisponible dans ce navigateur. Safari + beacio est recommandé.";
+    return "Web Bluetooth indisponible dans ce navigateur. Utiliser un navigateur compatible.";
+  }
+  function bleCapabilityPanel(){
+    const c=bleCapabilities();
+    return '<div class="bleCapability"><strong id="bleCapabilityText" role="status">'+esc(bleCapabilityText())+'</strong><div id="bleInstallHelp" '+(!c.ios||c.available?"hidden":"")+'><p class="muted">Sur iPhone/iPad : installer beacio gratuitement, activer son extension dans Safari, puis autoriser ce site. Si ResurGo est ouvert depuis son icône, ouvrir plutôt un onglet Safari.</p><a class="secondary" href="https://apps.apple.com/fr/app/beacio/id6761301368" target="_blank" rel="noopener noreferrer">Installer beacio gratuitement</a> <a href="https://beacio.com/" target="_blank" rel="noopener noreferrer">Guide de configuration</a></div><button type="button" class="secondary" id="bleCapabilityCheck">Tester la compatibilité Bluetooth</button><small id="bleCapabilityResult" aria-live="polite"></small></div>';
+  }
+  function bleCapabilityRefresh(){
+    const c=bleCapabilities(),x=document.getElementById("bleCapabilityText"),help=document.getElementById("bleInstallHelp");
+    if(x)x.textContent=bleCapabilityText();if(help)help.hidden=!c.ios||c.available;
+  }
+  async function bleCapabilityCheck(){
+    const out=document.getElementById("bleCapabilityResult");if(out)out.textContent="Vérification…";
+    if(!bleAvailable())await new Promise(resolve=>setTimeout(resolve,2000));
+    bleCapabilityRefresh();const c=bleCapabilities();let msg=bleCapabilityText();
+    if(c.available&&typeof navigator.bluetooth.getAvailability==="function"){
+      try{const ok=await navigator.bluetooth.getAvailability();msg+=ok?" · disponibilité signalée par le navigateur.":" · disponibilité non signalée : vérifier le Bluetooth et les permissions.";}catch{msg+=" · état radio non vérifiable.";}
+    }
+    if(c.available)msg+=" · connecter un capteur pour vérifier la réception réelle.";
+    if(c.background)msg+=" · API arrière-plan détectée, fonctionnement à vérifier.";
+    if(out)out.textContent=msg;
+  }
   function bleTextStatus(){
-    return bleAvailable()?(navigator.beacio?"Bluetooth Safari + beacio disponible.":"Bluetooth web disponible."):"Bluetooth indisponible ici. Sur iPhone, ouvrir ResurGo dans Safari avec l’extension beacio activée (pas la PWA autonome).";
+    return bleCapabilityText();
   }
   function bleHeartPacket(view){
     if(!(view instanceof DataView)||view.byteLength<2)throw Error("FC : paquet court");
@@ -164,7 +199,7 @@
       cadenceRpm:d?.cadenceRpm??null,powerW:d?.powerW??null,protocol:bleMachineProtocol,device:bleMachineLink?.device?.name||null};
   }
   function bleStatusRefresh(){
-    bleBackgroundStatus();
+    bleBackgroundStatus();bleCapabilityRefresh();
     const st=document.getElementById("bleDeviceStatus");
     const hr=bleHrSnapshot(),m=bleMachineSnapshot();
     if(st)st.textContent=bleTextStatus()+" Cardio : "+(hr.available?hr.bpm+" bpm ("+hr.source+")":"aucune mesure fraîche")+
@@ -349,7 +384,7 @@
   function sourceMachineKind(){return (typeof liveSelectedMachine==="function"?liveSelectedMachine():null)||document.getElementById("liveIndoorKind")?.value||"bike";}
   function bleConnectForSession(){const k=sourceMachineKind();return bleMachineConnect(navigator.beacio?"universal":k==="bike"?"pm5":"standard",k);}
   function sourceRow(role,title,button){return '<div class="sourceRow"><label><input type="checkbox" data-source-toggle="'+role+'" '+(bleSourceEnabled[role]!==false?"checked":"")+'><span><strong>'+title+'</strong><small id="sourceStatus_'+role+'">Non connectée</small></span></label><button class="secondary" id="'+button+'">Connecter</button></div>';}
-  function sourceManager(includeMachine=true){return '<div class="sourceManager"><h3>Sources de données</h3>'+(includeMachine?sourceRow("fitness_machine","Machine de sport","liveConnectMachine"):"")+sourceRow("watch","Montre · cardio","liveConnectWatch")+sourceRow("chest_strap","Ceinture cardio","liveConnectStrap")+'<div class="sourceRow"><span>Chronomètre</span><small>Toujours actif</small></div><p class="muted">Sources facultatives. La meilleure mesure fraîche est retenue automatiquement.</p><small id="bleBackgroundStatus"></small></div>';}
+  function sourceManager(includeMachine=true){return '<div class="sourceManager"><h3>Sources de données</h3>'+bleCapabilityPanel()+(includeMachine?sourceRow("fitness_machine","Machine de sport","liveConnectMachine"):"")+sourceRow("watch","Montre · cardio","liveConnectWatch")+sourceRow("chest_strap","Ceinture cardio","liveConnectStrap")+'<div class="sourceRow"><span>Chronomètre</span><small>Toujours actif</small></div><p class="muted">Sources facultatives. La meilleure mesure fraîche est retenue automatiquement.</p><small id="bleBackgroundStatus"></small></div>';}
 
   const bleBackgroundHandles=new Map(),bleBackgroundPending=new Map();
   let bleBackgroundGeneration=0,bleBackgroundError="";
