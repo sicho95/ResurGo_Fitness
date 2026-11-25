@@ -84,3 +84,13 @@ test("Bluefy rescue entry uses unique asset paths on the same origin",()=>{
   const sw=readFileSync(resolve(dir,"sw.js"),"utf8");
   assert.ok(sw.includes("app-"+meta.buildId+".js"));
 });
+
+test("Hot Refresh uses same-origin recovery without deleting databases or voice caches",()=>{
+ const dir=resolve(".webapp-build"),app=readFileSync(resolve(dir,"app.js"),"utf8"),page=readFileSync(resolve(dir,"force-update.html"),"utf8");
+ assert.ok(app.includes('id="forceAppCacheUpdate"'));
+ assert.ok(app.includes('on("forceAppCacheUpdate",forceAppCacheUpdate)'));
+ assert.ok(page.includes('key.startsWith("resurgo-fitness-static-")'));
+ assert.ok(!page.includes("deleteDatabase("));
+ assert.ok(!page.includes(".unregister("));
+ assert.ok(page.includes('location.replace(entry'));
+});

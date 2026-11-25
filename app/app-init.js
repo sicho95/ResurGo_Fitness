@@ -107,7 +107,14 @@
       svg.ontouchmove=e=>{ if(e.touches.length===1) setChartHover(svg,e.touches[0].clientX); if(e.touches.length===2&&pinchStart){ e.preventDefault(); const dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY, ratio=Math.max(.35,Math.min(3,Math.hypot(dx,dy)/pinchStart)), current=chartViewport(key,total), nextSize=Math.round(pinchSize/ratio), center=current.offset+current.size/2; setChartViewport(key,total,{size:nextSize,offset:center-nextSize/2}); } };
     });
   }
+  function forceAppCacheUpdate(){
+    if(state.liveSession||run()){alert("Termine et enregistre ta séance avant de mettre à jour l’application.");return;}
+    if(navigator.onLine===false){alert("Une connexion Internet est nécessaire pour actualiser les fichiers.");return;}
+    if(!confirm("Hot Refresh : recharger les fichiers de l’application ? Tes profils, séances, voix et connexions NAS restent conservés."))return;
+    save().then(()=>{window.location.href="./force-update.html?t="+Date.now();}).catch(()=>alert("Sauvegarde locale impossible : mise à jour annulée."));
+  }
   function bind(){
+    on("forceAppCacheUpdate",forceAppCacheUpdate);
     on("pushInboxButton",()=>pushInboxOpen());
     on("enableNasPush",pushEnableFromSettings);
     on("disableNasPush",pushDisableFromSettings);
