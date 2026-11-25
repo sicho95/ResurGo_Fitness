@@ -5,7 +5,7 @@
   const BLE_MAX_AGE_MS=9000;
   const BLE_CSC=0x1816,BLE_CSC_MEAS=0x2a5b,BLE_POWER=0x1818,BLE_POWER_MEAS=0x2a63;
   const pm5Uuid=id=>"ce06"+id.toString(16).padStart(4,"0")+"-43e5-11e4-916c-0800200c9a66";
-  const PM5_DATA=pm5Uuid(0x30);
+  const PM5_DISCOVERY=pm5Uuid(0),PM5_DATA=pm5Uuid(0x30);
   let bleMachineTrace=[],bleMachineSelected=null;
   function bleErrorText(e){return typeof e==="string"?e:e?.message||e?.name||JSON.stringify(e)||"erreur Bluetooth sans détail";}
   function bleTrace(s){bleMachineTrace.push(String(s).slice(0,200));if(bleMachineTrace.length>24)bleMachineTrace.shift();bleStatusRefresh();}
@@ -167,7 +167,7 @@
       ". Machine : "+(m.available?m.kind+" / "+(m.distanceM!==null?m.distanceM+" m":m.speedKmh+" km/h"):
         (m.connected?"connectée, données de progression absentes/périmées":"non connectée"))+".";
     const diagnostic=document.getElementById("bleBikeDiagnostic");
-    if(diagnostic)diagnostic.textContent=JSON.stringify({protocol:m.protocol,device:m.device||bleMachineSelected,state:m.state,trace:bleMachineTrace,speedKmh:m.speedKmh,distanceM:m.distanceM,cadenceRpm:m.cadenceRpm,powerW:m.powerW,heartRate:hr.bpm,heartSource:hr.source});
+    if(diagnostic)diagnostic.textContent=JSON.stringify({protocol:m.protocol,device:m.device||bleMachineSelected,state:m.state,trace:bleMachineTrace,speedKmh:m.speedKmh,distanceM:m.distanceM,cadenceRpm:m.cadenceRpm,powerW:m.powerW,heartRate:hr.bpm,heartSource:hr.source},null,2);
     for(const [id,value,unit] of [["liveCadence",m.cadenceRpm," rpm"],["livePower",m.powerW," W"]]){const field=document.getElementById(id);if(field)field.textContent=Number.isFinite(value)?Math.round(value)+unit:"—";}
     const hc=document.getElementById("liveHeartRate");
     if(hc)hc.textContent=hr.available?hr.bpm+" bpm ("+hr.source+")":"— (non mesuré)";
@@ -242,7 +242,8 @@
   }
   async function bleMachineConnect(mode="standard"){
     if(!bleAvailable()){alert(bleTextStatus());return;}
-    const kind=mode==="pm5"?"bike":document.getElementById("bleMachineKind")?.value||"bike";
+    const nativeMode=["pm5","pm5scan","pm5data"].includes(mode),cyclingMode=["csc","cps"].includes(mode);
+    const kind=nativeMode||cyclingMode?"bike":document.getElementById("bleMachineKind")?.value||"bike";
     if(!FTMS_CHARACTERISTICS[kind]){alert("Sélectionner un type d'appareil valide.");return;}
     bleMachineDisconnect();
     bleMachineTrace=[];bleMachineSelected=null;
@@ -252,7 +253,12 @@
       // Bluefy field test: one service filter opens the picker, mixed name/service filters do not.
       // PM5 direct button uses the proprietary data service; standard bike uses the same
       // single FTMS filter as treadmill and elliptical, with other services authorized.
-      const options=kind==="bike"?(mode==="pm5"?{acceptAllDevices:true,optionalServices:[PM5_DATA,BLE_FTMS,BLE_CSC,BLE_POWER]}:{filters:[{services:[BLE_FTMS]}],optionalServices:[PM5_DATA,BLE_CSC,BLE_POWER]}):{filters:[{services:[BLE_FTMS]}]};
+      const options=mode==="pm5"?{filters:[{services:[PM5_DISCOVERY]}],optionalServices:[PM5_DATA]}:
+        mode==="pm5scan"?{acceptAllDevices:true,optionalServices:[PM5_DATA]}:
+        mode==="pm5data"?{filters:[{services:[PM5_DATA]}]}:
+        cyclingMode?{filters:[{services:[mode==="csc"?BLE_CSC:BLE_POWER]}]}:
+        {filters:[{services:[BLE_FTMS]}]};
+      bleTrace("Recherche "+mode+" : "+JSON.stringify(options));
       const device=await navigator.bluetooth.requestDevice(options);
       bleMachineSelected=device.name||"Appareil sans nom";
       bleTrace("Appareil : "+bleMachineSelected);
@@ -261,9 +267,9 @@
       bleMachineLink={device,characteristic:null};bleMachineKind=kind;
       device.addEventListener("gattserverdisconnected",bleMachineLost);
       bleTrace("GATT connecté");
-      const isPm5=mode==="pm5"||/PM5|Concept2|BikeErg/i.test(device.name||"");
+      const isPm5=nativeMode||/PM5|Concept2|BikeErg/i.test(device.name||"");
       let connected=false;
-      if(mode!=="pm5"){
+      if(!nativeMode&&!cyclingMode){
         stage="FTMS "+FTMS_CHARACTERISTICS[kind].toString(16);
         try{
           const service=await server.getPrimaryService(BLE_FTMS);
@@ -271,9 +277,9 @@
           bleMachineLink.characteristic=characteristic;
           characteristic.addEventListener("characteristicvaluechanged",bleMachineNotify);
           await characteristic.startNotifications();connected=true;bleTrace("FTMS notifications OK");
-        }catch(error){bleTrace(stage+" : "+bleErrorText(error));try{bleMachineLink.characteristic?.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}bleMachineLink.characteristic=null;if(kind!=="bike"||!isPm5)throw error;}
+        }catch(error){bleTrace(stage+" : "+bleErrorText(error));try{bleMachineLink.characteristic?.removeEventListener("characteristicvaluechanged",bleMachineNotify);}catch{}bleMachineLink.characteristic=null;throw error;}
       }
-      if(!connected&&kind==="bike"&&isPm5){
+      if(!connected&&kind==="bike"&&isPm5&&nativeMode){
         stage="Concept2 natif";bleMachineProtocol="PM5 natif";
         let progress=false;
         for(const id of [0x31,0x32,0x36]){
@@ -281,21 +287,13 @@
           catch(error){bleTrace("PM5 "+id.toString(16)+" : "+bleErrorText(error));}
         }
         connected=progress;
-        if(!connected){
-          for(const link of bleBikeLinks){try{link.characteristic.removeEventListener("characteristicvaluechanged",link.handler);await link.characteristic.stopNotifications?.();}catch{}}
-          bleBikeLinks=[];bleBikeMetrics={};bleMachineReading=null;
-          stage="CSC/CPS";bleMachineProtocol="PM5 CSC/CPS";
-          for(const [serviceId,charId,protocol] of [[BLE_CSC,BLE_CSC_MEAS,"CSC"],[BLE_POWER,BLE_POWER_MEAS,"CPS"]]){
-            try{await bleSubscribeBike(server,serviceId,charId,event=>bleBikeNotify(event,protocol));}
-            catch(error){bleTrace(protocol+" : "+bleErrorText(error));}
-          }
-          connected=bleBikeLinks.length>0;
-        }
+
       }
+      if(cyclingMode){stage=mode.toUpperCase();bleMachineProtocol="PM5 "+stage;await bleSubscribeBike(server,mode==="csc"?BLE_CSC:BLE_POWER,mode==="csc"?BLE_CSC_MEAS:BLE_POWER_MEAS,event=>bleBikeNotify(event,mode.toUpperCase()));connected=true;}
       if(!connected)throw Error("Aucun service de mesure compatible");
       if(bleMachineState!=="live")bleMachineState="connected";bleStatusRefresh();
     }catch(e){bleTrace(stage+" : "+bleErrorText(e));await bleMachineDisconnect();bleMachineState="unavailable";bleStatusRefresh();if(e?.name!=="NotFoundError")
-      alert("Machine BLE — "+stage+" : "+bleErrorText(e)+". Ouvrir Diagnostic vélo. Pour un PM5, essayer le bouton Concept2 direct.");}
+      alert("Machine BLE — "+stage+" : "+(String(e)==="2"?"Bluefy a annulé ou refusé la sélection (code 2).":bleErrorText(e))+" Ouvrir Diagnostic vélo. Essayer une autre méthode de recherche PM5.");}
   }
 
   function bluefyHelpPanel(){
@@ -332,10 +330,20 @@
       <button type="button" class="primary" id="bleHrConnect">Connecter le cardio</button>
       <button type="button" class="secondary" id="bleHrDisconnect">Déconnecter le cardio</button>
       <button type="button" class="primary" id="bleMachineConnect">Connecter machine FTMS / PM5</button>
-      <button type="button" class="secondary" id="blePm5Connect">Connecter Concept2 PM5 (direct)</button>
+      <button type="button" class="secondary" id="blePm5Connect">Concept2 PM5 — recherche native</button>
+      <button type="button" class="secondary" id="blePm5Scan">Concept2 PM5 — recherche tous appareils</button>
+      <button type="button" class="secondary" id="blePm5Data">Concept2 PM5 — filtre données</button>
+      <button type="button" class="secondary" id="bleCscConnect">PM5 — vitesse/cadence CSC</button>
+      <button type="button" class="secondary" id="bleCpsConnect">PM5 — puissance CPS</button>
       <button type="button" class="secondary" id="bleMachineDisconnect">Déconnecter machine</button>
     </div>
-    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p><details open><summary>Diagnostic vélo (copier le texte)</summary><p id="bleBikeDiagnostic">En attente de connexion</p></details>`;
+    <p id="bleDeviceStatus" role="status" aria-live="polite">${esc(bleTextStatus())}</p><details open><summary>Diagnostic vélo (copier le texte)</summary><pre id="bleBikeDiagnostic" style="white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;max-width:100%;font-size:12px;user-select:text">En attente de connexion</pre><button type="button" class="secondary" id="copyBleDiagnostic">Copier le diagnostic</button></details>`;
+  }
+  async function copyBleDiagnostic(){
+    const field=document.getElementById("bleBikeDiagnostic");
+    if(!field)return;
+    try{await navigator.clipboard.writeText(field.textContent);alert("Diagnostic copié.");}
+    catch{try{const range=document.createRange();range.selectNodeContents(field);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}catch{}}
   }
   async function bluefyCopyAddress(){
     const address=location.href.split("#")[0].split("?")[0];

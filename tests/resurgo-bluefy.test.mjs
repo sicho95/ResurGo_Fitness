@@ -147,14 +147,23 @@ test("Bike chooser uses single FTMS filter without mixed name filters",async()=>
  const m=mockMachine(),{api,buttons,connections}=appContext({supported:true,device:m.device});
  buttons.bleMachineKind.value="bike";await api.bleMachineConnect();
  assert.equal(connections[0].filters.length,1);assert.equal(connections[0].filters[0].services[0],0x1826);
- assert.ok(connections[0].optionalServices.includes("ce060030-43e5-11e4-916c-0800200c9a66"));
+ assert.equal(connections[0].optionalServices,undefined);
 });
 test("PM5 direct chooser subscribes to native data and exposes real distance",async()=>{
  const handlers={},service={getCharacteristic:async id=>({addEventListener:(n,fn)=>{handlers[id]=fn},startNotifications:async()=>{},removeEventListener(){}})};
  const device={name:"PM5 test",id:"pm5",addEventListener(){},removeEventListener(){},gatt:{connected:true,connect:async()=>({getPrimaryService:async id=>{assert.equal(id,"ce060030-43e5-11e4-916c-0800200c9a66");return service}}),disconnect(){}}};
  const {api,connections}=appContext({supported:true,device});
  await api.bleMachineConnect("pm5");
- assert.equal(connections[0].acceptAllDevices,true);
+ assert.equal(connections[0].filters[0].services[0],"ce060000-43e5-11e4-916c-0800200c9a66");
+ assert.equal(connections[0].optionalServices[0],"ce060030-43e5-11e4-916c-0800200c9a66");
  handlers["ce060031-43e5-11e4-916c-0800200c9a66"]({target:{value:packet([0,0,0,0x10,0x27,0])}});
  assert.equal(api.bleMachineSnapshot().distanceM,1000);assert.equal(api.bleMachineSnapshot().protocol,"PM5 natif");
+});
+
+test("PM5 scan and data-filter alternatives do not mix service filters",async()=>{
+ const m=mockMachine(),{api,connections}=appContext({supported:true,device:m.device});
+ await api.bleMachineConnect("pm5scan");
+ assert.equal(connections[0].acceptAllDevices,true);assert.equal(connections[0].optionalServices.length,1);
+ await api.bleMachineConnect("pm5data");
+ assert.equal(connections[1].filters[0].services[0],"ce060030-43e5-11e4-916c-0800200c9a66");assert.equal(connections[1].optionalServices,undefined);
 });

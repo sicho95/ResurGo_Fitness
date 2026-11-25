@@ -138,7 +138,7 @@
     on("livePause",livePause); on("liveResume",liveResume); on("liveFinish",liveFinish);
     on("liveEncourage",()=>liveSpeech("positive"));
     on("bleHrConnect",bleHrConnect); on("bleHrDisconnect",bleHrDisconnect);
-    on("bleMachineConnect",()=>bleMachineConnect()); on("blePm5Connect",()=>bleMachineConnect("pm5")); on("bleMachineDisconnect",bleMachineDisconnect);
+    on("bleMachineConnect",()=>bleMachineConnect()); on("blePm5Connect",()=>bleMachineConnect("pm5")); on("blePm5Scan",()=>bleMachineConnect("pm5scan")); on("blePm5Data",()=>bleMachineConnect("pm5data")); on("copyBleDiagnostic",copyBleDiagnostic); on("bleCscConnect",()=>bleMachineConnect("csc")); on("bleCpsConnect",()=>bleMachineConnect("cps")); on("bleMachineDisconnect",bleMachineDisconnect);
     on("copyBluefyUrl",bluefyCopyAddress);
     on("liveStartIndoor",liveStartIndoor);
     on("openBluefyHelp",()=>{state.ui.view="settings";save().then(()=>{render();
