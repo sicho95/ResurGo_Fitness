@@ -1,12 +1,12 @@
 const CACHE = "resurgo-fitness-static-__APP_BUILD__";
-const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg", "./version.json", "./assets/bodymaps/male.svg", "./assets/bodymaps/female.svg"];
+const ASSETS = ["./", "./index.html", "./styles.css", "./app.js", "./styles-__APP_BUILD__.css", "./app-__APP_BUILD__.js", "./manifest.webmanifest", "./icon.svg", "./version.json", "./assets/bodymaps/male.svg", "./assets/bodymaps/female.svg"];
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
+  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS.map(path=>new Request(path,{cache:"reload"})))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE && !key.startsWith("resurgo-voice-")).map(key => caches.delete(key)))).then(() => self.clients.claim()));
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE && key.startsWith("resurgo-fitness-static-")).map(key => caches.delete(key)))).then(() => self.clients.claim()));
 });
 
 self.addEventListener("message", event => {

@@ -71,3 +71,16 @@ test("the header keeps the version visible beside a compact notification action"
   assert.ok(css.includes(".brandVersion{"),"Version styling is absent.");
   assert.ok(!css.includes(".topActions .pill{display:none}"),"The mobile version is being hidden.");
 });
+
+test("Bluefy rescue entry uses unique asset paths on the same origin",()=>{
+  const dir=resolve(".webapp-build"),meta=JSON.parse(readFileSync(resolve(dir,"version.json"),"utf8"));
+  const html=readFileSync(resolve(dir,"index.html"),"utf8");
+  const rescue=readFileSync(resolve(dir,"bluefy-"+meta.version.replace(/\./g,"")+".html"),"utf8");
+  assert.equal(rescue,html);
+  assert.ok(html.includes("app-"+meta.buildId+".js"));
+  assert.ok(html.includes("styles-"+meta.buildId+".css"));
+  assert.equal(readFileSync(resolve(dir,"app-"+meta.buildId+".js"),"utf8"),readFileSync(resolve(dir,"app.js"),"utf8"));
+  assert.equal(readFileSync(resolve(dir,"styles-"+meta.buildId+".css"),"utf8"),readFileSync(resolve(dir,"styles.css"),"utf8"));
+  const sw=readFileSync(resolve(dir,"sw.js"),"utf8");
+  assert.ok(sw.includes("app-"+meta.buildId+".js"));
+});

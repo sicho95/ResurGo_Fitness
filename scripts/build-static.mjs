@@ -139,6 +139,11 @@ async function main() {
   await ensureDir(outDir);
   await writeBundle(outDir, meta);
   await copyStatic(outDir, meta);
+  // Unique resource URLs bypass stale HTTP caches in embedded iOS browsers.
+  // The recovery entry is in the same directory and origin: IndexedDB is shared.
+  await fs.copyFile(path.join(outDir,"app.js"),path.join(outDir,`app-${meta.buildId}.js`));
+  await fs.copyFile(path.join(outDir,"styles.css"),path.join(outDir,`styles-${meta.buildId}.css`));
+  await fs.copyFile(path.join(outDir,"index.html"),path.join(outDir,`bluefy-${meta.version.replace(/\./g,"")}.html`));
   await copyDir(assetsDir, path.join(outDir, "assets"));
   await copyDir(docsDir, path.join(outDir, "docs"));
   await copyDir(workersDir, path.join(outDir, "workers"));
